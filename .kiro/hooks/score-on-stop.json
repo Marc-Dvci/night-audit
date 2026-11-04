@@ -1,0 +1,12 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "casebook-score-on-stop",
+      "description": "When the agent stops, score the matcher on the development casebook so every session ends with a measured result.",
+      "trigger": "Stop",
+      "action": { "type": "command", "command": "uv run python scripts/score_casebook.py --set dev --quiet" },
+      "timeout": 120
+    }
+  ]
+}

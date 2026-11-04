@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "seal-heldout-casebook",
+      "description": "Audit rule 7: the agent may never read the held-out casebook. Only the release scorer may.",
+      "trigger": "PreToolUse",
+      "matcher": "*",
+      "action": { "type": "command", "command": "python scripts/hooks/seal_heldout.py" },
+      "timeout": 10
+    }
+  ]
+}

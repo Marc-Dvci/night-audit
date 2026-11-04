@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "read-only-aws",
+      "description": "Audit rule 3: refuse any AWS call that is not a read, from MCP tools or from the shell.",
+      "trigger": "PreToolUse",
+      "matcher": "^(mcp_.*|execute_bash|execute_pwsh|shell)$",
+      "action": { "type": "command", "command": "python scripts/hooks/readonly_guard.py" },
+      "timeout": 10
+    }
+  ]
+}
