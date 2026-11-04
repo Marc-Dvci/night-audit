@@ -85,7 +85,10 @@ def test_lookalike_unicode_key_does_not_hide_behind_a_declared_one() -> None:
         _snapshots(
             [_rec(LedgerName.intended, "i1", "i-0aa1")],
             [_rec(LedgerName.observed, "o1", "i-0aa1"), _rec(LedgerName.observed, "o2", lookalike)],
-            [_rec(LedgerName.billed, "b1", "i-0aa1", amount="3.10"), _rec(LedgerName.billed, "b2", lookalike, amount="9.99")],
+            [
+                _rec(LedgerName.billed, "b1", "i-0aa1", amount="3.10"),
+                _rec(LedgerName.billed, "b2", lookalike, amount="9.99"),
+            ],
         ),
         CONTROL,
         RUN,
