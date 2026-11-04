@@ -12,8 +12,9 @@ from pathlib import Path
 
 import yaml
 from nightaudit.models import LedgerName
+from nightaudit.normalisers import normalise
 
-from .aws import Inventory
+from .aws import CostAndUsage, Inventory
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -22,6 +23,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--keep-prefix", action="append", default=["night-audit"], help="names never excluded")
     parser.add_argument("--profile", default="night-audit")
     parser.add_argument("--out", default="apps/vampires/controls/exclusions.local.yaml")
+    parser.add_argument("--cur-bucket", help="also exclude billed resources whose first usage is before the cut-off")
+    parser.add_argument("--cur-prefix", default="cur2")
+    parser.add_argument("--cur-export", default="night-audit-cur2")
     args = parser.parse_args(argv)
 
     cutoff = datetime.fromisoformat(args.before.replace("Z", "+00:00"))
@@ -32,6 +36,20 @@ def main(argv: list[str] | None = None) -> int:
             continue
         if record.timestamp is None or record.timestamp < cutoff:
             keys.add(record.raw_key.strip().lower())
+    billed_count = 0
+    if args.cur_bucket:
+        billed = CostAndUsage(
+            ledger=LedgerName.billed, profile=args.profile, bucket=args.cur_bucket,
+            prefix=args.cur_prefix, export=args.cur_export,
+        ).fetch()
+        billed_count = len(billed)
+        chain = ["arn_resource_id", "strip", "lower"]
+        for record in billed:
+            key = normalise(record.raw_key, chain, {})
+            if not key or any(key.startswith(p) for p in args.keep_prefix):
+                continue
+            if record.timestamp is not None and record.timestamp < cutoff:
+                keys.add(key)
     out = Path(args.out)
     out.write_text(
         "# Local exclusion list written by vampires-baseline. Not committed.\n"
@@ -41,7 +59,7 @@ def main(argv: list[str] | None = None) -> int:
         ),
         encoding="utf-8",
     )
-    print(f"{len(keys)} keys written to {out} ({len(records)} inventoried)")
+    print(f"{len(keys)} keys written to {out} ({len(records)} inventoried, {billed_count} billed groups read)")
     return 0
 
 
