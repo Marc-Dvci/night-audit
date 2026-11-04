@@ -1,0 +1,61 @@
+# Hollow Pines Credit Union: planted findings for the Ghosts app.
+# Written on 4 Nov 2026, before the generator and the app existed. The generator must plant exactly these, and the
+# run on its output must produce exactly these findings (plus nothing else). Run date for the demo: 2026-11-04.
+# All people, addresses and vendors are synthetic.
+
+run_date: "2026-11-04"
+staff_total: 180
+vendors:
+  - {name: Lantern Chat, unit_price: "8.00"}
+  - {name: Crypt Docs, unit_price: "12.00"}
+  - {name: Belfry CRM, unit_price: "45.00"}
+  - {name: Ossuary Design, unit_price: "22.00"}
+
+planted:
+  - key: j.marsh@hollowpines.com
+    region: OB
+    name: Ghost
+    story: Left on 2026-09-12. Identity account still active, last sign-in 2026-10-30. Seats in Crypt Docs and Belfry CRM.
+  - key: p.lindqvist@hollowpines.com
+    region: OB
+    name: Ghost
+    story: Contractor whose contract ended 2026-06-30. Account active, Lantern Chat seat still assigned.
+  - key: r.voss@hollowpines.com
+    region: OB
+    name: Ghost
+    story: Left 2026-08-01. Account appears in the identity export as R.Voss+old@hollowpines.org; Ossuary Design seat.
+  - key: svc-reporting@hollowpines.com
+    region: O
+    name: Poltergeist
+    story: A shared service account in the identity export, never in HR, no seat.
+  - key: test.admin@hollowpines.com
+    region: O
+    name: Poltergeist
+    story: A test administrator account created during a 2025 migration. Never in HR, no seat.
+  - key: temp.contractor@hollowpines.com
+    region: B
+    name: Phantom seat
+    story: A Belfry CRM licence assigned to an address that exists nowhere else.
+  - key: noor.haddad@hollowpines.com
+    region: I
+    name: Unprovisioned joiner
+    story: Starts 2026-11-02 per HR. No account and no seat yet; older than the 72-hour grace window by run time? No:
+      the grace window applies to observed records only, so the joiner is reported.
+  - key: e.castell@hollowpines.com
+    region: IB
+    name: Wraith
+    story: Current employee with a Crypt Docs seat, but no identity account (account deleted by mistake).
+
+unnamed_phantom_seats:
+  - {vendor: Lantern Chat, quantity: 3, note: Invoice lists 3 more seats than there are assignments.}
+
+informational:
+  # Current staff with an account and no paid seat (Unlicensed user, IO) are expected and not findings.
+  min_count: 1
+
+expected_counts:
+  OB: 3
+  O: 2
+  B: 1
+  I: 1
+  IB: 1
