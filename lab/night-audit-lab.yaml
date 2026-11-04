@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Night Audit lab. A small declared workload that the audit treats as intended: one t4g.micro instance,
+  one S3 bucket, one CloudTrail trail writing to it, and one IAM user. The stack carries the tag
+  night-audit:intended=true, which is how the Vampires app finds declared stacks.
+
+Parameters:
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64
+
+Resources:
+  LabBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub night-audit-lab-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-trail-logs
+            Status: Enabled
+            ExpirationInDays: 30
+
+  LabBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref LabBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: CloudTrailAclCheck
+            Effect: Allow
+            Principal: {Service: cloudtrail.amazonaws.com}
+            Action: s3:GetBucketAcl
+            Resource: !GetAtt LabBucket.Arn
+          - Sid: CloudTrailWrite
+            Effect: Allow
+            Principal: {Service: cloudtrail.amazonaws.com}
+            Action: s3:PutObject
+            Resource: !Sub ${LabBucket.Arn}/AWSLogs/${AWS::AccountId}/*
+            Condition:
+              StringEquals: {"s3:x-amz-acl": bucket-owner-full-control}
+
+  LabTrail:
+    Type: AWS::CloudTrail::Trail
+    DependsOn: LabBucketPolicy
+    Properties:
+      TrailName: night-audit-lab-trail
+      S3BucketName: !Ref LabBucket
+      IsLogging: true
+      IsMultiRegionTrail: true
+      IncludeGlobalServiceEvents: true
+
+  LabInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref LatestAmiId
+      InstanceType: t4g.micro
+      MetadataOptions: {HttpTokens: required}
+      Tags:
+        - {Key: Name, Value: night-audit-lab-web}
+
+  LabDeployer:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: night-audit-lab-deployer
+
+Outputs:
+  InstanceId: {Value: !Ref LabInstance}
+  BucketName: {Value: !Ref LabBucket}
+  TrailName: {Value: !Ref LabTrail}
+  UserName: {Value: !Ref LabDeployer}

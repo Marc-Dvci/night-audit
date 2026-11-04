@@ -1,0 +1,36 @@
+# Findings the planted lab must produce. Written on 2026-11-04 at 12:35 UTC, after planting and before any audit ran.
+# The first night whose billing data covers the planted resources is 2026-11-06 02:00 UTC (36-hour grace window).
+# Keys are normalised (lower-case). Account 416964654816.
+
+planted_at: "2026-11-04T12:29:08Z"
+first_full_night: "2026-11-06T02:00:00Z"
+
+findings:
+  - key: i-0c8b3995db6d57788
+    region: OB
+    name: Vampire
+    why: Untagged t4g.micro in eu-north-1, a region the account does not use. Not in any declared stack.
+  - key: lab-debug
+    region: O
+    name: Poltergeist
+    why: IAM user created outside the declared stack. IAM users are not billed.
+  - key: akiawcfihw3qdcdeagee
+    region: O
+    name: Poltergeist
+    why: Access key of lab-debug, created then set inactive. Not declared.
+  - key: night-audit-lab-deployer
+    region: I
+    name: Skeleton
+    why: IAM user declared by the night-audit-lab stack and deleted outside CloudFormation (drift).
+
+living_or_familiar:
+  # Declared lab resources that exist. Billed ones are Living (IOB); unbilled ones are Familiar (IO).
+  - i-05046eb7189d00d04
+  - night-audit-lab-416964654816
+  - night-audit-lab-trail
+
+also_expected:
+  # The root EBS volume of the vampire instance is billed and undeclared, so it is a second Vampire.
+  # Its id is only known from the inventory; it is checked by "attached_to: i-0c8b3995db6d57788".
+  - region: OB
+    attached_to: i-0c8b3995db6d57788
