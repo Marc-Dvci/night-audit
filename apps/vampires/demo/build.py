@@ -41,7 +41,9 @@ def main() -> int:
         (STATIC / f"{run_id}.json").write_text(result.model_dump_json(), encoding="utf-8")
         with zipfile.ZipFile(STATIC / f"evidence-{run_id}.zip", "w", zipfile.ZIP_DEFLATED) as zf:
             for name in ("evidence.jsonl", "manifest.json"):
-                zf.write(RUNS / run_id / "evidence" / name, name)
+                info = zipfile.ZipInfo(name, date_time=(2026, 11, 6, 2, 0, 0))
+                info.compress_type = zipfile.ZIP_DEFLATED
+                zf.writestr(info, (RUNS / run_id / "evidence" / name).read_bytes())
     (STATIC / "runs.json").write_text(json.dumps(summaries, indent=2), encoding="utf-8")
     print(f"static demo written to {STATIC}")
     return 0
