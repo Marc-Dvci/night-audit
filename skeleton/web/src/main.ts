@@ -169,7 +169,7 @@ function renderEvidence(f: Finding): string {
         .map(([k, v]) => `<span class="attr"><span class="k">${esc(k)}</span>=<span class="v">${esc(v)}</span></span>`)
         .join(" ");
       return `<tr><td>${esc(r.ledger)}</td><td class="mono">${esc(r.row_id)}</td><td class="mono">${esc(r.raw_key)}</td>
-        <td class="num">${r.amount === null ? "" : money(r.amount)}</td><td>${esc(shortDate(r.timestamp))}</td><td>${attrs}</td></tr>`;
+        <td class="num">${r.amount === null ? "" : money(r.amount)}</td><td class="date">${esc(shortDate(r.timestamp))}</td><td>${attrs}</td></tr>`;
     })
     .join("");
   const context = Object.entries(f.context)
