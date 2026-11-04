@@ -1,0 +1,174 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Night Audit deployment. A nightly Lambda audits the account under a read-only role at 02:00 UTC and stores each run
+  and its evidence pack in a private bucket; a second Lambda serves the UI and API from a public function URL.
+  Deploy with the tag night-audit:intended=true so the audit declares its own resources.
+
+Parameters:
+  CodeBucket: {Type: String}
+  CodeKey: {Type: String}
+  CurBucket: {Type: String, Default: night-audit-cur-416964654816}
+  Schedule: {Type: String, Default: "cron(0 2 * * ? *)"}
+
+Resources:
+  RunsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub night-audit-runs-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+
+  NightlyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: lambda.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: write-runs-only
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [s3:PutObject]
+                Resource: !Sub ${RunsBucket.Arn}/runs/*
+              - Effect: Allow
+                Action: [ce:Get*, bcm-data-exports:Get*, bcm-data-exports:List*]
+                Resource: "*"
+
+  WebRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: lambda.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: read-runs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [s3:ListBucket]
+                Resource: !GetAtt RunsBucket.Arn
+                Condition: {StringLike: {"s3:prefix": ["runs/*"]}}
+              - Effect: Allow
+                Action: [s3:GetObject]
+                Resource: !Sub ${RunsBucket.Arn}/runs/*
+
+  NightlyFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: night-audit-nightly
+      Description: Three-way match of the account, every night at 02:00 UTC, read-only.
+      Runtime: python3.12
+      Architectures: [arm64]
+      Handler: handlers.nightly
+      MemorySize: 1024
+      Timeout: 600
+      Role: !GetAtt NightlyRole.Arn
+      Code: {S3Bucket: !Ref CodeBucket, S3Key: !Ref CodeKey}
+      Environment:
+        Variables:
+          RUNS_BUCKET: !Ref RunsBucket
+          CONTROL_FILE: aws-account.yaml
+
+  WebFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: night-audit-web
+      Description: Night Audit UI and read API.
+      Runtime: python3.12
+      Architectures: [arm64]
+      Handler: handlers.web
+      MemorySize: 512
+      Timeout: 20
+      Role: !GetAtt WebRole.Arn
+      Code: {S3Bucket: !Ref CodeBucket, S3Key: !Ref CodeKey}
+      Environment:
+        Variables:
+          RUNS_BUCKET: !Ref RunsBucket
+
+  WebUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !GetAtt WebFunction.Arn
+      AuthType: NONE
+
+  WebUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WebFunction
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
+  WebInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref WebFunction
+      Action: lambda:InvokeFunction
+      Principal: "*"
+      InvokedViaFunctionUrl: true
+
+  NightlyLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/night-audit-nightly
+      RetentionInDays: 14
+
+  WebLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/lambda/night-audit-web
+      RetentionInDays: 14
+
+  SchedulerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: scheduler.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: invoke-nightly
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !GetAtt NightlyFunction.Arn
+
+  NightlySchedule:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      Name: night-audit-0200-utc
+      Description: The night audit, 02:00 UTC.
+      ScheduleExpression: !Ref Schedule
+      ScheduleExpressionTimezone: UTC
+      FlexibleTimeWindow: {Mode: "OFF"}
+      Target:
+        Arn: !GetAtt NightlyFunction.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+
+Outputs:
+  Url: {Value: !GetAtt WebUrl.FunctionUrl}
+  RunsBucket: {Value: !Ref RunsBucket}

@@ -8,3 +8,7 @@ approved:
     approver: Marc Donovici
     reason: Read-only IAM user that runs the audit locally.
     expires: "2027-03-31"
+  - id: night-audit-artifacts-416964654816
+    approver: Marc Donovici
+    reason: Holds the Lambda deployment packages of the Night Audit stack.
+    expires: "2027-03-31"

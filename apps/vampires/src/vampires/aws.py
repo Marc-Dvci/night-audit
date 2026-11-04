@@ -41,6 +41,8 @@ GLOBAL_REGION = "us-east-1"
 def _session(profile: str | None) -> Any:
     import boto3
 
+    if os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        return boto3.Session()  # deployed: the function's read-only role, never a named profile
     profile = profile or os.environ.get("NIGHT_AUDIT_PROFILE") or None
     return boto3.Session(profile_name=profile) if profile else boto3.Session()
 

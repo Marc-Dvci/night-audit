@@ -111,6 +111,10 @@ function renderMasthead(run: RunResult): string {
   return `<header class="masthead">
     <div class="brand"><span class="brand-mark" aria-hidden="true">◐</span> NIGHT AUDIT</div>
     <div class="masthead-meta">
+      <nav class="modes" aria-label="Account">
+        <a href="./" ${DEMO ? "" : 'aria-current="page"'}>Live account</a>
+        <a href="./?demo=1" ${DEMO ? 'aria-current="page"' : ""}>Demo account</a>
+      </nav>
       <span class="control">${esc(run.control_title || run.control_id)}</span>
       <label class="run-pick"><span class="sr-only">Run</span>
         <select id="run-select">${options}</select></label>
@@ -312,6 +316,10 @@ async function load(runId?: string): Promise<void> {
   try {
     if (!state.runs.length) state.runs = await api.runs();
     const id = runId ?? params.get("run") ?? state.runs[0]?.run_id;
+    if (!id && !DEMO) {
+      location.replace("./?demo=1");
+      return;
+    }
     if (!id) {
       state.error = "No runs yet. Run a control with: nightaudit run <control.yaml>";
       render();

@@ -12,3 +12,4 @@ runs/
 *.local.json
 .env
 .env.*
+build/
