@@ -1,0 +1,37 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - run: uv sync
+      - name: Lint
+        run: uv run ruff check .
+      - name: Types
+        run: uv run mypy skeleton apps/vampires/src
+      - name: Tests
+        run: uv run pytest -q
+      - name: Casebook (development set)
+        run: uv run python scripts/score_casebook.py --set dev
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: skeleton/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+      - run: npm run build

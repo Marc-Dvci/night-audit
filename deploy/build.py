@@ -28,10 +28,8 @@ TRIM = [
     "pyarrow/tests",
     "pyarrow/src",
     "pyarrow/libarrow_flight.so*",
-    "pyarrow/libarrow_substrait.so*",
     "pyarrow/libarrow_python_flight.so*",
     "pyarrow/_flight*.so",
-    "pyarrow/_substrait*.so",
 ]
 STACK = "night-audit"
 REGION = "us-east-1"
