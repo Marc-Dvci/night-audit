@@ -44,7 +44,7 @@ Cloud accounts still produce ledgers that nobody compares:
 - what exists (the inventory),
 - what is billed (the Cost and Usage Report).
 
-AWS's own Cloud Financial Management blog (27 Apr 2026) advises cross-checking cost data against CloudTrail by hand.
+AWS's Cloud Financial Management blog ([27 Apr 2026](https://aws.amazon.com/blogs/aws-cloud-financial-management/identifying-security-risks-using-aws-cost-and-usage-report-data/)) publishes Athena queries over the Cost and Usage Report and tells readers to "cross-reference findings with CloudTrail logs to identify who created these resources". Night Audit runs that cross-reference every night, adds the third ledger, and keeps the evidence.
 Stolen keys used to run models or miners show up on the bill before anyone looks; an access key nobody declared costs
 nothing, which is why nobody looks for it.
 
