@@ -13,7 +13,38 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from .models import (
+    DEFAULT_REGION_MEANINGS,
+    DEFAULT_REGION_NAMES,
+    DEFAULT_REGION_SEVERITIES,
+)
 from .normalisers import NormaliserRegistry, UnknownNormaliserError
+
+
+def resolve_region(code: str, control: ControlConfig) -> tuple[str, str, str]:
+    """Resolve ``(name, severity, meaning)`` from overrides or defaults (Req 1.4).
+
+    Shared by the matcher, the state module and the explainer so the resolution
+    rule lives in one place.
+    """
+    override = control.regions.get(code)
+    if override is not None:
+        name = override.name if override.name is not None else DEFAULT_REGION_NAMES[code]
+        severity = (
+            override.severity
+            if override.severity is not None
+            else DEFAULT_REGION_SEVERITIES[code]
+        )
+        meaning = (
+            override.meaning
+            if override.meaning is not None
+            else DEFAULT_REGION_MEANINGS[code]
+        )
+    else:
+        name = DEFAULT_REGION_NAMES[code]
+        severity = DEFAULT_REGION_SEVERITIES[code]
+        meaning = DEFAULT_REGION_MEANINGS[code]
+    return name, severity, meaning
 
 
 class ScopeFilter(BaseModel):

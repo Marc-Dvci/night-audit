@@ -153,4 +153,5 @@ class RunResult(BaseModel):
     billed_total: Decimal = Decimal("0")
     billed_unkeyed: Decimal = Decimal("0")
     dropped: dict[str, int] = Field(default_factory=dict)
+    resolved: list[Finding] = Field(default_factory=list)
     evidence_chain_hash: str | None = None

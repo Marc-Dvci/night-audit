@@ -8,6 +8,12 @@ explanation guard, and the API that the UI reads.
 
 from __future__ import annotations
 
+from .connectors import (
+    CSVConnector,
+    Connector,
+    JSONLConnector,
+    make_connector,
+)
 from .control import (
     ConnectorConfig,
     ControlConfig,
@@ -15,7 +21,10 @@ from .control import (
     LedgerConfig,
     RegionOverride,
     ScopeFilter,
+    resolve_region,
 )
+from .evidence import VerifyResult, verify_evidence_pack, write_evidence_pack
+from .explain import Explanation, ModelConfig, explain_finding
 from .grace import find_pending
 from .matcher import match
 from .models import (
@@ -34,15 +43,19 @@ from .models import (
     UnkeyedRow,
 )
 from .normalisers import NormaliserRegistry, UnknownNormaliserError, normalise
+from .runner import load_control_file, load_run, run_control, run_summary
 from .scope import apply_scope
+from .state import FindingState, StateStore, compare_findings
 
 __all__ = [
+    # constants
     "DEFAULT_REGION_MEANINGS",
     "DEFAULT_REGION_NAMES",
     "DEFAULT_REGION_SEVERITIES",
     "FINDING_REGIONS",
     "INFORMATIONAL_REGIONS",
     "REGION_CODES",
+    # models
     "Finding",
     "LedgerName",
     "LedgerSnapshot",
@@ -50,16 +63,43 @@ __all__ = [
     "RegionSummary",
     "RunResult",
     "UnkeyedRow",
+    # normalisers
     "NormaliserRegistry",
     "UnknownNormaliserError",
     "normalise",
+    # control
     "ControlConfig",
     "ControlFile",
     "ConnectorConfig",
     "LedgerConfig",
     "RegionOverride",
     "ScopeFilter",
-    "match",
+    "resolve_region",
+    # scope / grace
     "apply_scope",
     "find_pending",
+    # matcher
+    "match",
+    # state
+    "FindingState",
+    "StateStore",
+    "compare_findings",
+    # evidence
+    "VerifyResult",
+    "write_evidence_pack",
+    "verify_evidence_pack",
+    # explain
+    "ModelConfig",
+    "Explanation",
+    "explain_finding",
+    # connectors
+    "Connector",
+    "CSVConnector",
+    "JSONLConnector",
+    "make_connector",
+    # runner
+    "run_control",
+    "load_control_file",
+    "load_run",
+    "run_summary",
 ]
