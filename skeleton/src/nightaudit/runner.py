@@ -8,6 +8,7 @@ explanations, and persists the ``RunResult``.
 
 from __future__ import annotations
 
+import importlib
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -62,6 +63,13 @@ def _fetch_snapshot(
                 f"{connector.source}: {type(exc).__name__}: {str(exc)[:300]}",
             )
     return LedgerSnapshot(name=ledger_name, source=source, records=records), None
+
+
+def _load_callable(entry: str) -> Any:
+    module_name, _, attr = entry.partition(":")
+    if not module_name or not attr:
+        raise ValueError(f"entry '{entry}' must look like 'package.module:function'")
+    return getattr(importlib.import_module(module_name), attr)
 
 
 def load_exclusions(path: Path) -> frozenset[str]:
@@ -130,6 +138,22 @@ def run_control(
         result.findings = updated
         result.resolved = resolved
         state_store.save(control_id, new_state)
+
+    # Enrichers: read-only context for chosen regions. They cannot change a region (audit rule 1).
+    for enricher in control_file.enrichers:
+        targets = [f for f in result.findings if f.region_code in enricher.regions]
+        if not targets:
+            continue
+        try:
+            func = _load_callable(enricher.entry)
+            context_by_key = func(targets, enricher.options)
+        except Exception as exc:  # noqa: BLE001 - context is optional; the run keeps its findings
+            result.ledger_errors[f"enricher:{enricher.entry}"] = f"{type(exc).__name__}: {str(exc)[:300]}"
+            continue
+        for finding in result.findings:
+            extra = context_by_key.get(finding.key)
+            if extra:
+                finding.context.update({str(k): str(v)[:500] for k, v in extra.items()})
 
     # Explanations (Req 7). Code has already decided every finding.
     for finding in result.findings:

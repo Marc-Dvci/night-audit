@@ -92,6 +92,7 @@ def _finding_row(finding: Finding) -> dict[str, object]:
         "first_seen": _to_utc_iso(finding.first_seen),
         "billed_amount": str(finding.billed_amount),
         "evidence_rows": [f"{r.ledger.value}:{r.row_id}" for r in finding.records],
+        "context": dict(sorted(finding.context.items())),
     }
 
 

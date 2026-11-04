@@ -125,6 +125,8 @@ class Finding(BaseModel):
     nights_persisted: int | None = None
     first_seen: datetime | None = None
     explanation: str | None = None
+    #: Read-only context gathered after matching (for example the creating CloudTrail event).
+    context: dict[str, str] = Field(default_factory=dict)
 
 
 class RegionSummary(BaseModel):

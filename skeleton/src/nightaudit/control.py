@@ -94,6 +94,18 @@ class ConnectorConfig(BaseModel):
     options: dict[str, Any] = Field(default_factory=dict)
 
 
+class EnricherConfig(BaseModel):
+    """A read-only step that adds context to findings after matching.
+
+    ``entry`` names a callable ``package.module:function`` with the signature
+    ``(findings, options) -> dict[key, dict[str, str]]``. It may never change a region.
+    """
+
+    entry: str
+    regions: list[str] = Field(default_factory=lambda: ["OB", "O"])
+    options: dict[str, Any] = Field(default_factory=dict)
+
+
 class LedgerConfig(BaseModel):
     """Per-ledger configuration in a production control file.
 
@@ -123,6 +135,7 @@ class ControlFile(BaseModel):
     app: str = ""
     #: Local, untracked list of keys outside the audited scope (Vampires Req 5).
     exclude_keys_file: str | None = None
+    enrichers: list[EnricherConfig] = Field(default_factory=list)
     ledgers: dict[str, LedgerConfig] = Field(default_factory=dict)
     grace_hours: int = 24
     scope: ScopeFilter | None = None

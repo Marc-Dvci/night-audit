@@ -1,0 +1,62 @@
+# Night Audit control: one AWS account, three ledgers.
+# Intended = declared stacks + approved changes. Observed = live inventory. Billed = CUR 2.0.
+id: aws-account
+title: AWS account 416964654816
+app: vampires
+grace_hours: 36
+exclude_keys_file: exclusions.local.yaml
+
+ledgers:
+  intended:
+    normalisers: [arn_resource_id, strip, lower]
+    sources:
+      - type: python
+        entry: vampires.aws:DeclaredStacks
+        options: {profile: night-audit}
+      - type: python
+        entry: vampires.aws:ApprovedChanges
+        options: {path: approved-changes.yaml}
+      - type: python
+        entry: vampires.aws:ApprovedChanges
+        options: {path: approved-changes.local.yaml, optional: true}
+  observed:
+    normalisers: [arn_resource_id, strip, lower]
+    sources:
+      - type: python
+        entry: vampires.aws:Inventory
+        options: {profile: night-audit}
+  billed:
+    normalisers: [arn_resource_id, strip, lower]
+    sources:
+      - type: python
+        entry: vampires.aws:CostAndUsage
+        options:
+          profile: night-audit
+          bucket: night-audit-cur-416964654816
+          prefix: cur2
+          export: night-audit-cur2
+
+enrichers:
+  - entry: vampires.aws:creating_events
+    regions: [OB, O]
+    options: {profile: night-audit}
+
+regions:
+  OB:
+    name: Vampire
+    meaning: Running and on the bill, but in no declared stack and no approved change.
+  O:
+    name: Poltergeist
+    meaning: Exists but was never declared. It costs nothing, which is why nobody notices it.
+  B:
+    name: Phantom
+    meaning: On the bill, but the inventory cannot see it and nobody declared it.
+  I:
+    name: Skeleton
+    meaning: Declared in a stack or an approved change, but gone and no longer billed.
+  IB:
+    name: Wraith
+    meaning: Declared and billed, but the inventory cannot see it.
+  IO:
+    name: Familiar
+    meaning: Declared and present, with no charge on the bill yet.

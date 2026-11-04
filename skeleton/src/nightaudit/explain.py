@@ -90,6 +90,8 @@ def build_prompt(finding: Finding) -> str:
         lines.append(f"  timestamp: {_quote_truncate(record.timestamp)}")
         for attr_name, attr_value in sorted(record.attrs.items()):
             lines.append(f"  {attr_name}: {_quote_truncate(attr_value)}")
+    for ctx_name, ctx_value in sorted(finding.context.items()):
+        lines.append(f"  context.{ctx_name}: {_quote_truncate(ctx_value)}")
     return "\n".join(lines)
 
 
@@ -125,6 +127,8 @@ def evidence_numbers(finding: Finding) -> set[Decimal]:
         if record.timestamp is not None:
             _add_numeric(nums, record.timestamp.isoformat())
     _add_numeric(nums, finding.key)
+    for ctx_value in finding.context.values():
+        _add_numeric(nums, ctx_value)
     if finding.first_seen is not None:
         _add_numeric(nums, finding.first_seen.isoformat())
     nums.add(finding.billed_amount)
@@ -216,9 +220,9 @@ def _call_bedrock(prompt: str, cfg: ModelConfig) -> str:
     if not cfg.model_id:
         raise ModelUnavailable("no model_id configured")
     try:
-        import boto3  # type: ignore[import-untyped]
-        from botocore.config import Config  # type: ignore[import-untyped]
-        from botocore.exceptions import BotoCoreError, ClientError  # type: ignore[import-untyped]
+        import boto3
+        from botocore.config import Config
+        from botocore.exceptions import BotoCoreError, ClientError
     except ImportError as exc:
         raise ModelUnavailable(str(exc)) from exc
 

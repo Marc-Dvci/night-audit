@@ -4,6 +4,8 @@ version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
     "nightaudit",
+    "vampires",
+    "ghosts",
 ]
 
 [tool.uv.workspace]
@@ -11,6 +13,8 @@ members = ["skeleton", "apps/*"]
 
 [tool.uv.sources]
 nightaudit = { workspace = true }
+vampires = { workspace = true }
+ghosts = { workspace = true }
 
 [dependency-groups]
 dev = [
@@ -40,4 +44,8 @@ ignore = ["UP042"]
 
 [tool.mypy]
 strict = true
-mypy_path = ["skeleton/src"]
+mypy_path = ["skeleton/src", "apps/vampires/src", "apps/ghosts/src"]
+
+[[tool.mypy.overrides]]
+module = ["pyarrow", "pyarrow.*", "boto3", "boto3.*", "botocore", "botocore.*"]
+ignore_missing_imports = true

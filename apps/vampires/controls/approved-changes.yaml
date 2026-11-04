@@ -1,0 +1,10 @@
+# Resources approved outside a CloudFormation stack. Each entry names who approved it, why, and until when.
+approved:
+  - id: night-audit-cur-416964654816
+    approver: Marc Donovici
+    reason: Destination of the CUR 2.0 data export that Night Audit reads as the billed ledger.
+    expires: "2027-03-31"
+  - id: night-audit-reader
+    approver: Marc Donovici
+    reason: Read-only IAM user that runs the audit locally.
+    expires: "2027-03-31"
