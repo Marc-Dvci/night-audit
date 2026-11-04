@@ -16,11 +16,11 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .models import Record, RunResult
+from .models import Finding, Record, RunResult
 
 CHAIN_SEED = "0" * 64
 
@@ -47,7 +47,7 @@ def _to_utc_iso(dt: datetime | None) -> str | None:
     if dt is None:
         return None
     if dt.tzinfo is not None:
-        dt = dt.astimezone(timezone.utc).replace(tzinfo=None)
+        dt = dt.astimezone(UTC).replace(tzinfo=None)
     return dt.isoformat() + "Z"
 
 
@@ -81,6 +81,20 @@ def _content_from_row(row: dict[str, object]) -> dict[str, object]:
     return result
 
 
+def _finding_row(finding: Finding) -> dict[str, object]:
+    """The decided part of a finding: what code concluded and from which rows (no prose)."""
+    return {
+        "type": "finding",
+        "key": finding.key,
+        "region_code": finding.region_code,
+        "name": finding.name,
+        "status": finding.status,
+        "first_seen": _to_utc_iso(finding.first_seen),
+        "billed_amount": str(finding.billed_amount),
+        "evidence_rows": [f"{r.ledger.value}:{r.row_id}" for r in finding.records],
+    }
+
+
 def _ordered_records(result: RunResult) -> list[Record]:
     """All in-scope records ordered by ledger then ``row_id``."""
     records: list[Record] = []
@@ -106,8 +120,11 @@ def write_evidence_pack(result: RunResult, pack_dir: Path) -> str:
 
     records = _ordered_records(result)
 
-    # Build content dicts (ledger order, row_id order) then the chain.
-    contents = [_content_from_record(r) for r in records]
+    # Build content dicts (ledger order, row_id order), then one row per finding, then the chain.
+    contents: list[dict[str, object]] = [
+        {"type": "record", **_content_from_record(r)} for r in records
+    ]
+    contents.extend(_finding_row(f) for f in result.findings)
     rows: list[dict[str, object]] = []
     prev_hash = CHAIN_SEED
     for index, content in enumerate(contents):
@@ -125,7 +142,7 @@ def write_evidence_pack(result: RunResult, pack_dir: Path) -> str:
     result.evidence_chain_hash = final_chain_hash
 
     evidence_path = pack_dir / "evidence.jsonl"
-    with evidence_path.open("w", encoding="utf-8") as f:
+    with evidence_path.open("w", encoding="utf-8", newline="\n") as f:
         for row in rows:
             f.write(_canonical_json(row))
             f.write("\n")
@@ -153,6 +170,7 @@ def write_evidence_pack(result: RunResult, pack_dir: Path) -> str:
         "chain_seed": CHAIN_SEED,
         "final_chain_hash": final_chain_hash,
         "row_count": len(rows),
+        "finding_count": len(result.findings),
         "run_id": result.run_id,
         "run_time": _to_utc_iso(result.run_time),
     }
@@ -189,12 +207,21 @@ def verify_evidence_pack(pack_dir: Path) -> VerifyResult:
         return VerifyResult(False, "evidence.jsonl not found")
 
     rows: list[dict[str, object]] = []
-    with evidence_path.open(encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            rows.append(json.loads(line))
+    raw = evidence_path.read_bytes()
+    lines = raw.split(b"\n")
+    if lines and lines[-1] == b"":
+        lines.pop()
+    for i, line_bytes in enumerate(lines):
+        try:
+            row = json.loads(line_bytes.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return VerifyResult(False, f"row {i}: not valid JSON")
+        if not isinstance(row, dict):
+            return VerifyResult(False, f"row {i}: not a JSON object")
+        # Byte-exact: the stored line must be the canonical serialisation of its content (Req 6.3).
+        if _canonical_json(row).encode("utf-8") != line_bytes:
+            return VerifyResult(False, f"row {i}: bytes differ from the canonical form")
+        rows.append(row)
 
     chain_seed = str(manifest_raw.get("chain_seed", CHAIN_SEED))
     prev_recomputed = chain_seed
@@ -231,6 +258,8 @@ def verify_evidence_pack(pack_dir: Path) -> VerifyResult:
         return VerifyResult(False, "manifest 'ledgers' is not an object")
     by_ledger: dict[str, list[dict[str, object]]] = {}
     for row in rows:
+        if row.get("type") != "record":
+            continue
         ledger = str(row.get("ledger", ""))
         by_ledger.setdefault(ledger, []).append(row)
 
@@ -253,4 +282,8 @@ def verify_evidence_pack(pack_dir: Path) -> VerifyResult:
                 f"({expected_count} vs {len(ledger_rows)})",
             )
 
-    return VerifyResult(True, "verified")
+    finding_rows = sum(1 for row in rows if row.get("type") == "finding")
+    if "finding_count" in manifest_raw and int(manifest_raw["finding_count"]) != finding_rows:
+        return VerifyResult(False, "finding count differs from the manifest")
+
+    return VerifyResult(True, f"verified {len(rows)} rows, {finding_rows} findings")

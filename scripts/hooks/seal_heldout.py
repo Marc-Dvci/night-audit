@@ -7,7 +7,7 @@ The only command allowed to touch the held-out set is the release scorer.
 import json
 import sys
 
-ALLOWED_COMMANDS = ("scripts/score_heldout.py", "scripts\score_heldout.py")
+ALLOWED_COMMANDS = ("scripts/score_heldout.py", r"scripts\score_heldout.py")
 
 
 def main() -> int:

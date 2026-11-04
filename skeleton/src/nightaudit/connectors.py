@@ -10,14 +10,15 @@ tested against recorded fixtures, never live sources (tech rule).
 from __future__ import annotations
 
 import csv
+import importlib
 import json
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
-from .control import LedgerConfig
+from .control import ConnectorConfig, LedgerConfig
 from .models import LedgerName, Record
 
 #: Column / field names treated specially (not mapped to ``attrs``).
@@ -32,7 +33,7 @@ def _parse_ts(value: object) -> datetime | None:
         return None
     if isinstance(value, datetime):
         if value.tzinfo is None:
-            return value.replace(tzinfo=timezone.utc)
+            return value.replace(tzinfo=UTC)
         return value
     text = str(value).strip()
     if not text:
@@ -44,7 +45,7 @@ def _parse_ts(value: object) -> datetime | None:
     except ValueError:
         return None
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
     return dt
 
 
@@ -213,15 +214,61 @@ class JSONLConnector(Connector):
         return records
 
 
-def make_connector(ledger: LedgerName, config: LedgerConfig) -> Connector:
-    """Build a connector from a ledger's control-file configuration."""
-    cc = config.connector
-    if cc is None:
+def _resolve_path(path: str, base_dir: Path | None) -> Path:
+    candidate = Path(path)
+    if candidate.is_absolute() or base_dir is None:
+        return candidate
+    return base_dir / candidate
+
+
+def _load_entry(entry: str) -> type[Connector]:
+    """Import ``package.module:ClassName`` and check it is a connector class."""
+    module_name, _, class_name = entry.partition(":")
+    if not module_name or not class_name:
+        raise ValueError(f"connector entry '{entry}' must look like 'package.module:ClassName'")
+    module = importlib.import_module(module_name)
+    cls = getattr(module, class_name, None)
+    if not isinstance(cls, type) or not issubclass(cls, Connector):
+        raise ValueError(f"connector entry '{entry}' is not a Connector subclass")
+    return cls
+
+
+def make_source(
+    ledger: LedgerName,
+    source: ConnectorConfig,
+    key_field: str,
+    base_dir: Path | None = None,
+) -> Connector:
+    """Build one connector for one configured source of a ledger."""
+    field = source.key_field or key_field
+    if source.type in ("csv", "jsonl"):
+        if source.path is None:
+            raise ValueError(f"{source.type} source for ledger '{ledger.value}' has no path")
+        path = _resolve_path(source.path, base_dir)
+        cls: type[CSVConnector] | type[JSONLConnector] = (
+            CSVConnector if source.type == "csv" else JSONLConnector
+        )
+        return cls(path, ledger, field, source=source.path)
+    if source.type == "python":
+        if source.entry is None:
+            raise ValueError(f"python source for ledger '{ledger.value}' has no entry")
+        connector_cls = _load_entry(source.entry)
+        return connector_cls(  # type: ignore[call-arg]
+            ledger=ledger, key_field=field, base_dir=base_dir, **source.options
+        )
+    raise ValueError(f"unknown connector type '{source.type}' for ledger '{ledger.value}'")
+
+
+def make_connectors(
+    ledger: LedgerName, config: LedgerConfig, base_dir: Path | None = None
+) -> list[Connector]:
+    """Build every connector configured for a ledger."""
+    sources = config.all_sources()
+    if not sources:
         raise ValueError(f"no connector configured for ledger '{ledger.value}'")
-    if cc.path is None:
-        raise ValueError(f"connector for ledger '{ledger.value}' has no path")
-    if cc.type == "csv":
-        return CSVConnector(Path(cc.path), ledger, config.key_field, source=cc.path)
-    if cc.type == "jsonl":
-        return JSONLConnector(Path(cc.path), ledger, config.key_field, source=cc.path)
-    raise ValueError(f"unknown connector type '{cc.type}' for ledger '{ledger.value}'")
+    return [make_source(ledger, source, config.key_field, base_dir) for source in sources]
+
+
+def make_connector(ledger: LedgerName, config: LedgerConfig) -> Connector:
+    """Build the single connector of a one-source ledger (kept for simple callers)."""
+    return make_connectors(ledger, config)[0]

@@ -142,6 +142,12 @@ class RunResult(BaseModel):
     run_time: datetime
     control_hash: str
     complete: bool
+    control_id: str = ""
+    control_title: str = ""
+    app: str = ""
+    region_names: dict[str, str] = Field(default_factory=dict)
+    ledger_errors: dict[str, str] = Field(default_factory=dict)
+    excluded: dict[str, int] = Field(default_factory=dict)
     missing_ledgers: list[str] = Field(default_factory=list)
     snapshots: list[LedgerSnapshot] = Field(default_factory=list)
     regions: dict[str, str] = Field(default_factory=dict)

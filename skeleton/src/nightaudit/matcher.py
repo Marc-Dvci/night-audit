@@ -12,7 +12,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-from .control import ControlConfig
+from .control import ControlConfig, region_names
 from .grace import find_pending
 from .models import (
     DEFAULT_REGION_MEANINGS,
@@ -45,7 +45,7 @@ def _region_code(present: set[LedgerName]) -> str:
 
 def _derive_run_id(run_time: datetime, control_hash: str) -> str:
     """Deterministic run id derived from run_time + control_hash."""
-    raw = f"{run_time.isoformat()!s}:{control_hash}"
+    raw = f"{run_time.isoformat()}:{control_hash}"
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
 
 
@@ -73,12 +73,21 @@ def _resolve_region(
     return name, severity, meaning
 
 
+class ConservationError(RuntimeError):
+    """The billed amounts per region and unkeyed do not add up to the billed total."""
+
+
 def match(
     snapshots: list[LedgerSnapshot],
     control: ControlConfig,
     run_time: datetime,
+    exclude_keys: frozenset[str] = frozenset(),
 ) -> RunResult:
-    """Run the three-way match and return a ``RunResult``."""
+    """Run the three-way match and return a ``RunResult``.
+
+    ``exclude_keys`` are normalised keys outside the audited scope (an owner-maintained local list).
+    Their records are dropped from every ledger before matching and only their count is reported.
+    """
     # Step 0 — Missing-ledger check (Req 9.4).
     missing = [s.name.value for s in snapshots if s.missing]
     if missing:
@@ -104,14 +113,6 @@ def match(
         for record in snapshot.records:
             normalised_key = normalise(record.raw_key, chain, ctx)
             if normalised_key == "":
-                unkeyed.append(
-                    UnkeyedRow(
-                        row_id=record.row_id,
-                        ledger=record.ledger,
-                        source=record.source,
-                        amount=record.amount,
-                    )
-                )
                 new_record = record.model_copy(update={"key": None})
             else:
                 new_record = record.model_copy(update={"key": normalised_key})
@@ -120,8 +121,29 @@ def match(
             snapshot.model_copy(update={"records": new_records})
         )
 
-    # Step 2 — Scope filtering.
+    # Step 2 — Scope filtering, then the owner's exclusion list.
     filtered_snapshots, dropped = apply_scope(normalised_snapshots, control.scope)
+    excluded: dict[str, int] = {}
+    if exclude_keys:
+        kept_snapshots: list[LedgerSnapshot] = []
+        for snapshot in filtered_snapshots:
+            kept = [r for r in snapshot.records if r.key is None or r.key not in exclude_keys]
+            excluded[snapshot.name.value] = len(snapshot.records) - len(kept)
+            kept_snapshots.append(snapshot.model_copy(update={"records": kept}))
+        filtered_snapshots = kept_snapshots
+
+    # Unkeyed rows are reported only when they survive scope (Req 2.4).
+    for snapshot in filtered_snapshots:
+        for record in snapshot.records:
+            if record.key is None:
+                unkeyed.append(
+                    UnkeyedRow(
+                        row_id=record.row_id,
+                        ledger=record.ledger,
+                        source=record.source,
+                        amount=record.amount,
+                    )
+                )
 
     # Step 3 — Group by key.
     records_by_key: dict[str, list[Record]] = {}
@@ -167,15 +189,17 @@ def match(
                 present.add(ledger_name)
         regions[key] = _region_code(present)
 
-    # Step 6 — Produce findings.
+    # Step 6 — Produce findings, in a fixed order so evidence hashes do not depend on input order.
     findings: list[Finding] = []
     duplicates: dict[str, dict[str, int]] = {}
 
-    for key, code in regions.items():
+    for key, code in sorted(regions.items(), key=lambda item: (item[1], item[0])):
         if code == "IOB":
             continue
 
-        key_records = records_by_key[key]
+        key_records = sorted(
+            records_by_key[key], key=lambda r: (r.ledger.value, r.source, r.row_id)
+        )
 
         # Billed amount for this key.
         billed_amount = Decimal("0")
@@ -213,19 +237,19 @@ def match(
         )
 
     # Step 7 — Compute summaries (Req 3.5).
-    region_summaries: dict[str, RegionSummary] = {}
-    for code in set(regions.values()):
-        keys_in_region = [k for k, c in regions.items() if c == code]
-        billed_amount = Decimal("0")
-        for k in keys_in_region:
-            for record in records_by_key[k]:
-                if record.ledger == LedgerName.billed and record.amount is not None:
-                    billed_amount += record.amount
-        region_summaries[code] = RegionSummary(
-            code=code,
-            key_count=len(keys_in_region),
-            billed_amount=billed_amount,
-        )
+    counts: dict[str, int] = {}
+    amounts: dict[str, Decimal] = {}
+    for key, code in regions.items():
+        counts[code] = counts.get(code, 0) + 1
+        amount = amounts.get(code, Decimal("0"))
+        for record in records_by_key[key]:
+            if record.ledger == LedgerName.billed and record.amount is not None:
+                amount += record.amount
+        amounts[code] = amount
+    region_summaries: dict[str, RegionSummary] = {
+        code: RegionSummary(code=code, key_count=counts[code], billed_amount=amounts[code])
+        for code in sorted(counts)
+    }
 
     # Step 8 — Amount conservation (Req 3.5).
     billed_total = Decimal("0")
@@ -242,9 +266,10 @@ def match(
     for rs in region_summaries.values():
         region_sum += rs.billed_amount
 
-    assert region_sum + billed_unkeyed == billed_total, (
-        f"Amount conservation failed: {region_sum} + {billed_unkeyed} != {billed_total}"
-    )
+    if region_sum + billed_unkeyed != billed_total:
+        raise ConservationError(
+            f"Amount conservation failed: {region_sum} + {billed_unkeyed} != {billed_total}"
+        )
 
     # Step 9 — Assemble RunResult.
     control_hash = control.canonical_hash()
@@ -264,4 +289,6 @@ def match(
         billed_total=billed_total,
         billed_unkeyed=billed_unkeyed,
         dropped=dropped,
+        excluded=excluded,
+        region_names=region_names(control),
     )

@@ -1,8 +1,8 @@
 """Night-over-night state: new / persisting / resolved (Req 5.1-5.3).
 
 A finding is identified by the pair ``(key, region_code)``.  State is persisted
-per control (keyed by ``control_hash``) as a JSON file at
-``runs/<control_hash>/state.json`` mapping ``"{key}:{region_code}"`` to
+per control (keyed by the control id) as a JSON file at
+``runs/_state/<control_id>.json`` mapping ``"{key}:{region_code}"`` to
 ``{"first_seen": <iso-8601>, "region_code": <code>}``.
 
 The state comparison depends only on the previous state file and the current
@@ -14,7 +14,7 @@ assignments (Req 5.3).
 from __future__ import annotations
 
 import json
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -26,7 +26,7 @@ from .models import INFORMATIONAL_REGIONS, Finding
 def _utc_date(dt: datetime) -> date:
     """Return the calendar date of *dt* expressed in UTC."""
     if dt.tzinfo is not None:
-        dt = dt.astimezone(timezone.utc)
+        dt = dt.astimezone(UTC)
     return dt.date()
 
 
@@ -52,8 +52,8 @@ class StateStore:
     def __init__(self, runs_dir: Path) -> None:
         self._runs_dir = runs_dir
 
-    def _path(self, control_hash: str) -> Path:
-        return self._runs_dir / control_hash / "state.json"
+    def _path(self, control_id: str) -> Path:
+        return self._runs_dir / "_state" / f"{control_id}.json"
 
     def load(self, control_hash: str) -> dict[str, FindingState]:
         """Return the previous state, or an empty dict when none exists."""

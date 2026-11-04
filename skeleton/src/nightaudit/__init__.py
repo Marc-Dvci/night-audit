@@ -9,8 +9,8 @@ explanation guard, and the API that the UI reads.
 from __future__ import annotations
 
 from .connectors import (
-    CSVConnector,
     Connector,
+    CSVConnector,
     JSONLConnector,
     make_connector,
 )

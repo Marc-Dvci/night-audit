@@ -80,24 +80,49 @@ class ControlConfig(BaseModel):
 
 
 class ConnectorConfig(BaseModel):
-    """Connector configuration for one ledger in a production control file."""
+    """One source of records for a ledger.
+
+    ``type`` is ``csv``, ``jsonl`` or ``python``. A ``python`` source names a connector class as
+    ``entry: "package.module:ClassName"``; the class is constructed with the ledger, the key field,
+    the control file's directory and ``options`` as keyword arguments.
+    """
 
     type: str
     path: str | None = None
-    options: dict[str, str] = Field(default_factory=dict)
+    entry: str | None = None
+    key_field: str | None = None
+    options: dict[str, Any] = Field(default_factory=dict)
 
 
 class LedgerConfig(BaseModel):
-    """Per-ledger configuration in a production control file."""
+    """Per-ledger configuration in a production control file.
+
+    A ledger reads one or more sources. ``connector`` is the single-source shorthand.
+    """
 
     connector: ConnectorConfig | None = None
+    sources: list[ConnectorConfig] = Field(default_factory=list)
     key_field: str = ""
     normalisers: list[str] = Field(default_factory=list)
+
+    def all_sources(self) -> list[ConnectorConfig]:
+        """Every configured source, the shorthand ``connector`` first."""
+        return ([self.connector] if self.connector is not None else []) + list(self.sources)
+
+
+def region_names(control: ControlConfig) -> dict[str, str]:
+    """The display name of every region code for this control (Req 1.4)."""
+    return {code: resolve_region(code, control)[0] for code in DEFAULT_REGION_NAMES}
 
 
 class ControlFile(BaseModel):
     """A production control file with connector configuration per ledger."""
 
+    id: str = ""
+    title: str = ""
+    app: str = ""
+    #: Local, untracked list of keys outside the audited scope (Vampires Req 5).
+    exclude_keys_file: str | None = None
     ledgers: dict[str, LedgerConfig] = Field(default_factory=dict)
     grace_hours: int = 24
     scope: ScopeFilter | None = None

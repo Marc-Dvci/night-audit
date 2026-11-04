@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import io
 import json
+import re
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -26,8 +27,12 @@ from fastapi.staticfiles import StaticFiles
 from .models import Finding, RunResult
 from .runner import list_run_ids, load_run, run_summary
 
+_RUN_ID = re.compile(r"^[0-9a-f]{16}$")
+
 
 def _run_or_404(runs_dir: Path, run_id: str) -> RunResult:
+    if not _RUN_ID.match(run_id):
+        raise HTTPException(status_code=404, detail="unknown run id")
     try:
         return load_run(runs_dir, run_id)
     except FileNotFoundError:
@@ -36,7 +41,8 @@ def _run_or_404(runs_dir: Path, run_id: str) -> RunResult:
 
 def _as_json_dict(model: Any) -> dict[str, Any]:
     """Serialise a pydantic model to a JSON-native dict (Decimal as string)."""
-    return json.loads(model.model_dump_json())
+    data: dict[str, Any] = json.loads(model.model_dump_json())
+    return data
 
 
 def create_app(runs_dir: Path, static_dir: Path | None = None) -> FastAPI:
@@ -55,6 +61,17 @@ def create_app(runs_dir: Path, static_dir: Path | None = None) -> FastAPI:
             summaries.append(run_summary(result))
         return summaries
 
+    @app.get("/api/health")
+    def health() -> dict[str, str]:
+        return {"status": "ok"}
+
+    @app.get("/api/latest")
+    def latest() -> dict[str, Any]:
+        ids = list_run_ids(runs_dir)
+        if not ids:
+            raise HTTPException(status_code=404, detail="no runs yet")
+        return _as_json_dict(_run_or_404(runs_dir, ids[0]))
+
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str) -> dict[str, Any]:
         return _as_json_dict(_run_or_404(runs_dir, run_id))
@@ -69,6 +86,7 @@ def create_app(runs_dir: Path, static_dir: Path | None = None) -> FastAPI:
 
     @app.get("/api/runs/{run_id}/evidence.zip")
     def get_evidence(run_id: str) -> StreamingResponse:
+        _run_or_404(runs_dir, run_id)
         evidence_dir = runs_dir / run_id / "evidence"
         if not evidence_dir.exists():
             raise HTTPException(status_code=404, detail="evidence pack not found")

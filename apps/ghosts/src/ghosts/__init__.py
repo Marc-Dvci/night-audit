@@ -1,0 +1,1 @@
+"""Night Audit application: ghosts."""

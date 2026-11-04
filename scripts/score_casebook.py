@@ -10,17 +10,15 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
 import yaml
-
 from nightaudit.control import ControlConfig
 from nightaudit.matcher import match
 from nightaudit.models import LedgerName, LedgerSnapshot, Record, RunResult
-
 
 # --- Default controls -------------------------------------------------------
 
@@ -75,14 +73,14 @@ def _parse_ts(ts: str | datetime | None) -> datetime | None:
         return None
     if isinstance(ts, datetime):
         if ts.tzinfo is None:
-            return ts.replace(tzinfo=timezone.utc)
+            return ts.replace(tzinfo=UTC)
         return ts
     ts_str = ts
     if ts_str.endswith("Z"):
         ts_str = ts_str[:-1] + "+00:00"
     dt = datetime.fromisoformat(ts_str)
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
     return dt
 
 

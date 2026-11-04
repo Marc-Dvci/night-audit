@@ -9,7 +9,8 @@ result as applying it once (Req 2.3).
 from __future__ import annotations
 
 import re
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 NormaliserFn = Callable[[str, dict[str, Any]], str]
 

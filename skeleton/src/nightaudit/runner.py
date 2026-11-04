@@ -8,19 +8,18 @@ explanations, and persists the ``RunResult``.
 
 from __future__ import annotations
 
-import csv
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-from .connectors import Connector, make_connector
+from .connectors import Connector, make_connectors
 from .control import ControlConfig, ControlFile
 from .evidence import write_evidence_pack
 from .explain import ModelConfig, explain_finding
 from .matcher import match
-from .models import LedgerName, LedgerSnapshot, RunResult
+from .models import LedgerName, LedgerSnapshot, Record, RunResult
 from .state import StateStore, compare_findings
 
 
@@ -35,25 +34,48 @@ def load_control_file(control_path: Path) -> ControlFile:
 
 def _fetch_snapshot(
     ledger_name: LedgerName,
-    connector: Connector | None,
-) -> LedgerSnapshot:
-    """Fetch one ledger, enforcing read-only and treating failure as missing (Req 9)."""
-    fallback_source = f"connector:{ledger_name.value}"
-    if connector is None:
-        return LedgerSnapshot(name=ledger_name, source=fallback_source, missing=True)
-    if not connector.read_only:
-        # Refuse to run a non-read-only connector (audit rule 3, Req 9.2).
-        return LedgerSnapshot(name=ledger_name, source=connector.source, missing=True)
-    try:
-        records = connector.fetch()
-    except (OSError, ValueError, KeyError, csv.Error):
-        return LedgerSnapshot(name=ledger_name, source=connector.source, missing=True)
-    return LedgerSnapshot(
-        name=ledger_name,
-        source=connector.source,
-        records=records,
-        missing=False,
-    )
+    connectors: list[Connector],
+) -> tuple[LedgerSnapshot, str | None]:
+    """Fetch one ledger from all its sources.
+
+    Read-only is enforced per source (audit rule 3, Req 9.2). If any source fails, the ledger is
+    missing for this run (Req 9.4) and the error is returned so the run can name it.
+    """
+    if not connectors:
+        return (
+            LedgerSnapshot(name=ledger_name, source=f"connector:{ledger_name.value}", missing=True),
+            "no connector configured",
+        )
+    source = ", ".join(c.source for c in connectors)
+    records: list[Record] = []
+    for connector in connectors:
+        if not connector.read_only:
+            return (
+                LedgerSnapshot(name=ledger_name, source=source, missing=True),
+                f"{connector.source}: refused, connector is not read-only",
+            )
+        try:
+            records.extend(connector.fetch())
+        except Exception as exc:  # noqa: BLE001 - any connector failure makes the ledger missing
+            return (
+                LedgerSnapshot(name=ledger_name, source=source, missing=True),
+                f"{connector.source}: {type(exc).__name__}: {str(exc)[:300]}",
+            )
+    return LedgerSnapshot(name=ledger_name, source=source, records=records), None
+
+
+def load_exclusions(path: Path) -> frozenset[str]:
+    """Read an exclusion file: a YAML list of keys, or a mapping with a ``keys`` list.
+
+    Keys are compared after ``strip`` and ``lower``. A missing file means no exclusions.
+    """
+    if not path.exists():
+        return frozenset()
+    raw: Any = yaml.safe_load(path.read_text(encoding="utf-8"))
+    items = raw.get("keys", []) if isinstance(raw, dict) else raw
+    if not isinstance(items, list):
+        raise ValueError(f"exclusion file {path} must hold a list of keys")
+    return frozenset(str(item).strip().lower() for item in items if str(item).strip())
 
 
 def run_control(
@@ -63,46 +85,60 @@ def run_control(
     model_config: ModelConfig | None = None,
 ) -> RunResult:
     """Run one control end to end and persist the result."""
+    control_path = Path(control_path)
+    base_dir = control_path.parent
     control_file = load_control_file(control_path)
     control_config: ControlConfig = control_file.to_config()
-    control_hash = control_file.canonical_hash()
-    now = run_time if run_time is not None else datetime.now(timezone.utc)
+    control_id = control_file.id or control_path.stem
+    now = run_time if run_time is not None else datetime.now(UTC)
     cfg = model_config if model_config is not None else ModelConfig()
 
     # Fetch ledgers via connectors (Req 9.1-9.4).
     snapshots: list[LedgerSnapshot] = []
+    errors: dict[str, str] = {}
     for name in ("intended", "observed", "billed"):
         ledger_name = LedgerName(name)
         ledger_config = control_file.ledgers.get(name)
-        connector: Connector | None = None
+        connectors: list[Connector] = []
         if ledger_config is not None:
             try:
-                connector = make_connector(ledger_name, ledger_config)
-            except ValueError:
-                connector = None
-        snapshots.append(_fetch_snapshot(ledger_name, connector))
+                connectors = make_connectors(ledger_name, ledger_config, base_dir)
+            except (ValueError, ImportError) as exc:
+                errors[name] = str(exc)
+        snapshot, error = _fetch_snapshot(ledger_name, connectors)
+        if error is not None and name not in errors:
+            errors[name] = error
+        snapshots.append(snapshot)
 
-    result = match(snapshots, control_config, now)
+    exclusions: frozenset[str] = frozenset()
+    if control_file.exclude_keys_file:
+        exclusions = load_exclusions(base_dir / control_file.exclude_keys_file)
 
-    # Night-over-night state (Req 5.1-5.3).
+    result = match(snapshots, control_config, now, exclude_keys=exclusions)
+    result.control_id = control_id
+    result.control_title = control_file.title
+    result.app = control_file.app
+    result.ledger_errors = errors
+
+    # Night-over-night state, kept per control id so editing a control keeps its history (Req 5).
     state_store = StateStore(runs_dir)
     if result.complete:
-        previous = state_store.load(control_hash)
+        previous = state_store.load(control_id)
         updated, resolved, new_state = compare_findings(
             result.findings, previous, now, control_config
         )
         result.findings = updated
         result.resolved = resolved
-        state_store.save(control_hash, new_state)
+        state_store.save(control_id, new_state)
 
-    # Evidence pack (Req 6.1).
-    run_dir = runs_dir / result.run_id
-    write_evidence_pack(result, run_dir / "evidence")
-
-    # Explanations (Req 7).
+    # Explanations (Req 7). Code has already decided every finding.
     for finding in result.findings:
         explanation = explain_finding(finding, cfg, control_config)
         finding.explanation = explanation.text
+
+    # Evidence pack (Req 6.1): ledger rows and the findings they produce.
+    run_dir = runs_dir / result.run_id
+    write_evidence_pack(result, run_dir / "evidence")
 
     # Persist the RunResult.
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -136,6 +172,9 @@ def run_summary(result: RunResult) -> dict[str, Any]:
     informational = sum(1 for f in result.findings if f.informational)
     return {
         "run_id": result.run_id,
+        "control_id": result.control_id,
+        "control_title": result.control_title,
+        "app": result.app,
         "run_time": result.run_time.isoformat(),
         "control_hash": result.control_hash,
         "complete": result.complete,
