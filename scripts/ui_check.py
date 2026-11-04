@@ -38,7 +38,9 @@ def main() -> int:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1440, "height": 900})
         errors: list[str] = []
+        dialogs: list[str] = []
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+        page.on("dialog", lambda d: (dialogs.append(d.message), d.dismiss()))
         page.goto(base, wait_until="networkidle")
         page.wait_for_selector(".venn")
         states = [("overview", None)]
@@ -57,6 +59,16 @@ def main() -> int:
                 page.screenshot(path=str(shots / f"ui-{label.replace(' ', '-')}.png"), full_page=True)
             if code:
                 page.click(f'.legend-item[data-region="{code}"]')
+        # Hostile text from a ledger must render as text: open every Poltergeist row and look for a dialog.
+        page.click('.legend-item[data-region="O"]')
+        for i in range(page.locator(".row-head").count()):
+            page.locator(".row-head").nth(i).click()
+            page.wait_for_timeout(150)
+        page.wait_for_timeout(500)
+        shown = page.locator("text=<img src=x onerror=alert(1)>").count()
+        print(f"script payload shown as text: {shown} place(s); dialogs opened: {len(dialogs)}")
+        if dialogs or not shown:
+            failures.append("xss")
         # Keyboard path: tab to the first legend button and press Enter, then open a row with Enter.
         page.goto(base, wait_until="networkidle")
         page.keyboard.press("Tab")

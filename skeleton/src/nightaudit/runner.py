@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -184,14 +185,20 @@ def load_run(runs_dir: Path, run_id: str) -> RunResult:
 
 
 def list_run_ids(runs_dir: Path) -> list[str]:
-    """Return the run ids that have a persisted result, newest-first by mtime."""
+    """Return the run ids that have a persisted result, newest run time first."""
     if not runs_dir.exists():
         return []
-    ids: list[tuple[float, str]] = []
+    ids: list[tuple[str, str]] = []
     for child in runs_dir.iterdir():
-        if (child / "result.json").exists():
-            ids.append((child.stat().st_mtime, child.name))
-    ids.sort(key=lambda pair: pair[0], reverse=True)
+        result_file = child / "result.json"
+        if not result_file.exists():
+            continue
+        try:
+            run_time = str(json.loads(result_file.read_text(encoding="utf-8")).get("run_time", ""))
+        except (OSError, ValueError):
+            continue
+        ids.append((run_time, child.name))
+    ids.sort(reverse=True)
     return [run_id for _, run_id in ids]
 
 

@@ -1,0 +1,8 @@
+.git
+.venv
+build
+runs
+**/node_modules
+**/dist
+**/*.local.yaml
+**/__pycache__

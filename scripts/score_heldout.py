@@ -18,9 +18,8 @@ from typing import Any
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from score_casebook import build_control, build_snapshots, compare_result  # noqa: E402
-
 from nightaudit.matcher import match  # noqa: E402
+from score_casebook import build_control, build_snapshots, compare_result  # noqa: E402
 
 CASEBOOK = Path(__file__).resolve().parents[1] / "casebook" / "heldout" / "cases.yaml"
 
