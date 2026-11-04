@@ -1,0 +1,39 @@
+[project]
+name = "night-audit"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "nightaudit",
+]
+
+[tool.uv.workspace]
+members = ["skeleton", "apps/*"]
+
+[tool.uv.sources]
+nightaudit = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "hypothesis>=6",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "pyyaml>=6",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "property: property-based tests using hypothesis",
+]
+testpaths = ["skeleton/tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.mypy]
+strict = true
+mypy_path = ["skeleton/src"]

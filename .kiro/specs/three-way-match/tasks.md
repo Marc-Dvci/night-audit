@@ -5,14 +5,14 @@ references are in brackets. Do not start implementation until this checklist is 
 
 ## Setup
 
-- [ ] **1. Project setup.** Create `skeleton/pyproject.toml`: package `nightaudit`, `src/` layout, Python
+- [x] **1. Project setup.** Create `skeleton/pyproject.toml`: package `nightaudit`, `src/` layout, Python
       3.12, deps `pydantic`, `pyyaml`, `fastapi`, `uvicorn`, `boto3` (dev: `pytest`, `hypothesis`,
       `ruff`, `mypy`). Configure `ruff` and `mypy --strict` for `skeleton/`. Add `pytest` markers:
       `property` in `pyproject.toml` (`[tool.pytest.ini_options] markers = ["property"]`). Create
       `skeleton/src/nightaudit/__init__.py` and `skeleton/tests/conftest.py`. Run `uv sync`.
       [tech]
 
-- [ ] **2. Casebook scorer scaffold.** Write `scripts/score_casebook.py` that loads
+- [x] **2. Casebook scorer scaffold.** Write `scripts/score_casebook.py` that loads
       `casebook/dev/cases.yaml`, and for each case builds a `ControlConfig` (cloud default, people
       default, per-case overrides), builds `LedgerSnapshot` objects from inline data (handling `null`
       as `missing=True`), runs `match()`, and compares results against `expect`. Accept `--set dev`
@@ -21,39 +21,39 @@ references are in brackets. Do not start implementation until this checklist is 
 
 ## Core data and configuration
 
-- [ ] **3. Data model.** Implement `skeleton/src/nightaudit/models.py`: `LedgerName` enum, `Record`,
+- [x] **3. Data model.** Implement `skeleton/src/nightaudit/models.py`: `LedgerName` enum, `Record`,
       `LedgerSnapshot`, `UnkeyedRow`, `Finding`, `RegionSummary`, `RunResult`, and constants
       (`REGION_CODES`, `DEFAULT_REGION_NAMES`, `DEFAULT_REGION_MEANINGS`, `FINDING_REGIONS`,
       `INFORMATIONAL_REGIONS`). All money is `Decimal`. Records are frozen. [Req 2.4, 3.1, 3.4, 3.5]
 
-- [ ] **4. Normalisers.** Implement `skeleton/src/nightaudit/normalisers.py`: `NormaliserRegistry` with
+- [x] **4. Normalisers.** Implement `skeleton/src/nightaudit/normalisers.py`: `NormaliserRegistry` with
       `register`, `get`, `names`. Built-in normalisers: `strip`, `lower`, `collapse_whitespace`,
       `email_canonical` (reads `alias_domains` from ctx), `arn_resource_id`. Chain application
       `normalise(raw_key, chain, ctx)`. `UnknownNormaliserError` for unregistered names. [Req 2.1–2.4]
 
-- [ ] **5. Control file.** Implement `skeleton/src/nightaudit/control.py`: `ScopeFilter`,
+- [x] **5. Control file.** Implement `skeleton/src/nightaudit/control.py`: `ScopeFilter`,
       `RegionOverride`, `ControlConfig`, `ConnectorConfig`, `LedgerConfig`, `ControlFile`. Validate
       exactly three ledgers named intended/observed/billed (Req 1.1). Validate normaliser names are
       registered (Req 1.2). Compute canonical hash as `SHA-256(canonical_json)` (Req 1.3). Resolve
       region names/meanings from overrides or defaults (Req 1.4). `ControlFile.to_config()` →
       `ControlConfig`. [Req 1.1–1.4]
 
-- [ ] **6. Scope filtering.** Implement `skeleton/src/nightaudit/scope.py`:
+- [x] **6. Scope filtering.** Implement `skeleton/src/nightaudit/scope.py`:
       `apply_scope(snapshots, scope)` drops records whose `attrs.get(scope.attr) != scope.equals`,
       returns filtered snapshots and dropped counts per ledger. [Req 4.2]
 
-- [ ] **7. Grace window.** Implement `skeleton/src/nightaudit/grace.py`:
+- [x] **7. Grace window.** Implement `skeleton/src/nightaudit/grace.py`:
       `find_pending(keys_in_observed, billed_keys, observed_records_by_key, grace_hours, run_time)`
       returns the set of keys to suppress. A key is pending when its most recent observed timestamp is
       within `grace_hours` of `run_time` and the key is absent from billed. [Req 4.1]
 
-- [ ] **8. Matcher.** Implement `skeleton/src/nightaudit/matcher.py`:
+- [x] **8. Matcher.** Implement `skeleton/src/nightaudit/matcher.py`:
       `match(snapshots, control, run_time) → RunResult`. Steps per design §6: missing-ledger check,
       normalise keys, scope filter, group by key, grace window, compute regions, produce findings
       (with duplicate counts), compute region summaries, verify amount conservation. [Req 3.1–3.5,
       4.1, 4.2, 9.4]
 
-- [ ] **9. Scorer completion.** Complete `scripts/score_casebook.py` with case parsing, default control
+- [x] **9. Scorer completion.** Complete `scripts/score_casebook.py` with case parsing, default control
       building (cloud + people), per-case override merging, snapshot building from inline data, and
       result comparison against all `expect` fields (regions, findings, informational, billed_total,
       billed_by_region, billed_unkeyed, pending, unkeyed, duplicates, dropped, complete,
