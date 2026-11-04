@@ -62,13 +62,13 @@ references are in brackets. Do not start implementation until this checklist is 
 
 ## State, evidence, explanations, connectors
 
-- [ ] **10. Night-over-night state.** Implement `skeleton/src/nightaudit/state.py`: `StateStore` with
+- [x] **10. Night-over-night state.** Implement `skeleton/src/nightaudit/state.py`: `StateStore` with
       `load(control_hash)` and `save(control_hash, state)`. `compare_findings(current, previous)` →
       statuses (new/persisting/resolved), first-seen carry-over, nights_persisted computation (date
       difference in UTC). State persisted as JSON in `runs/<control_hash>/state.json`, mapping
       `"{key}:{region_code}"` to `{"first_seen": ..., "region_code": ...}`. [Req 5.1–5.3]
 
-- [ ] **11. Evidence pack.** Implement `skeleton/src/nightaudit/evidence.py`:
+- [x] **11. Evidence pack.** Implement `skeleton/src/nightaudit/evidence.py`:
       `write_evidence_pack(run_result, pack_dir)` writes `evidence.jsonl` (hash chain) and
       `manifest.json`. `verify_evidence_pack(pack_dir)` recomputes the chain and reports the first
       failing row or confirms. Canonical JSON for hashing (sorted keys, compact separators, Decimal
@@ -76,7 +76,7 @@ references are in brackets. Do not start implementation until this checklist is 
       row_id. Manifest includes control_hash, per-ledger hash + count, chain_seed, final_chain_hash.
       [Req 6.1–6.3]
 
-- [ ] **12. Explanation guard.** Implement `skeleton/src/nightaudit/explain.py`:
+- [x] **12. Explanation guard.** Implement `skeleton/src/nightaudit/explain.py`:
       `explain_finding(finding, model_config)` calls Bedrock Converse with a 10-second timeout. Prompt
       contains only region, meaning, and evidence fields (quoted, truncated to 200 chars). Number
       guard: extract numbers from the response, check against evidence numbers (amounts, row_id
@@ -84,12 +84,12 @@ references are in brackets. Do not start implementation until this checklist is 
       if mismatch (use template, record rejection). Template fallback on timeout/unavailable.
       [Req 7.1–7.4, audit rules 1–2, 4]
 
-- [ ] **13. Connectors.** Implement `skeleton/src/nightaudit/connectors.py`: `Connector` ABC with
+- [x] **13. Connectors.** Implement `skeleton/src/nightaudit/connectors.py`: `Connector` ABC with
       `ledger`, `read_only`, `fetch()`. `CSVConnector` (reads CSV, maps `key_field` column to
       `raw_key`, parses `amount` as `Decimal`, `ts`/`timestamp` as `datetime`). `JSONLConnector` (reads
       JSONL, maps `key_field`). Both `read_only = True`. [Req 9.1, 9.3]
 
-- [ ] **14. Runner.** Implement `skeleton/src/nightaudit/runner.py`:
+- [x] **14. Runner.** Implement `skeleton/src/nightaudit/runner.py`:
       `run_control(control_path, runs_dir)` loads control, fetches ledgers via connectors, enforces
       read-only (refuse non-read-only, mark ledger missing), applies scope + normalisation + grace +
       matching, updates state, writes evidence pack, generates explanations, saves RunResult.
@@ -97,11 +97,11 @@ references are in brackets. Do not start implementation until this checklist is 
 
 ## API and UI
 
-- [ ] **15. API.** Implement `skeleton/src/nightaudit/api.py`: FastAPI app with `GET /api/runs`,
+- [x] **15. API.** Implement `skeleton/src/nightaudit/api.py`: FastAPI app with `GET /api/runs`,
       `GET /api/runs/{id}`, `GET /api/runs/{id}/findings?region=`, `GET /api/runs/{id}/evidence.zip`.
       Mount static front-end from `web/dist/`. [Req 8.1]
 
-- [ ] **16. CLI.** Implement `skeleton/src/nightaudit/cli.py`: `nightaudit run <control>`,
+- [x] **16. CLI.** Implement `skeleton/src/nightaudit/cli.py`: `nightaudit run <control>`,
       `nightaudit serve --app <name>`, `nightaudit verify <pack>`, `nightaudit score --set dev`. Uses
       argparse. [all]
 
