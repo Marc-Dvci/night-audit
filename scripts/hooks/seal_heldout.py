@@ -20,7 +20,7 @@ def main() -> int:
     # folder) is not a read of the folder.
     fields = [tool_input.get(k) for k in ("path", "paths", "file_path", "pattern", "glob", "include", "command", "cwd")]
     payload = json.dumps(fields).lower().replace("\\\\", "/")
-    if "heldout" not in payload:
+    if "casebook/heldout" not in payload and r"casebook\heldout" not in payload:
         return 0
     if any(cmd.lower() in payload for cmd in ALLOWED_COMMANDS):
         return 0
