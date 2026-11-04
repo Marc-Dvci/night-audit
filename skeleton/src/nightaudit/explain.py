@@ -169,13 +169,18 @@ class _SafeTemplate(dict[str, object]):
 
 
 def _default_template(finding: Finding) -> str:
-    nights = ""
-    if finding.nights_persisted is not None and finding.nights_persisted != 0:
-        nights = f", persisted {finding.nights_persisted} nights"
-    return (
-        f"{finding.key} is a {finding.name} ({finding.region_code}): "
-        f"{finding.meaning} Billed amount: {finding.billed_amount}{nights}."
-    )
+    """Deterministic wording built only from the finding's own fields."""
+    parts = [f"{finding.key}: {finding.meaning}"]
+    if finding.billed_amount != 0:
+        parts.append(f"On the bill: ${finding.billed_amount}.")
+    created_by = finding.context.get("created_by")
+    created_at = finding.context.get("created_at", "")[:10]
+    if created_by and created_at:
+        parts.append(f"Created on {created_at} by {created_by}.")
+    if finding.nights_persisted:
+        nights = finding.nights_persisted
+        parts.append(f"Seen for {nights} night{'s' if nights != 1 else ''}.")
+    return " ".join(parts)
 
 
 def resolve_template(finding: Finding, control: ControlConfig) -> str:

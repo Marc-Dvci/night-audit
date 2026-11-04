@@ -1,0 +1,9 @@
+row_id,resource,amount,product,usage_type,region
+cur/web,i-0a11c0ffee000001,18.61,AmazonEC2,BoxUsage:t4g.small,us-east-1
+cur/webroot,arn:aws:ec2:us-east-1:111122223333:volume/vol-0a11c0ffee000001,0.64,AmazonEC2,EBS:VolumeUsage.gp3,us-east-1
+cur/db,arn:aws:rds:us-east-1:111122223333:db:shop-orders,14.40,AmazonRDS,InstanceUsage:db.t4g.micro,us-east-1
+cur/assets,shop-assets-111122223333,0.31,AmazonS3,TimedStorage-ByteHrs,us-east-1
+cur/report,reporting-export,0.02,AmazonS3,TimedStorage-ByteHrs,us-east-1
+cur/nat,arn:aws:ec2:us-east-1:111122223333:natgateway/nat-0a11c0ffee000009,32.40,AmazonEC2,NatGateway-Hours,us-east-1
+cur/snap,arn:aws:ec2:ap-south-1:111122223333:snapshot/snap-0c0ffee0ld5na9,6.40,AmazonEC2,APS3-EBS:SnapshotUsage,ap-south-1
+cur/tax,,4.12,,Tax,

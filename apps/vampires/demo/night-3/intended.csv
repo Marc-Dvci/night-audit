@@ -1,0 +1,9 @@
+row_id,id,stack,kind,region
+us-east-1/shop/Web,i-0a11c0ffee000001,shop,ec2-instance,us-east-1
+us-east-1/shop/WebRoot,vol-0a11c0ffee000001,shop,ebs-volume,us-east-1
+us-east-1/shop/Db,shop-orders,shop,rds-instance,us-east-1
+us-east-1/shop/Assets,shop-assets-111122223333,shop,s3-bucket,global
+us-east-1/shop/Trail,org-audit-trail,shop,cloudtrail-trail,us-east-1
+us-east-1/shop/Deployer,shop-deployer,shop,iam-user,global
+us-east-1/shop/Nat,nat-0a11c0ffee000009,shop,nat-gateway,us-east-1
+approved/1,reporting-export,approved:CFO,s3-bucket,global

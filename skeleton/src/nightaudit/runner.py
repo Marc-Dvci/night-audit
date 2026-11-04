@@ -8,6 +8,7 @@ explanations, and persists the ``RunResult``.
 
 from __future__ import annotations
 
+import hashlib
 import importlib
 from datetime import UTC, datetime
 from pathlib import Path
@@ -123,6 +124,10 @@ def run_control(
         exclusions = load_exclusions(base_dir / control_file.exclude_keys_file)
 
     result = match(snapshots, control_config, now, exclude_keys=exclusions)
+    # The run is identified by the whole control file (sources included), not only the matching rules.
+    file_hash = control_file.canonical_hash()
+    result.control_hash = file_hash
+    result.run_id = hashlib.sha256(f"{now.isoformat()}:{file_hash}".encode()).hexdigest()[:16]
     result.control_id = control_id
     result.control_title = control_file.title
     result.app = control_file.app

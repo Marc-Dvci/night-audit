@@ -1,0 +1,25 @@
+# Demo control: a synthetic account (111122223333) over three nights. Runs with no AWS access.
+id: demo-account
+title: Demo account 111122223333
+app: vampires
+grace_hours: 36
+ledgers:
+  intended:
+    key_field: id
+    normalisers: [arn_resource_id, strip, lower]
+    connector: {type: csv, path: intended.csv}
+  observed:
+    key_field: id
+    normalisers: [arn_resource_id, strip, lower]
+    connector: {type: csv, path: observed.csv}
+  billed:
+    key_field: resource
+    normalisers: [arn_resource_id, strip, lower]
+    connector: {type: csv, path: billed.csv}
+regions:
+  OB: {name: Vampire, meaning: "Running and on the bill, but in no declared stack and no approved change."}
+  O: {name: Poltergeist, meaning: "Exists but was never declared. It costs nothing, which is why nobody notices it."}
+  B: {name: Phantom, meaning: "On the bill, but the inventory cannot see it and nobody declared it."}
+  I: {name: Skeleton, meaning: "Declared in a stack or an approved change, but gone and no longer billed."}
+  IB: {name: Wraith, meaning: "Declared and billed, but the inventory cannot see it."}
+  IO: {name: Familiar, meaning: "Declared and present, with no charge on the bill yet."}

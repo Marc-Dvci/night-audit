@@ -182,5 +182,7 @@ class ControlFile(BaseModel):
                     ) from None
 
     def canonical_hash(self) -> str:
-        """Delegate to the ``ControlConfig`` hash."""
-        return self.to_config().canonical_hash()
+        """SHA-256 of the whole control file in canonical JSON: ledgers, sources, rules and wording (Req 1.3)."""
+        data: dict[str, Any] = self.model_dump(mode="json")
+        canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
