@@ -7,6 +7,7 @@ Every call here is a Describe, List, Get or LookupEvents call. The deployed func
 from __future__ import annotations
 
 import io
+import ipaddress
 import os
 from collections.abc import Iterable, Iterator
 from datetime import UTC, date, datetime
@@ -51,6 +52,14 @@ def _iso(value: Any) -> datetime | None:
     if isinstance(value, datetime):
         return value if value.tzinfo else value.replace(tzinfo=UTC)
     return None
+
+
+def _is_ip_address(value: str) -> bool:
+    try:
+        ipaddress.ip_address(value)
+    except ValueError:
+        return False
+    return True
 
 
 def _name_tag(tags: Iterable[dict[str, str]] | None) -> str:
@@ -122,7 +131,9 @@ class _AwsConnector(Connector):
 class DeclaredStacks(_AwsConnector):
     """Intended ledger: resources of CloudFormation stacks tagged ``night-audit:intended=true``.
 
-    Root volumes of a declared instance are declared with it (they are not stack resources).
+    Root volumes and network interfaces of a declared instance are declared with it: neither is a stack resource.
+    An Elastic IP is keyed by its allocation id, because CloudFormation reports its public IP address as the
+    physical id while the inventory and the bill use the allocation id.
     """
 
     @property
@@ -134,6 +145,7 @@ class DeclaredStacks(_AwsConnector):
         for region in self.regions():
             cfn = self.session.client("cloudformation", region_name=region)
             instances: list[str] = []
+            allocations: dict[str, str] | None = None  # public IP -> allocation id, read once and only if needed
             for stack in _paginate(cfn, "describe_stacks", "Stacks"):
                 tags = {t["Key"]: t["Value"] for t in stack.get("Tags", [])}
                 if tags.get(INTENDED_TAG, "").lower() != "true":
@@ -144,38 +156,69 @@ class DeclaredStacks(_AwsConnector):
                     physical = res.get("PhysicalResourceId")
                     if kind is None or not physical or res.get("ResourceStatus", "").startswith("DELETE"):
                         continue
+                    key: str = physical
+                    extra: dict[str, str] = {}
+                    if kind == "elastic-ip" and _is_ip_address(physical):
+                        if allocations is None:
+                            allocations = self._allocation_ids(region)
+                        if physical in allocations:
+                            key, extra = allocations[physical], {"public_ip": physical}
                     records.append(
                         self._record(
                             f"{region}/{stack_name}/{res['LogicalResourceId']}",
-                            physical,
+                            key,
                             None,
                             kind=kind,
                             stack=stack_name,
                             logical_id=res["LogicalResourceId"],
                             region=region,
+                            **extra,
                         )
                     )
                     if kind == "ec2-instance":
                         instances.append(physical)
             if instances:
-                records.extend(self._root_volumes(region, instances))
+                records.extend(self._declared_with_instances(region, instances))
         return records
 
-    def _root_volumes(self, region: str, instance_ids: list[str]) -> list[Record]:
+    def _allocation_ids(self, region: str) -> dict[str, str]:
+        ec2 = self.session.client("ec2", region_name=region)
+        return {
+            a["PublicIp"]: a["AllocationId"]
+            for a in ec2.describe_addresses().get("Addresses", [])
+            if a.get("PublicIp") and a.get("AllocationId")
+        }
+
+    def _declared_with_instances(self, region: str, instance_ids: list[str]) -> list[Record]:
+        """Root volumes and network interfaces of the declared instances."""
         ec2 = self.session.client("ec2", region_name=region)
         out: list[Record] = []
         for reservation in _paginate(ec2, "describe_instances", "Reservations", InstanceIds=instance_ids):
             for inst in reservation.get("Instances", []):
+                instance_id = inst["InstanceId"]
                 for mapping in inst.get("BlockDeviceMappings", []):
                     volume = mapping.get("Ebs", {}).get("VolumeId")
                     if volume:
                         out.append(
                             self._record(
-                                f"{region}/{inst['InstanceId']}/{volume}",
+                                f"{region}/{instance_id}/{volume}",
                                 volume,
                                 None,
                                 kind="ebs-volume",
-                                declared_with=inst["InstanceId"],
+                                declared_with=instance_id,
+                                region=region,
+                            )
+                        )
+                for interface in inst.get("NetworkInterfaces", []):
+                    eni = interface.get("NetworkInterfaceId")
+                    if eni:
+                        out.append(
+                            self._record(
+                                f"{region}/{instance_id}/{eni}",
+                                eni,
+                                None,
+                                kind="network-interface",
+                                declared_with=instance_id,
                                 region=region,
                             )
                         )
@@ -268,6 +311,23 @@ class Inventory(_AwsConnector):
                         region=region,
                         size_gib=vol.get("Size"),
                         attached_to=attached,
+                    )
+                )
+            # Public IPv4 is billed on the interface, so the interface must be in the inventory. Requester-managed
+            # interfaces (Lambda, NAT gateways, load balancers) stay: they are on the bill too. An interface has no
+            # creation time; the attachment time stands in, so a new one is pending during the grace window.
+            for eni in _paginate(ec2, "describe_network_interfaces", "NetworkInterfaces"):
+                attachment = eni.get("Attachment") or {}
+                out.append(
+                    self._record(
+                        f"{region}/eni/{eni['NetworkInterfaceId']}",
+                        eni["NetworkInterfaceId"],
+                        _iso(attachment.get("AttachTime")),
+                        kind="network-interface",
+                        region=region,
+                        attached_to=attachment.get("InstanceId"),
+                        description=eni.get("Description"),
+                        interface_type=eni.get("InterfaceType"),
                     )
                 )
             for snap in _paginate(ec2, "describe_snapshots", "Snapshots", OwnerIds=["self"]):
@@ -397,6 +457,16 @@ CUR_COLUMNS = [
 ]
 
 
+def _is_cloudformation_stack(resource_id: str) -> bool:
+    """True for ``arn:aws:cloudformation:<region>:<account>:stack/<name>/<uuid>[::<LogicalId>]``.
+
+    CloudFormation bills resource handler operations (``*Resource-Operation-Count``, cost 0) against the stack
+    ARN suffixed with the logical id. No inventory kind is a stack, so a keyed line would be a false Phantom.
+    """
+    parts = resource_id.split(":", 5)
+    return len(parts) == 6 and parts[0] == "arn" and parts[2] == "cloudformation" and parts[5].startswith("stack/")
+
+
 class CostAndUsage(_AwsConnector):
     """Billed ledger: CUR 2.0 Parquet for one billing period, one record per resource and usage type.
 
@@ -460,6 +530,8 @@ class CostAndUsage(_AwsConnector):
             for row in table.to_pylist():
                 line_type = str(row.get("line_item_line_item_type") or "")
                 resource = str(row.get("line_item_resource_id") or "") if line_type in USAGE_LINE_TYPES else ""
+                if _is_cloudformation_stack(resource):
+                    resource = ""  # an operation on a stack (handler calls), not a resource: unkeyed, still counted
                 group_key = (
                     resource,
                     line_type if not resource else "usage",

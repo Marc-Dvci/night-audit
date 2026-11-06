@@ -89,3 +89,34 @@ Billing data arrives late, so the control runs at 02:00 UTC on yesterday's bill 
 1. WHEN a run completes THE SYSTEM SHALL produce a one-page report: counts per region, tonight's new findings first, the
    billed amount of each Vampire and Phantom, and nights persisted.
 2. THE SYSTEM SHALL show the same report in the UI and as a downloadable HTML page.
+
+## Requirement 10: What the first real bill taught
+
+The first real CUR 2.0 of the lab account, read by the read-only investigator, showed four conditions that Requirements
+2, 3 and 4 did not cover. Each produced false findings on a healthy account.
+
+1. WHEN the observed ledger is read THE SYSTEM SHALL list the network interfaces of every enabled region, including
+   requester-managed interfaces (for example those owned by Lambda or a NAT gateway), as records of kind
+   `network-interface` keyed by the interface id (`eni-...`), with the attached instance id (`attached_to`), the region,
+   the description and the interface type as attributes. An interface has no creation time, so THE SYSTEM SHALL record
+   the attachment time as its timestamp when it is attached, so that a new interface is pending during the grace
+   window instead of a finding.
+2. WHEN a billed usage line names a network interface (for example usage type `<region>-PublicIPv4:InUseAddress`,
+   product `AmazonVPC`) THE SYSTEM SHALL key the line by the interface id, so that the charge lands on the interface
+   record, which names the instance it belongs to.
+3. WHEN a declared stack contains an EC2 instance THE SYSTEM SHALL declare, with that instance, each network interface
+   attached to it, recording the instance id as `declared_with`, in the same way as its root volumes (Requirement 2),
+   because an interface is not a stack resource.
+4. WHEN a billed usage line names a CloudFormation stack (a resource id of the form
+   `arn:aws:cloudformation:...:stack/<name>/<uuid>::<LogicalId>`, as on `*Resource-Operation-Count` lines of product
+   `AWSCloudFormation`) THE SYSTEM SHALL emit the line as an unkeyed billed record. The line is an operation on a stack,
+   not a resource. Its cost SHALL stay in the billed total and in the unkeyed amount, and the line SHALL NOT be hidden.
+5. WHEN the physical id of a declared `AWS::EC2::EIP` is a public IP address THE SYSTEM SHALL resolve it to the
+   allocation id through `describe_addresses` and key the intended record by the allocation id, because the observed
+   ledger and the bill key an Elastic IP by its allocation id.
+6. IF no address with that public IP is found THEN THE SYSTEM SHALL keep the physical id as the key, so that the
+   declared Elastic IP shows as a Skeleton instead of being dropped silently.
+7. THE SYSTEM SHALL make only read calls for these conditions (`describe_network_interfaces`, `describe_instances`,
+   `describe_addresses`).
+8. WHEN a declared instance has an auto-assigned public IP THE SYSTEM SHALL place the instance, its root volume and its
+   network interface in Living and produce no finding for them.
