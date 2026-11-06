@@ -21,7 +21,7 @@ from .connectors import Connector, make_connectors
 from .control import ControlConfig, ControlFile
 from .evidence import write_evidence_pack
 from .explain import ModelConfig, explain_finding
-from .matcher import match
+from .matcher import KeyScope, match
 from .models import LedgerName, LedgerSnapshot, Record, RunResult
 from .state import StateStore, compare_findings
 
@@ -88,6 +88,16 @@ def load_exclusions(path: Path) -> frozenset[str]:
     return frozenset(str(item).strip().lower() for item in items if str(item).strip())
 
 
+def load_scope(path: Path) -> KeyScope:
+    """Read a scope file: a mapping with ``keys`` and ``prefixes`` lists, compared after ``strip`` and ``lower``."""
+    raw: Any = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(raw, dict):
+        raise ValueError(f"scope file {path} must hold a mapping with keys and prefixes")
+    keys = frozenset(str(item).strip().lower() for item in raw.get("keys") or [] if str(item).strip())
+    prefixes = tuple(str(item).strip().lower() for item in raw.get("prefixes") or [] if str(item).strip())
+    return keys, prefixes
+
+
 def run_control(
     control_path: Path,
     runs_dir: Path,
@@ -124,7 +134,11 @@ def run_control(
     if control_file.exclude_keys_file:
         exclusions = load_exclusions(base_dir / control_file.exclude_keys_file)
 
-    result = match(snapshots, control_config, now, exclude_keys=exclusions)
+    scope: KeyScope | None = None
+    if control_file.include_keys_file and (base_dir / control_file.include_keys_file).exists():
+        scope = load_scope(base_dir / control_file.include_keys_file)
+
+    result = match(snapshots, control_config, now, exclude_keys=exclusions, include=scope)
     # The run is identified by the whole control file (sources included), not only the matching rules.
     file_hash = control_file.canonical_hash()
     result.control_hash = file_hash

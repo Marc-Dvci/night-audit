@@ -73,8 +73,20 @@ def _resolve_region(
     return name, severity, meaning
 
 
+#: The keys and name prefixes a deployment audits: ``(keys, prefixes)``, both normalised.
+KeyScope = tuple[frozenset[str], tuple[str, ...]]
+
+
 class ConservationError(RuntimeError):
     """The billed amounts per region and unkeyed do not add up to the billed total."""
+
+
+def in_scope(key: str, include: KeyScope | None) -> bool:
+    """A key is in scope when no scope is set, or it is listed, or it starts with a listed prefix."""
+    if include is None:
+        return True
+    keys, prefixes = include
+    return key in keys or key.startswith(prefixes)
 
 
 def match(
@@ -82,11 +94,13 @@ def match(
     control: ControlConfig,
     run_time: datetime,
     exclude_keys: frozenset[str] = frozenset(),
+    include: KeyScope | None = None,
 ) -> RunResult:
     """Run the three-way match and return a ``RunResult``.
 
     ``exclude_keys`` are normalised keys outside the audited scope (an owner-maintained local list).
-    Their records are dropped from every ledger before matching and only their count is reported.
+    ``include``, when set, keeps only the listed keys and prefixes. Records outside the scope are dropped from
+    every ledger before matching and only their count is reported.
     """
     # Step 0 — Missing-ledger check (Req 9.4).
     missing = [s.name.value for s in snapshots if s.missing]
@@ -124,10 +138,14 @@ def match(
     # Step 2 — Scope filtering, then the owner's exclusion list.
     filtered_snapshots, dropped = apply_scope(normalised_snapshots, control.scope)
     excluded: dict[str, int] = {}
-    if exclude_keys:
+    if exclude_keys or include is not None:
         kept_snapshots: list[LedgerSnapshot] = []
         for snapshot in filtered_snapshots:
-            kept = [r for r in snapshot.records if r.key is None or r.key not in exclude_keys]
+            kept = [
+                r
+                for r in snapshot.records
+                if r.key is None or (r.key not in exclude_keys and in_scope(r.key, include))
+            ]
             excluded[snapshot.name.value] = len(snapshot.records) - len(kept)
             kept_snapshots.append(snapshot.model_copy(update={"records": kept}))
         filtered_snapshots = kept_snapshots

@@ -22,6 +22,7 @@ BUCKET = os.environ["RUNS_BUCKET"]
 RUNS = Path("/tmp/runs")
 CONTROLS = Path("/tmp/controls")
 CONTROL_FILE = os.environ.get("CONTROL_FILE", "aws-account.yaml")
+PREFIX = "nights/"
 _s3 = boto3.client("s3")
 _last_sync = 0.0
 
@@ -54,19 +55,19 @@ _mangum = Mangum(_app, lifespan="off")
 def web(event: dict[str, Any], context: Any) -> dict[str, Any]:
     global _last_sync
     if time.time() - _last_sync > 60:
-        _download_prefix("runs/", RUNS)
+        _download_prefix(PREFIX, RUNS)
         _last_sync = time.time()
     return _mangum(event, context)
 
 
 def nightly(event: dict[str, Any], context: Any) -> dict[str, Any]:
-    _download_prefix("runs/_state/", RUNS / "_state")
+    _download_prefix(f"{PREFIX}_state/", RUNS / "_state")
     shutil.rmtree(CONTROLS, ignore_errors=True)
     shutil.copytree(HERE / "controls", CONTROLS)
     _download_prefix("config/", CONTROLS)  # local-only files: exclusions and approvals with live identifiers
     result = run_control(CONTROLS / CONTROL_FILE, RUNS)
-    _upload_dir(RUNS / result.run_id, f"runs/{result.run_id}/")
-    _upload_dir(RUNS / "_state", "runs/_state/")
+    _upload_dir(RUNS / result.run_id, f"{PREFIX}{result.run_id}/")
+    _upload_dir(RUNS / "_state", f"{PREFIX}_state/")
     summary = run_summary(result)
     print(summary)
     return summary

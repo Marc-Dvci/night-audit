@@ -521,11 +521,22 @@ CREATE_EVENTS = {
 }
 
 
+def mask_ip(value: str) -> str:
+    """Keep the network and hide the host, for a run that a public page will show."""
+    if value.count(".") == 3:
+        first, second, _, _ = value.split(".")
+        return f"{first}.{second}.x.x"
+    if ":" in value:
+        return ":".join(value.split(":")[:2]) + ":x"
+    return value
+
+
 def creating_events(findings: list[Any], options: dict[str, Any]) -> dict[str, dict[str, str]]:
     """Enricher: the CloudTrail event that created each finding's resource (Vampires Req 6).
 
     Uses ``LookupEvents`` (event history, last 90 days) in the resource's region; IAM and S3 events are read in
-    us-east-1. Returns a mapping of finding key to context fields.
+    us-east-1. Returns a mapping of finding key to context fields. ``mask_source_ip`` hides the host part of the
+    address for a run that a public page will show.
     """
     session = options.get("session") or _session(options.get("profile"))
     out: dict[str, dict[str, str]] = {}
@@ -549,11 +560,14 @@ def creating_events(findings: list[Any], options: dict[str, Any]) -> dict[str, d
         first = min(events, key=lambda e: e["EventTime"])
         detail = _event_detail(first)
         created = _iso(first["EventTime"])
+        source_ip = detail.get("source_ip", "")
+        if options.get("mask_source_ip"):
+            source_ip = mask_ip(source_ip)
         out[finding.key] = {
             "creating_event": first["EventName"],
             "created_at": created.isoformat() if created else "",
             "created_by": detail.get("principal", first.get("Username", "")),
-            "source_ip": detail.get("source_ip", ""),
+            "source_ip": source_ip,
             "user_agent": detail.get("user_agent", "")[:120],
         }
     return out

@@ -232,3 +232,23 @@ def test_creating_event_is_found_for_the_vampire() -> None:
     context = creating_events([F()], {"session": FakeSession(ACCOUNT)})
     assert context["i-0vamp"]["creating_event"] == "RunInstances"
     assert context["i-0vamp"]["source_ip"] == "203.0.113.9"
+    masked = creating_events([F()], {"session": FakeSession(ACCOUNT), "mask_source_ip": True})
+    assert masked["i-0vamp"]["source_ip"] == "203.0.x.x"
+
+
+def test_a_scope_list_keeps_only_listed_keys_and_prefixes(tmp_path: Path) -> None:
+    session = FakeSession(ACCOUNT)
+    intended = DeclaredStacks(ledger=LedgerName.intended, regions=REGIONS, session=session).fetch()
+    observed = Inventory(ledger=LedgerName.observed, regions=REGIONS, session=session).fetch()
+    billed = CostAndUsage(ledger=LedgerName.billed, path=str(_cur(tmp_path))).fetch()
+    chain = ["arn_resource_id", "strip", "lower"]
+    control = ControlConfig(normalisers={"intended": chain, "observed": chain, "billed": chain}, grace_hours=36)
+    snapshots = [
+        LedgerSnapshot(name=LedgerName.intended, source="i", records=intended),
+        LedgerSnapshot(name=LedgerName.observed, source="o", records=observed),
+        LedgerSnapshot(name=LedgerName.billed, source="b", records=billed),
+    ]
+    result = match(snapshots, control, RUN, include=(frozenset({"i-0vamp"}), ("lab-",)))
+    assert set(result.regions) == {"i-0vamp", "lab-debug", "lab-deployer"}
+    assert result.excluded["observed"] == 4  # i-0lab, vol-0lab, vol-0vamp and the access key
+    assert result.billed_unkeyed == Decimal("-0.2216")  # lines with no resource id stay visible

@@ -43,7 +43,7 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: [s3:PutObject]
-                Resource: !Sub ${RunsBucket.Arn}/runs/*
+                Resource: !Sub ${RunsBucket.Arn}/nights/*
               - Effect: Allow
                 Action: [ce:Get*, bcm-data-exports:Get*, bcm-data-exports:List*]
                 Resource: "*"
@@ -67,10 +67,10 @@ Resources:
               - Effect: Allow
                 Action: [s3:ListBucket]
                 Resource: !GetAtt RunsBucket.Arn
-                Condition: {StringLike: {"s3:prefix": ["runs/*"]}}
+                Condition: {StringLike: {"s3:prefix": ["nights/*"]}}
               - Effect: Allow
                 Action: [s3:GetObject]
-                Resource: !Sub ${RunsBucket.Arn}/runs/*
+                Resource: !Sub ${RunsBucket.Arn}/nights/*
 
   NightlyFunction:
     Type: AWS::Lambda::Function

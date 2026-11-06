@@ -135,6 +135,8 @@ class ControlFile(BaseModel):
     app: str = ""
     #: Local, untracked list of keys outside the audited scope (Vampires Req 5).
     exclude_keys_file: str | None = None
+    #: Local, untracked list of the keys and name prefixes this deployment audits. Absent means everything.
+    include_keys_file: str | None = None
     enrichers: list[EnricherConfig] = Field(default_factory=list)
     ledgers: dict[str, LedgerConfig] = Field(default_factory=dict)
     grace_hours: int = 24

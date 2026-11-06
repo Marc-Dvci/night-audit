@@ -1,10 +1,11 @@
 # Night Audit control: one AWS account, three ledgers.
 # Intended = declared stacks + approved changes. Observed = live inventory. Billed = CUR 2.0.
 id: aws-account
-title: AWS account 416964654816
+title: Lab account
 app: vampires
 grace_hours: 36
 exclude_keys_file: exclusions.local.yaml
+include_keys_file: scope.local.yaml
 
 ledgers:
   intended:
@@ -39,7 +40,7 @@ ledgers:
 enrichers:
   - entry: vampires.aws:creating_events
     regions: [OB, O]
-    options: {profile: night-audit}
+    options: {profile: night-audit, mask_source_ip: true}
 
 regions:
   OB:
