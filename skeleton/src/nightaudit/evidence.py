@@ -52,8 +52,12 @@ def _to_utc_iso(dt: datetime | None) -> str | None:
 
 
 def _canonical_json(obj: object) -> str:
-    """Canonical JSON: sorted keys, compact separators."""
+    """Canonical JSON: sorted keys, compact separators, non-ASCII escaped as ``\\uXXXX``."""
     return json.dumps(obj, sort_keys=True, separators=(",", ":"))
+
+
+#: Public name: the browser verifier (``skeleton/web/src/canonical.ts``) reproduces exactly this serialisation.
+canonical_json = _canonical_json
 
 
 def _sha(text: str) -> str:
@@ -184,10 +188,18 @@ def write_evidence_pack(result: RunResult, pack_dir: Path) -> str:
 
 @dataclass
 class VerifyResult:
-    """Outcome of verifying an evidence pack."""
+    """Outcome of verifying an evidence pack.
+
+    ``failed_row`` is the 0-based index of the first row that fails, or ``None`` when the pack verifies or the failure
+    is in the manifest as a whole. The browser verifier returns the same fields (ui-kit Req 6.4).
+    """
 
     ok: bool
     detail: str
+    failed_row: int | None = None
+    rows: int = 0
+    findings: int = 0
+    final_hash: str | None = None
 
 
 def verify_evidence_pack(pack_dir: Path) -> VerifyResult:
@@ -216,12 +228,12 @@ def verify_evidence_pack(pack_dir: Path) -> VerifyResult:
         try:
             row = json.loads(line_bytes.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError):
-            return VerifyResult(False, f"row {i}: not valid JSON")
+            return VerifyResult(False, f"row {i}: not valid JSON", failed_row=i)
         if not isinstance(row, dict):
-            return VerifyResult(False, f"row {i}: not a JSON object")
+            return VerifyResult(False, f"row {i}: not a JSON object", failed_row=i)
         # Byte-exact: the stored line must be the canonical serialisation of its content (Req 6.3).
         if _canonical_json(row).encode("utf-8") != line_bytes:
-            return VerifyResult(False, f"row {i}: bytes differ from the canonical form")
+            return VerifyResult(False, f"row {i}: bytes differ from the canonical form", failed_row=i)
         rows.append(row)
 
     chain_seed = str(manifest_raw.get("chain_seed", CHAIN_SEED))
@@ -237,11 +249,12 @@ def verify_evidence_pack(pack_dir: Path) -> VerifyResult:
                 False,
                 f"row {i}: hash mismatch (stored {stored_hash[:12]}, "
                 f"computed {recomputed[:12]})",
+                failed_row=i,
             )
         expected_prev = chain_seed if i == 0 else prev_recomputed
         if stored_prev != expected_prev:
             return VerifyResult(
-                False, f"row {i}: chain broken (prev_hash does not link to previous row)"
+                False, f"row {i}: chain broken (prev_hash does not link to previous row)", failed_row=i
             )
         prev_recomputed = recomputed
 
@@ -287,4 +300,10 @@ def verify_evidence_pack(pack_dir: Path) -> VerifyResult:
     if "finding_count" in manifest_raw and int(manifest_raw["finding_count"]) != finding_rows:
         return VerifyResult(False, "finding count differs from the manifest")
 
-    return VerifyResult(True, f"verified {len(rows)} rows, {finding_rows} findings")
+    return VerifyResult(
+        True,
+        f"verified {len(rows)} rows, {finding_rows} findings",
+        rows=len(rows),
+        findings=finding_rows,
+        final_hash=prev_recomputed,
+    )

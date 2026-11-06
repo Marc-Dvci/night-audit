@@ -272,3 +272,12 @@ def numbers_in(text: str | None) -> set[Decimal]:
     if not text:
         return set()
     return {Decimal(m.replace("\u2212", "-")) for m in NUMBER.findall(text)}
+
+
+def display_numbers(text: str | None) -> set[Decimal]:
+    """Numbers as a reader sees them on the page: ``−$1,234.50`` is -1234.50 and ``06 Nov`` is 6."""
+    if not text:
+        return set()
+    plain = text.replace("\u2212$", "-").replace("-$", "-").replace("$", "")
+    plain = re.sub(r"(?<=\d),(?=\d{3})", "", plain)
+    return numbers_in(plain)

@@ -148,6 +148,75 @@ class RegionSummary(BaseModel):
     billed_amount: Decimal
 
 
+# --- UI vocabulary (ui-kit Req 1) --------------------------------------------
+
+
+class NounUi(BaseModel):
+    """What a control counts, in both forms."""
+
+    singular: str = "item"
+    plural: str = "items"
+
+
+class LedgerUi(BaseModel):
+    """A ledger's short label and the sentence saying where its rows come from."""
+
+    label: str
+    source: str
+
+
+class ColumnUi(BaseModel):
+    """One column of the finding rows. ``from`` is key, name, status, amount, attr:<name> or context:<name>."""
+
+    model_config = ConfigDict(populate_by_name=True, serialize_by_alias=True)
+
+    label: str
+    from_: str = Field(alias="from")
+
+    @field_validator("from_")
+    @classmethod
+    def _known_source(cls, value: str) -> str:
+        if value in {"key", "name", "status", "amount"}:
+            return value
+        prefix, _, name = value.partition(":")
+        if prefix in {"attr", "context"} and name:
+            return value
+        raise ValueError(f"column 'from: {value}' must be key, name, status, amount, attr:<name> or context:<name>")
+
+
+class HeadlineUi(BaseModel):
+    """A headline template in singular (``one``) and plural (``other``) form."""
+
+    one: str
+    other: str
+
+
+DEFAULT_TAGLINE = "Three ledgers of the same reality, matched every night."
+
+DEFAULT_LEDGER_UI: dict[str, LedgerUi] = {
+    "intended": LedgerUi(label="Intended", source="What was approved."),
+    "observed": LedgerUi(label="Observed", source="What exists."),
+    "billed": LedgerUi(label="Billed", source="What is paid for."),
+}
+
+DEFAULT_COLUMNS: tuple[ColumnUi, ...] = (
+    ColumnUi.model_validate({"label": "Key", "from": "key"}),
+    ColumnUi.model_validate({"label": "Since", "from": "status"}),
+    ColumnUi.model_validate({"label": "Billed", "from": "amount"}),
+)
+
+
+class UiConfig(BaseModel):
+    """The resolved words a run renders with. Stored in every run so it renders the same forever (Req 1.3)."""
+
+    title: str = "Night Audit"
+    tagline: str = DEFAULT_TAGLINE
+    noun: NounUi = Field(default_factory=NounUi)
+    ledgers: dict[str, LedgerUi] = Field(default_factory=lambda: dict(DEFAULT_LEDGER_UI))
+    columns: list[ColumnUi] = Field(default_factory=lambda: list(DEFAULT_COLUMNS))
+    headlines: dict[str, HeadlineUi] = Field(default_factory=dict)
+
+
 class RunResult(BaseModel):
     """The complete output of one run."""
 
@@ -159,6 +228,7 @@ class RunResult(BaseModel):
     control_title: str = ""
     app: str = ""
     region_names: dict[str, str] = Field(default_factory=dict)
+    region_meanings: dict[str, str] = Field(default_factory=dict)
     ledger_errors: dict[str, str] = Field(default_factory=dict)
     excluded: dict[str, int] = Field(default_factory=dict)
     missing_ledgers: list[str] = Field(default_factory=list)
@@ -174,3 +244,5 @@ class RunResult(BaseModel):
     dropped: dict[str, int] = Field(default_factory=dict)
     resolved: list[Finding] = Field(default_factory=list)
     evidence_chain_hash: str | None = None
+    #: The control's resolved ``ui`` words. Runs saved before the UI kit load with the neutral defaults.
+    ui: UiConfig = Field(default_factory=UiConfig)

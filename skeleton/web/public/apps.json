@@ -1,0 +1,14 @@
+[
+  {
+    "name": "vampires",
+    "title": "Vampires",
+    "mode": "live",
+    "base": "api/"
+  },
+  {
+    "name": "vampires-demo",
+    "title": "Vampires demo account",
+    "mode": "demo",
+    "base": "demo/"
+  }
+]

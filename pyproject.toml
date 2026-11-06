@@ -30,6 +30,7 @@ dev = [
 [tool.pytest.ini_options]
 markers = [
     "property: property-based tests using hypothesis",
+    "e2e: browser tests in headless Chromium against a local server (skeleton/tests/e2e)",
 ]
 testpaths = ["skeleton/tests", "apps"]
 filterwarnings = ["ignore::DeprecationWarning"]
@@ -47,5 +48,5 @@ strict = true
 mypy_path = ["skeleton/src", "apps/vampires/src", "apps/ghosts/src"]
 
 [[tool.mypy.overrides]]
-module = ["pyarrow", "pyarrow.*", "boto3", "boto3.*", "botocore", "botocore.*"]
+module = ["pyarrow", "pyarrow.*", "boto3", "boto3.*", "botocore", "botocore.*", "playwright", "playwright.*"]
 ignore_missing_imports = true

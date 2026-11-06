@@ -61,3 +61,36 @@ regions:
   IO:
     name: Familiar
     meaning: Declared and present, with no charge on the bill yet.
+
+ui:
+  title: Vampires
+  tagline: Every night, this AWS account is checked against what was declared and what is on the bill.
+  noun: {singular: resource, plural: resources}
+  ledgers:
+    intended: {label: Declared, source: CloudFormation stacks and approved changes.}
+    observed: {label: Running, source: Live inventory from read-only Describe and List calls.}
+    billed: {label: Billed, source: Cost and Usage Report 2.0 line items.}
+  columns:
+    - {label: Finding, from: name}
+    - {label: Resource, from: key}
+    - {label: Kind, from: "attr:kind"}
+    - {label: Region, from: "attr:region"}
+    - {label: Created by, from: "context:created_by"}
+    - {label: Since, from: status}
+    - {label: On the bill, from: amount}
+  headlines:
+    OB:
+      one: "{count} Vampire is running and on the bill with no approval: {amount} so far."
+      other: "{count} Vampires are running and on the bill with no approval: {amount} so far."
+    B:
+      one: "{count} Phantom is on the bill, but nobody declared it and the inventory cannot see it: {amount}."
+      other: "{count} Phantoms are on the bill, but nobody declared them and the inventory cannot see them: {amount}."
+    IB:
+      one: "{count} Wraith is declared and billed, but the inventory cannot see it: {amount}."
+      other: "{count} Wraiths are declared and billed, but the inventory cannot see them: {amount}."
+    I:
+      one: "{count} declared {noun} is gone."
+      other: "{count} declared {noun} are gone."
+    O:
+      one: "{count} Poltergeist costs nothing."
+      other: "{count} Poltergeists cost nothing."

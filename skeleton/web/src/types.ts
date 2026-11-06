@@ -1,6 +1,8 @@
-// Shapes of the JSON served by the Night Audit API (skeleton/src/nightaudit/models.py).
+// Shapes of the JSON served by the Night Audit API (skeleton/src/nightaudit/models.py and report.py).
+// Every amount is a decimal string. It is displayed with moneyText() and never converted to a float.
 
 export type LedgerName = "intended" | "observed" | "billed";
+export const LEDGERS: readonly LedgerName[] = ["intended", "observed", "billed"];
 
 export interface EvidenceRecord {
   ledger: LedgerName;
@@ -43,6 +45,42 @@ export interface Snapshot {
   missing: boolean;
 }
 
+export interface UiColumn {
+  label: string;
+  from: string;
+}
+
+export interface UiConfig {
+  title: string;
+  tagline: string;
+  noun: { singular: string; plural: string };
+  ledgers: Record<string, { label: string; source: string }>;
+  columns: UiColumn[];
+  headlines: Record<string, { one: string; other: string }>;
+}
+
+export interface MoneyLine {
+  label: string;
+  value: string;
+  amount: string;
+  note: string;
+}
+
+export interface RunView {
+  headline: string;
+  calm: boolean;
+  ledger_keys: Record<string, number | null>;
+  keyed_total: string;
+  unkeyed_total: string;
+  billed_total: string;
+  lines: MoneyLine[];
+  finding_count: number;
+  new_count: number;
+  persisting_count: number;
+  pending_count: number;
+  resolved_count: number;
+}
+
 export interface RunResult {
   run_id: string;
   run_time: string;
@@ -56,16 +94,16 @@ export interface RunResult {
   snapshots: Snapshot[];
   regions: Record<string, string>;
   region_names: Record<string, string>;
+  region_meanings: Record<string, string>;
   region_summaries: Record<string, RegionSummary>;
   pending_keys: string[];
-  unkeyed: { row_id: string; ledger: LedgerName; source: string; amount: string | null }[];
   findings: Finding[];
   resolved: Finding[];
   billed_total: string;
   billed_unkeyed: string;
-  dropped: Record<string, number>;
-  excluded: Record<string, number>;
   evidence_chain_hash: string | null;
+  ui: UiConfig;
+  view: RunView;
 }
 
 export interface RunSummary {
@@ -76,7 +114,18 @@ export interface RunSummary {
   app: string;
   complete: boolean;
   findings: number;
+  new_findings?: number;
   informational: number;
 }
 
-export const REGION_ORDER = ["OB", "B", "IB", "I", "O", "IO", "IOB"] as const;
+/** One entry of apps.json, written at build time. `base` is where that app's data lives, relative to the page. */
+export interface AppEntry {
+  name: string;
+  title: string;
+  mode: "live" | "demo";
+  base: string;
+}
+
+/** The seven region codes, in the order the page lists them. */
+export const REGION_ORDER = ["OB", "B", "IB", "O", "I", "IO", "IOB"] as const;
+export const REGION_CODES: ReadonlySet<string> = new Set(REGION_ORDER);

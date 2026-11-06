@@ -18,7 +18,7 @@ from typing import Any
 import yaml
 
 from .connectors import Connector, make_connectors
-from .control import ControlConfig, ControlFile
+from .control import ControlConfig, ControlFile, region_meanings, region_names, resolve_ui
 from .evidence import write_evidence_pack
 from .explain import ModelConfig, explain_finding
 from .matcher import KeyScope, match
@@ -147,6 +147,9 @@ def run_control(
     result.control_title = control_file.title
     result.app = control_file.app
     result.ledger_errors = errors
+    result.ui = resolve_ui(control_file)
+    result.region_names = region_names(control_config)
+    result.region_meanings = region_meanings(control_config)
 
     # Night-over-night state, kept per control id so editing a control keeps its history (Req 5).
     state_store = StateStore(runs_dir)
@@ -220,6 +223,7 @@ def run_summary(result: RunResult) -> dict[str, Any]:
     """A compact summary for the ``/api/runs`` listing."""
     finding_count = sum(1 for f in result.findings if not f.informational)
     informational = sum(1 for f in result.findings if f.informational)
+    new_findings = sum(1 for f in result.findings if not f.informational and f.status == "new")
     return {
         "run_id": result.run_id,
         "control_id": result.control_id,
@@ -229,5 +233,6 @@ def run_summary(result: RunResult) -> dict[str, Any]:
         "control_hash": result.control_hash,
         "complete": result.complete,
         "findings": finding_count,
+        "new_findings": new_findings,
         "informational": informational,
     }

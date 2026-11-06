@@ -2,16 +2,86 @@
   "name": "night-app-builder",
   "description": "Builds an application on the skeleton. It has no write permission on skeleton/, so a second app either fits the template or the template is not flexible enough.",
   "prompt": "file://prompts/night-app-builder.md",
-  "tools": ["read", "write", "shell"],
+  "tools": [
+    "read",
+    "write",
+    "shell"
+  ],
   "includeMcpJson": false,
   "permissions": {
     "rules": [
-      { "capability": "fs_read", "match": ["**"], "exclude": ["casebook/heldout/**", "**/.aws/**", "**/.env"], "effect": "allow" },
-      { "capability": "fs_read", "match": ["casebook/heldout/**", "**/.aws/**", "**/.env"], "effect": "deny" },
-      { "capability": "fs_write", "match": ["apps/**", ".kiro/specs/**"], "exclude": ["apps/vampires/**"], "effect": "allow" },
-      { "capability": "fs_write", "match": ["skeleton/**", "apps/vampires/**", "casebook/**", ".kiro/hooks/**", ".kiro/agents/**", ".kiro/steering/**", ".kiro/settings/**", "scripts/**", "**/*.local.yaml"], "effect": "deny" },
-      { "capability": "shell", "match": ["uv run pytest*", "uv run ruff*", "uv run mypy*", "uv run python scripts/score_casebook.py*", "uv run python apps/*", "uv run nightaudit*", "uv sync*", "git status*", "git diff*", "git log*", "git show*"], "effect": "allow" },
-      { "capability": "shell", "match": ["git push*", "git commit*", "git reset*", "git checkout*", "aws *", "rm -rf*", "del *", "*heldout*"], "effect": "deny" }
+      {
+        "capability": "fs_read",
+        "match": [
+          "**"
+        ],
+        "exclude": [
+          "casebook/heldout/**",
+          "**/.aws/**",
+          "**/.env"
+        ],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_read",
+        "match": [
+          "casebook/heldout/**",
+          "**/.aws/**",
+          "**/.env"
+        ],
+        "effect": "deny"
+      },
+      {
+        "capability": "fs_write",
+        "match": [
+          "apps/**",
+          ".kiro/specs/**"
+        ],
+        "exclude": [
+          "apps/vampires/**"
+        ],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_write",
+        "match": [
+          "skeleton/**",
+          "apps/vampires/**",
+          "casebook/**",
+          ".kiro/hooks/**",
+          ".kiro/agents/**",
+          ".kiro/steering/**",
+          ".kiro/settings/**",
+          "scripts/**",
+          "**/*.local.yaml"
+        ],
+        "effect": "deny"
+      },
+      {
+        "capability": "shell",
+        "match": [
+          "*"
+        ],
+        "effect": "allow"
+      },
+      {
+        "capability": "shell",
+        "match": [
+          "git push*",
+          "git commit*",
+          "git reset*",
+          "git checkout*",
+          "aws *",
+          "rm -rf*",
+          "del *",
+          "*heldout*"
+        ],
+        "effect": "deny"
+      }
     ]
-  }
+  },
+  "excludedTools": [
+    "delete_file",
+    "createHook"
+  ]
 }

@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "no-harm-guard",
+      "description": "The builder may run any command, except one that deletes files, publishes code or could harm the computer.",
+      "trigger": "PreToolUse",
+      "matcher": "*",
+      "action": { "type": "command", "command": "python scripts/hooks/no_harm_guard.py" },
+      "timeout": 10
+    }
+  ]
+}

@@ -9,16 +9,71 @@ from __future__ import annotations
 
 import hashlib
 import json
+import string
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .models import (
     DEFAULT_REGION_MEANINGS,
     DEFAULT_REGION_NAMES,
     DEFAULT_REGION_SEVERITIES,
+    FINDING_REGIONS,
+    ColumnUi,
+    HeadlineUi,
+    LedgerUi,
+    NounUi,
+    UiConfig,
 )
 from .normalisers import NormaliserRegistry, UnknownNormaliserError
+
+#: The slots a control author may use in a headline template (Req 1.1).
+HEADLINE_SLOTS: frozenset[str] = frozenset({"count", "amount", "noun"})
+
+
+def _check_template(template: str) -> None:
+    parsed = list(string.Formatter().parse(template))
+    fields = {name for _, name, _, _ in parsed if name is not None}
+    unknown = fields - HEADLINE_SLOTS
+    if unknown:
+        raise ValueError(f"headline template uses unknown slots: {', '.join(sorted(unknown))}")
+    if "count" not in fields:
+        raise ValueError("headline template must contain {count}")
+    # Every number in a headline comes from the run (audit rule 2), so the fixed words may not hold digits.
+    if any(ch.isdigit() for literal, _, _, _ in parsed for ch in literal):
+        raise ValueError("headline template text may not contain digits; numbers come from the run")
+
+
+class UiSection(BaseModel):
+    """The optional ``ui`` section of a control file, as written. ``resolve_ui`` fills the gaps (Req 1.1, 1.2)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    title: str | None = None
+    tagline: str | None = None
+    noun: NounUi | None = None
+    ledgers: dict[str, LedgerUi] = Field(default_factory=dict)
+    columns: list[ColumnUi] = Field(default_factory=list)
+    headlines: dict[str, HeadlineUi] = Field(default_factory=dict)
+
+    @field_validator("headlines", mode="before")
+    @classmethod
+    def _plain_string_is_both_forms(cls, value: Any) -> Any:
+        if isinstance(value, dict):
+            return {k: ({"one": v, "other": v} if isinstance(v, str) else v) for k, v in value.items()}
+        return value
+
+    @model_validator(mode="after")
+    def _validate(self) -> UiSection:
+        unknown_ledgers = set(self.ledgers) - {"intended", "observed", "billed"}
+        if unknown_ledgers:
+            raise ValueError(f"ui.ledgers names unknown ledgers: {', '.join(sorted(unknown_ledgers))}")
+        for code, headline in self.headlines.items():
+            if code not in FINDING_REGIONS:
+                raise ValueError(f"ui.headlines names '{code}', which is not a finding region")
+            _check_template(headline.one)
+            _check_template(headline.other)
+        return self
 
 
 def resolve_region(code: str, control: ControlConfig) -> tuple[str, str, str]:
@@ -127,6 +182,66 @@ def region_names(control: ControlConfig) -> dict[str, str]:
     return {code: resolve_region(code, control)[0] for code in DEFAULT_REGION_NAMES}
 
 
+def region_meanings(control: ControlConfig) -> dict[str, str]:
+    """The one-sentence meaning of every region code for this control (Req 1.4, ui-kit Req 2.6)."""
+    return {code: resolve_region(code, control)[2] for code in DEFAULT_REGION_NAMES}
+
+
+#: Default headline sentences per finding region (ui-kit design §3). ``{name}`` is the region's resolved name and is
+#: filled in by ``resolve_ui``; control authors only get ``{count}``, ``{amount}`` and ``{noun}``.
+DEFAULT_HEADLINES: dict[str, tuple[str, str]] = {
+    "OB": (
+        "{count} {name} exists and is on the bill with no approval: {amount}.",
+        "{count} {name}s exist and are on the bill with no approval: {amount}.",
+    ),
+    "B": (
+        "{count} {name} is on the bill for something nobody approved or can see: {amount}.",
+        "{count} {name}s are on the bill for something nobody approved or can see: {amount}.",
+    ),
+    "IB": (
+        "{count} {name} is approved and billed but cannot be seen: {amount}.",
+        "{count} {name}s are approved and billed but cannot be seen: {amount}.",
+    ),
+    "I": (
+        "{count} {name} is approved but gone and unbilled.",
+        "{count} {name}s are approved but gone and unbilled.",
+    ),
+    "O": (
+        "{count} {name} exists with no approval and costs nothing.",
+        "{count} {name}s exist with no approval and cost nothing.",
+    ),
+}
+
+
+def fill_region_name(template: str, name: str) -> str:
+    """Put a region's resolved name into a default template; braces in the name stay literal text."""
+    safe = name.replace("{", "{{").replace("}", "}}")
+    return template.replace("{name}", safe)
+
+
+def resolve_ui(control: ControlFile) -> UiConfig:
+    """The words a run renders with: the ``ui`` section with every gap filled by a neutral default (Req 1.2)."""
+    section = control.ui if control.ui is not None else UiSection()
+    config = control.to_config()
+    headlines: dict[str, HeadlineUi] = {}
+    for code, (one, other) in DEFAULT_HEADLINES.items():
+        name = resolve_region(code, config)[0]
+        headlines[code] = section.headlines.get(code) or HeadlineUi(
+            one=fill_region_name(one, name), other=fill_region_name(other, name)
+        )
+    defaults = UiConfig()
+    ledgers = dict(defaults.ledgers)
+    ledgers.update(section.ledgers)
+    return UiConfig(
+        title=section.title or control.title or control.id or defaults.title,
+        tagline=section.tagline or defaults.tagline,
+        noun=section.noun or defaults.noun,
+        ledgers=ledgers,
+        columns=list(section.columns) if section.columns else list(defaults.columns),
+        headlines=headlines,
+    )
+
+
 class ControlFile(BaseModel):
     """A production control file with connector configuration per ledger."""
 
@@ -143,6 +258,8 @@ class ControlFile(BaseModel):
     scope: ScopeFilter | None = None
     alias_domains: dict[str, str] = Field(default_factory=dict)
     regions: dict[str, RegionOverride] = Field(default_factory=dict)
+    #: The words the UI and the morning report use (ui-kit Req 1). Part of the canonical hash.
+    ui: UiSection | None = None
 
     def to_config(self) -> ControlConfig:
         """Extract a ``ControlConfig`` for the matcher and scorer."""
@@ -184,7 +301,12 @@ class ControlFile(BaseModel):
                     ) from None
 
     def canonical_hash(self) -> str:
-        """SHA-256 of the whole control file in canonical JSON: ledgers, sources, rules and wording (Req 1.3)."""
+        """SHA-256 of the whole control file in canonical JSON: ledgers, sources, rules and wording (Req 1.3).
+
+        A control without a ``ui`` section hashes as it did before the section existed, so its run ids do not change.
+        """
         data: dict[str, Any] = self.model_dump(mode="json")
+        if data.get("ui") is None:
+            data.pop("ui", None)
         canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
