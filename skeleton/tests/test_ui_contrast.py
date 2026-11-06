@@ -62,7 +62,7 @@ def test_the_skip_link_is_readable() -> None:
 
 @pytest.mark.parametrize("text", ["bone", "bone-dim", "amber"])
 def test_venn_labels_are_readable_on_the_tinted_finding_regions(text: str) -> None:
-    assert ratio(rgb(text), tint(255, 179, 71, 0.13, rgb("ink"))) >= 4.5
+    assert ratio(rgb(text), tint(255, 179, 71, 0.07, rgb("ink"))) >= 4.5
 
 
 @pytest.mark.parametrize("text", ["bone", "amber"])

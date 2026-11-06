@@ -68,6 +68,7 @@ export interface MoneyLine {
 
 export interface RunView {
   headline: string;
+  headline_sentences: string[];
   calm: boolean;
   ledger_keys: Record<string, number | null>;
   keyed_total: string;

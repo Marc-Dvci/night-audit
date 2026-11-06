@@ -54,6 +54,7 @@ export function compare(run: RunResult, selected: string | null): string {
     <div class="venn-wrap">${venn}</div>
     <div class="compare-side">
       <h2 class="rule-title">Three ledgers</h2>
+      <p class="compare-intro">Every key is looked up in all three. Found in all three, it is matched. Any other combination is a finding, named by the region it falls in.</p>
       <ol class="ledgers">${ledgerList(run)}</ol>
       ${calm ? "" : legend(run, selected)}
     </div>

@@ -80,7 +80,7 @@ a { color: var(--phosphor); }
 }
 .mast-link { font: 14px var(--mono); letter-spacing: 0.06em; text-underline-offset: 0.25em; }
 .recorded {
-  max-width: 1240px; margin: 0 auto; padding: 0.4rem var(--gutter); background: var(--ink-2);
+  padding: 0.4rem max(var(--gutter), calc((100% - 1240px) / 2 + var(--gutter))); background: var(--ink-2);
   font: 13px var(--mono); letter-spacing: 0.08em; color: var(--amber);
 }
 .scanline {
@@ -92,15 +92,23 @@ a { color: var(--phosphor); }
 
 /* Lede: tagline, headline, money lines --------------------------------------------------------------------------- */
 
-.lede { padding: clamp(1.8rem, 4vw, 3.2rem) 0 1.6rem; }
-.tagline { color: var(--bone-dim); font-size: 1.05rem; max-width: 60ch; margin-bottom: 0.9rem; }
-.headline {
-  font: 400 clamp(1.7rem, 1.05rem + 2.3vw, 2.65rem)/1.22 var(--sans); letter-spacing: -0.005em;
-  max-width: 34ch; color: var(--bone); text-wrap: pretty;
+.lede {
+  padding: clamp(1.8rem, 4vw, 3.2rem) 0 1.6rem;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(19rem, 25rem); gap: 1.8rem 3.5rem; align-items: start;
 }
+@media (max-width: 1100px) { .lede { grid-template-columns: minmax(0, 1fr); } }
+.lede-side { padding-top: 0.35rem; }
+.tagline { color: var(--bone-dim); font-size: 1.05rem; max-width: 60ch; margin-bottom: 0.9rem; }
+.headline { font-weight: 400; color: var(--bone); max-width: 30ch; text-wrap: pretty; }
+/* The lead sentence is the largest text below the masthead, readable from across a room. */
+.headline-lead {
+  display: block; font: 400 clamp(1.85rem, 1.1rem + 2.6vw, 3rem)/1.18 var(--sans); letter-spacing: -0.01em;
+}
+.headline-more { display: block; margin-top: 0.9rem; font: 400 clamp(1.1rem, 0.95rem + 0.6vw, 1.35rem)/1.45 var(--sans); }
+.headline-line { display: block; padding: 0.15rem 0; border-top: 1px solid var(--hairline); }
 .lede.calm .headline { color: var(--phosphor); }
 .stamp { margin-top: 1rem; font: 13px var(--mono); letter-spacing: 0.08em; color: var(--bone-dim); }
-.money { margin-top: 1.4rem; max-width: 52rem; font-family: var(--mono); }
+.money { margin-top: 0.2rem; font-family: var(--mono); }
 .money-line {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.2rem 1.5rem; align-items: baseline;
   padding: 0.5rem 0.7rem;
@@ -126,9 +134,9 @@ a { color: var(--phosphor); }
 .venn { display: block; width: 100%; max-width: 540px; height: auto; margin: 0 auto; cursor: pointer; }
 .venn.calm { cursor: default; }
 .venn-region { fill: transparent; }
-.venn-region.finding.has { fill: rgba(255, 179, 71, 0.13); }
-.venn-region.familiar.has { fill: rgba(201, 211, 255, 0.11); }
-.venn-region.living.has { fill: rgba(124, 255, 178, 0.11); }
+.venn-region.finding.has { fill: rgba(255, 179, 71, 0.07); }
+.venn-region.familiar.has { fill: rgba(201, 211, 255, 0.07); }
+.venn-region.living.has { fill: rgba(124, 255, 178, 0.09); }
 .venn-region.selected { fill: rgba(124, 255, 178, 0.26); }
 .venn-region.finding.has.selected { fill: rgba(255, 179, 71, 0.34); }
 .venn-ring { fill: none; stroke: var(--moon); stroke-width: 1.4; }
@@ -142,6 +150,7 @@ a { color: var(--phosphor); }
 .venn-name.sel, .venn-count.zero.sel { fill: var(--bone); }
 .venn.calm .venn-count { font-size: 34px; }
 
+.compare-intro { padding: 0.5rem 0.7rem 0.6rem; color: var(--bone); font-size: 15.5px; max-width: 52ch; }
 .ledgers { margin-bottom: 1.8rem; }
 .ledger { padding: 0.6rem 0.7rem 0.7rem; }
 .ledger:nth-child(odd) { background: var(--ink-2); }
@@ -200,17 +209,13 @@ a { color: var(--phosphor); }
 .filter-code { font: 12px var(--mono); letter-spacing: 0.12em; color: var(--bone-dim); }
 .filter-meaning { margin: 0.2rem 0 0.35rem; max-width: 70ch; color: var(--bone); }
 
-.colhead, .row-head { display: grid; gap: 0.3rem 1.1rem; }
+/* Columns share the row by kind: the key gets the most room, the amount the least. */
+.colhead, .row-head { display: flex; gap: 0.3rem 1.1rem; }
 .colhead { padding: 0.5rem 0.7rem 0.3rem; font: 12px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--bone-dim); }
-.u-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); } .u-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.u-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .u-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.u-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); } .u-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-.u-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); } .u-8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
-.u-9 { grid-template-columns: repeat(9, minmax(0, 1fr)); } .u-10 { grid-template-columns: repeat(10, minmax(0, 1fr)); }
-.u-11 { grid-template-columns: repeat(11, minmax(0, 1fr)); } .u-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-.u-13 { grid-template-columns: repeat(13, minmax(0, 1fr)); } .u-14 { grid-template-columns: repeat(14, minmax(0, 1fr)); }
-.w-1 { grid-column: span 1; } .w-2 { grid-column: span 2; } .w-3 { grid-column: span 3; }
-.cell-amount { text-align: right; }
+.colhead > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-key { flex: 2.6 1 0; } .c-name { flex: 1.5 1 0; } .c-attr { flex: 1.4 1 0; }
+.c-status { flex: 1.9 1 0; } .c-amount { flex: 1.1 1 0; text-align: right; }
+.nowrap { white-space: nowrap; }
 
 .row { padding: 0.75rem 0.7rem 0.85rem; }
 .row:nth-child(odd) { background: var(--ink-2); }
@@ -303,14 +308,14 @@ a { color: var(--phosphor); }
   body { font-size: 16px; }
   .mast-meta { width: 100%; justify-content: space-between; }
   .colhead { display: none; }
-  .row-head { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
-  .row-head > .cell { grid-column: auto; display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 0.6rem; text-align: left; }
-  .row-head > .cell-name { display: block; margin-bottom: 0.2rem; }
+  .row-head { flex-direction: column; gap: 0.15rem; }
+  .row-head > .cell { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 0.6rem; text-align: left; }
+  .row-head > .c-name { display: block; margin-bottom: 0.2rem; }
   .cell-label {
     position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal;
     font: 11.5px/1.9 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--bone-dim);
   }
-  .row-head > .cell-name .cell-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .row-head > .c-name .cell-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .rest-row { grid-template-columns: minmax(0, 1fr); }
   .printout > div { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
   .context > div { grid-template-columns: minmax(0, 1fr); gap: 0; }

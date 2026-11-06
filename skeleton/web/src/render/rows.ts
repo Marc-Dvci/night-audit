@@ -22,9 +22,9 @@ export function tone(f: Finding): "new" | "old" | "haunting" {
 }
 
 function statusText(f: Finding): string {
-  if (f.status === "new") return "New tonight";
+  if (f.status === "new") return `<span class="nowrap">New tonight</span>`;
   const nights = f.nights_persisted ?? 0;
-  return `Since ${dateText(f.first_seen)} · ${plural(nights, "night", "nights")}`;
+  return `<span class="nowrap">Since ${esc(dateText(f.first_seen))}</span> <span class="nowrap">· ${esc(plural(nights, "night", "nights"))}</span>`;
 }
 
 function attrOf(f: Finding, name: string): string {
@@ -35,29 +35,24 @@ function attrOf(f: Finding, name: string): string {
   return "";
 }
 
-const WIDTH: Record<string, number> = { key: 3, name: 2, status: 2, amount: 1 };
-
-function width(column: UiColumn): number {
-  return WIDTH[column.from] ?? 1;
+/** The column kind sets its share of the row width (style.css: .c-key, .c-name, ...). */
+function kind(column: UiColumn): string {
+  return ["key", "name", "status", "amount"].includes(column.from) ? column.from : "attr";
 }
 
 function cell(f: Finding, column: UiColumn): string {
   const label = `<span class="cell-label">${esc(column.label)}</span>`;
   const source = column.from;
   let value: string;
-  let cls = `cell w-${width(column)}`;
+  const cls = `cell c-${kind(column)}`;
   if (source === "key") {
     value = `<span class="mono key">${esc(f.key)}</span>`;
-    cls += " cell-key";
   } else if (source === "name") {
     value = `<span class="finding-name">${GLYPHS[f.region_code] ?? ""}<span>${esc(f.name)}</span></span>`;
-    cls += " cell-name";
   } else if (source === "status") {
-    value = `<span class="status ${tone(f)}">${esc(statusText(f))}</span>`;
-    cls += " cell-status";
+    value = `<span class="status ${tone(f)}">${statusText(f)}</span>`;
   } else if (source === "amount") {
-    value = f.region_code.includes("B") ? `<span class="mono">${esc(moneyText(f.billed_amount))}</span>` : `<span class="dim">not billed</span>`;
-    cls += " cell-amount";
+    value = f.region_code.includes("B") ? `<span class="mono nowrap">${esc(moneyText(f.billed_amount))}</span>` : `<span class="dim nowrap">not billed</span>`;
   } else {
     const [prefix, ...rest] = source.split(":");
     const name = rest.join(":");
@@ -111,11 +106,10 @@ function matched(run: RunResult): string {
 export function findings(run: RunResult, region: string | null, open: string | null): string {
   const columns = run.ui.columns.length ? run.ui.columns : [{ label: "Key", from: "key" }];
   const hasName = columns.some((c) => c.from === "name");
-  const units = columns.reduce((sum, c) => sum + width(c), 0);
   const visible = run.findings.filter((f) => (region ? f.region_code === region : !f.informational)).sort(byPriority);
 
-  const header = `<div class="colhead u-${units}" aria-hidden="true">${columns
-    .map((c) => `<span class="w-${width(c)}${c.from === "amount" ? " cell-amount" : ""}">${esc(c.label)}</span>`)
+  const header = `<div class="colhead" aria-hidden="true">${columns
+    .map((c) => `<span class="c-${kind(c)}">${esc(c.label)}</span>`)
     .join("")}</div>`;
 
   const items = visible
@@ -124,7 +118,7 @@ export function findings(run: RunResult, region: string | null, open: string | n
       const name = hasName ? "" : `<p class="row-region">${GLYPHS[f.region_code] ?? ""}<span>${esc(f.name)}</span></p>`;
       return `<li class="row ${tone(f)}" id="row-${i}">
         ${name}
-        <button type="button" class="row-head u-${units}" aria-expanded="${isOpen}" aria-controls="ev-${i}" data-key="${esc(f.key)}">${columns
+        <button type="button" class="row-head" aria-expanded="${isOpen}" aria-controls="ev-${i}" data-key="${esc(f.key)}">${columns
           .map((c) => cell(f, c))
           .join("")}</button>
         <p class="row-explain">${esc(f.explanation ?? f.meaning)}</p>

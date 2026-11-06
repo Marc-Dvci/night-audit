@@ -83,11 +83,11 @@ ui:
       one: "{count} Vampire is running and on the bill with no approval: {amount} so far."
       other: "{count} Vampires are running and on the bill with no approval: {amount} so far."
     B:
-      one: "{count} Phantom is on the bill, but nobody declared it and the inventory cannot see it: {amount}."
-      other: "{count} Phantoms are on the bill, but nobody declared them and the inventory cannot see them: {amount}."
+      one: "{count} Phantom is billed, but nobody declared it or can see it: {amount}."
+      other: "{count} Phantoms are billed, but nobody declared them or can see them: {amount}."
     IB:
-      one: "{count} Wraith is declared and billed, but the inventory cannot see it: {amount}."
-      other: "{count} Wraiths are declared and billed, but the inventory cannot see them: {amount}."
+      one: "{count} Wraith is declared and billed, but cannot be seen: {amount}."
+      other: "{count} Wraiths are declared and billed, but cannot be seen: {amount}."
     I:
       one: "{count} declared {noun} is gone."
       other: "{count} declared {noun} are gone."

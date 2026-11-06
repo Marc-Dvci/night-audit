@@ -8,13 +8,11 @@ Open interpretation, flagged for review: Req 1.1 names one headline template per
 `{one, other}` pair (a plain string is shorthand for both) because the singular-noun boundary needs singular verbs too.
 Amounts are shown with a `$` sign for every control; a currency field is not in Req 1 and is not added.
 
-Status: tasks 1, 15–21 and 23–28 are written but unticked. Their tests run in a browser, and this environment could
-not install Playwright or Chromium (`uv add --dev playwright`, `uv run playwright install chromium`) or add vitest to
-`package.json` (`npm install -D vitest`). The browser tests skip with that reason until those three commands are run.
+Status: every task but 28 is ticked. Task 28 waits on `uv run ruff check .`, which reports five line-length errors in `scripts/hooks/no_harm_guard.py`, a hook file outside this spec that is left for its owner.
 
 ## Setup
 
-- [ ] **1. Tooling.** `uv add --dev playwright` at the workspace root and `uv run playwright install chromium`. Add the
+- [x] **1. Tooling.** `uv add --dev playwright` at the workspace root and `uv run playwright install chromium`. Add the
       `e2e` marker to `[tool.pytest.ini_options]`. In `skeleton/web`, add `vitest` as a dev dependency, a `test` script,
       `vitest.config.ts` (node environment, `test/**/*.test.ts`), and keep `build` as `tsc --noEmit && vite build`.
       Confirm `npm run build`, `npx vitest run` (no tests yet: passes with `--passWithNoTests` only for this task) and
@@ -86,28 +84,28 @@ not install Playwright or Chromium (`uv add --dev playwright`, `uv run playwrigh
       of the four faces. No inline styles anywhere. Test: `test_web_shell.py`. `og.png` itself is task 23.
       [Req 9.1, 9.2, 11.2]
 
-- [ ] **15. Style rewrite.** `style.css` for the printout direction: bands and hairlines only, no borders around
+- [x] **15. Style rewrite.** `style.css` for the printout direction: bands and hairlines only, no borders around
       blocks, no radius, no gradient except the scan line; headline the largest text after the masthead; phosphor focus
       ring; reduced motion; 360 px single column; tables scroll in their own container; summary lines wrap only at
       spaces. [Req 2.1, 3.4, 10.2–10.4, ui-identity]
 
-- [ ] **16. Masthead and lede.** Brand, app switch from `apps.json`, recorded-run notice in words, night picker, morning
+- [x] **16. Masthead and lede.** Brand, app switch from `apps.json`, recorded-run notice in words, night picker, morning
       report link; tagline, headline, money lines. [Req 2.1, 3.1, 3.2, 7.2, 8.1, 8.3]
 
-- [ ] **17. Ledgers and Venn.** Ledger label, source sentence and distinct-key count beside the Venn; calm state without
+- [x] **17. Ledgers and Venn.** Ledger label, source sentence and distinct-key count beside the Venn; calm state without
       zero labels; legend as the keyboard path; filter note with name and meaning. [Req 2.3–2.6]
 
-- [ ] **18. Rows and laid to rest.** Rows from `ui.columns`; status with first-seen date and nights; amber for new, blood
+- [x] **18. Rows and laid to rest.** Rows from `ui.columns`; status with first-seen date and nights; amber for new, blood
       only above 3 nights; evidence table in a scroll container; "Laid to rest" with region, key, first seen, nights.
       [Req 4.2, 4.3, 8.2, 10.3]
 
-- [ ] **19. Nights strip.** Up to 30 marks for the control, height classes, text counts, selection loads the night.
+- [x] **19. Nights strip.** Up to 30 marks for the control, height classes, text counts, selection loads the night.
       [Req 4.1]
 
-- [ ] **20. Deep links.** `state.ts` reads and writes `app`, `run`, `region`, `open`; ignores unknown values; opens and
+- [x] **20. Deep links.** `state.ts` reads and writes `app`, `run`, `region`, `open`; ignores unknown values; opens and
       scrolls to the named finding. [Req 5.1, 5.2]
 
-- [ ] **21. Verify screen.** Line-printer output on animation frames, one final line under reduced motion, live region
+- [x] **21. Verify screen.** Line-printer output on animation frames, one final line under reduced motion, live region
       for the verdict; change one byte and restore. [Req 6.1–6.3, 10.4]
 
 ## Demo and capture
@@ -117,24 +115,24 @@ not install Playwright or Chromium (`uv add --dev playwright`, `uv run playwrigh
       `uv run python apps/vampires/demo/build.py`. Test: every run listed in `runs.json` has its four files and its
       evidence verifies. [Req 6.5, 7.2, 8.1]
 
-- [ ] **23. Capture.** `scripts/capture_card.py` writes `public/og.png` (1200×630) and, with `--review`, screenshots at
+- [x] **23. Capture.** `scripts/capture_card.py` writes `public/og.png` (1200×630) and, with `--review`, screenshots at
       1440 and 390 px into `build/screens/`. Read the screenshots and fix what they show. [Req 9.1]
 
 ## Browser tests
 
-- [ ] **24. E2E harness.** `skeleton/tests/e2e/conftest.py`: dist check, demo runs plus a clean night and a hostile night
+- [x] **24. E2E harness.** `skeleton/tests/e2e/conftest.py`: dist check, demo runs plus a clean night and a hostile night
       in a temp folder, uvicorn on a free port in a thread, headless Chromium per session, `assert_axe_clean` with the
       WCAG 2.0/2.1/2.2 A and AA tags. [Req 10.1, 12.1, 12.2]
 
-- [ ] **25. Screen states.** `test_screens.py`: overview, each region filter, opened finding, deep link, nights strip,
+- [x] **25. Screen states.** `test_screens.py`: overview, each region filter, opened finding, deep link, nights strip,
       verify (and reduced motion), change one byte, report, clean night, phone, hostile name, keyboard and focus ring;
       axe on each. [Req 2, 4, 5, 6.2, 6.3, 7.2, 8, 10.1, 10.2, 11.1, 12.1]
 
-- [ ] **26. Layout.** `test_layout.py`: no horizontal scroll at 360 and 390 px; no word in a summary line split across
+- [x] **26. Layout.** `test_layout.py`: no horizontal scroll at 360 and 390 px; no word in a summary line split across
       lines at 360–1440 px; layout-shift sum 0; report prints on one A4 page with 12 findings; no request leaves the
       origin. [Req 3.4, 7.1, 9.2, 10.3]
 
-- [ ] **27. Verify parity property.** `test_property_verify_parity.py`: hostile packs, untouched or with one changed
+- [x] **27. Verify parity property.** `test_property_verify_parity.py`: hostile packs, untouched or with one changed
       character, compared between `assets/verify.js` in Chromium and `verify_evidence_pack`. [Req 6.4, P15]
 
 ## Verification

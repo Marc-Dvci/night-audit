@@ -310,3 +310,14 @@ def test_the_report_policy_allows_only_its_own_style() -> None:
     policy = report_csp()
     assert policy.startswith("default-src 'none'; style-src 'sha256-")
     assert "script-src" not in policy
+
+
+def test_the_headline_splits_into_a_lead_and_one_sentence_per_region() -> None:
+    result = run_of(*matched("a"), rec(O, "o1", "v1"), rec(B, "b1", "v1", "0.20"), rec(O, "o4", "p1"), ui=VAMPIRES)
+    sentences = run_view(result).headline_sentences
+    assert sentences == [
+        "1 Vampire is running and on the bill with no approval: $0.20 so far.",
+        "1 Poltergeist costs nothing.",
+    ]
+    assert " ".join(sentences) == headline(result)
+    assert run_view(run_of(*matched("a"))).headline_sentences == [CALM_HEADLINE]

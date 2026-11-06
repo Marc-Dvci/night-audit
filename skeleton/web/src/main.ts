@@ -127,8 +127,9 @@ async function boot(): Promise<void> {
     return;
   }
   if (state.open) {
+    // Landing on a deep link jumps straight to the finding; there is nothing to animate from.
     const head = root.querySelector<HTMLElement>(rowSelector(state.open));
-    head?.closest(".row")?.scrollIntoView({ block: "start", behavior: reducedMotion() ? "auto" : "smooth" });
+    head?.closest(".row")?.scrollIntoView({ block: "start", behavior: "instant" });
     head?.focus({ preventScroll: true });
   }
 }
@@ -190,7 +191,8 @@ async function verify(change: "none" | "tamper" = "none"): Promise<void> {
       verdict = `CHAIN IS WHOLE, BUT  its final hash ${result.finalHash} differs from the hash on this page.`;
     } else {
       const where = result.failedRow === null ? "" : ` at row ${String(result.failedRow).padStart(3, "0")}`;
-      verdict = `FAILED${where}  ${result.detail}.${note}`;
+      const why = result.detail.replace(/^row \d+: /, "");
+      verdict = `FAILED${where}  ${why}.${note}`;
     }
     state.verify = { lines: animate ? lines : [], verdict, ok, busy: false, tampered: change === "tamper" };
   } catch (err) {

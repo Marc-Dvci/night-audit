@@ -86,14 +86,14 @@ def _join(words: list[str]) -> str:
     return ", ".join(words[:-1]) + " and " + words[-1]
 
 
-def headline(run: RunResult) -> str:
-    """Tonight's result in one or a few sentences, computed from the region summaries (Req 2.2, 2.3)."""
+def headline_sentences(run: RunResult) -> list[str]:
+    """Tonight's result as sentences, computed from the region summaries (Req 2.2, 2.3). The first is the lead."""
     if not run.complete:
         labels = [run.ui.ledgers[n].label if n in run.ui.ledgers else n for n in run.missing_ledgers]
         noun = "ledger" if len(labels) == 1 else "ledgers"
-        return f"The {_join(labels)} {noun} could not be read, so tonight has no findings."
+        return [f"The {_join(labels)} {noun} could not be read, so tonight has no findings."]
     if not _findings(run):
-        return CALM_HEADLINE
+        return [CALM_HEADLINE]
     sentences: list[str] = []
     for code in HEADLINE_ORDER:
         summary = run.region_summaries.get(code)
@@ -108,7 +108,12 @@ def headline(run: RunResult) -> str:
                 noun=run.ui.noun.singular if one else run.ui.noun.plural,
             )
         )
-    return " ".join(sentences)
+    return sentences
+
+
+def headline(run: RunResult) -> str:
+    """Tonight's result in one or a few sentences (Req 2.2, 2.3)."""
+    return " ".join(headline_sentences(run))
 
 
 # --- The view the page reads ------------------------------------------------------------------------------------------
@@ -127,6 +132,8 @@ class RunView(BaseModel):
     """Everything the page shows that is derived from the run, computed once in Python."""
 
     headline: str
+    #: The same headline, one sentence per region. The page prints the first large and the rest beneath it.
+    headline_sentences: list[str] = Field(default_factory=list)
     calm: bool
     ledger_keys: dict[str, int | None]
     keyed_total: Decimal
@@ -180,6 +187,7 @@ def run_view(run: RunResult) -> RunView:
         lines.append(MoneyLine(label="Billed total", value=money_text(run.billed_total), amount=str(run.billed_total)))
     return RunView(
         headline=headline(run),
+        headline_sentences=headline_sentences(run),
         calm=run.complete and not findings,
         ledger_keys=keys,
         keyed_total=keyed_total,
@@ -378,6 +386,7 @@ __all__ = [
     "RunView",
     "date_text",
     "headline",
+    "headline_sentences",
     "ledger_key_counts",
     "money_text",
     "report_csp",

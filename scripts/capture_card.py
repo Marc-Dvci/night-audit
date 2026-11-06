@@ -28,8 +28,13 @@ SCREENS = ROOT / "build" / "screens"
 DEMO = "?app=vampires-demo"
 
 
+class _Quiet(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, format: str, *args: object) -> None:  # noqa: A002 - the base class names it so
+        return
+
+
 def _serve() -> tuple[str, http.server.ThreadingHTTPServer]:
-    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(DIST))
+    handler = functools.partial(_Quiet, directory=str(DIST))
     sock = socket.socket()
     sock.bind(("127.0.0.1", 0))
     port = sock.getsockname()[1]

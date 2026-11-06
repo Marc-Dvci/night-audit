@@ -1,7 +1,7 @@
 """PreToolUse hook: the builder may run any command, except one that deletes files or could harm the computer.
 
-An allow-list of commands fails on every pipe when nobody is there to answer a prompt, so the agent gets a shell and this hook
-states what is off limits. A non-zero exit blocks the call and stderr goes back to the agent.
+An allow-list of commands fails on every pipe when nobody is there to answer a prompt, so the agent gets a shell and
+this hook states what is off limits. A non-zero exit blocks the call and stderr goes back to the agent.
 """
 
 import json
@@ -17,11 +17,24 @@ RULES = [
     (r"\bgit\s+(rm|clean|rebase|filter-branch)\b", "deletes files or rewrites history"),
     (r"\bgit\s+reset\s+--hard\b|\bgit\s+checkout\s+(--|\.)|\bgit\s+restore\b", "discards work"),
     (r"\bgit\s+push\b|\bgit\s+commit\b|\bgit\s+remote\s+(add|set-url)\b", "publishing and commits stay with the owner"),
-    (r"\bgh\s+(repo|release|gist|pr|issue)\s+\w+|--visibility|--public\b", "changes GitHub, which stays with the owner"),
-    (r"\b(shutdown|reboot|restart-computer|stop-computer|diskpart|mkfs|bcdedit|reg\s+delete)\b", "could harm the computer"),
+    (
+        r"\bgh\s+(repo|release|gist|pr|issue)\s+\w+|--visibility|--public\b",
+        "changes GitHub, which stays with the owner",
+    ),
+    (
+        r"\b(shutdown|reboot|restart-computer|stop-computer|diskpart|mkfs|bcdedit|reg\s+delete)\b",
+        "could harm the computer",
+    ),
     (r"\bwsl(\.exe)?\s+--\w+|\bset-mppreference\b|\bset-executionpolicy\b|\bnetsh\b", "changes system settings"),
-    (r"\btaskkill\b[^\n]*/im\b|\bstop-process\b[^\n]*-name\b|\bget-process\b[^\n]*\|\s*stop-process\b|\b(killall|pkill)\b", "kills processes by name"),
-    (r"-verb\s+runas|\brunas\b|\bwinget\b|\bchoco(latey)?\b|\bmsiexec\b|\binvoke-expression\b|\biex\b", "opens a window or a system prompt"),
+    (
+        r"\btaskkill\b[^\n]*/im\b|\bstop-process\b[^\n]*-name\b|\bget-process\b[^\n]*\|\s*stop-process\b"
+        r"|\b(killall|pkill)\b",
+        "kills processes by name",
+    ),
+    (
+        r"-verb\s+runas|\brunas\b|\bwinget\b|\bchoco(latey)?\b|\bmsiexec\b|\binvoke-expression\b|\biex\b",
+        "opens a window or a system prompt",
+    ),
     (r"[\\/]\.aws[\\/]|[\\/]\.git-credentials|[\\/]\.ssh[\\/]|--profile\s+otl", "reads a credential"),
 ]
 

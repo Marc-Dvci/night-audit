@@ -9,7 +9,7 @@ export function masthead(run: RunResult, apps: AppEntry[], app: AppEntry, runs: 
     apps.length > 1
       ? `<label class="mast-field"><span class="mast-label">App</span>
           <select id="app-select">${apps
-            .map((a) => `<option value="${esc(a.name)}"${a.name === app.name ? " selected" : ""}>${esc(a.title)}${a.mode === "demo" ? " (recorded)" : ""}</option>`)
+            .map((a) => `<option value="${esc(a.name)}"${a.name === app.name ? " selected" : ""}>${esc(a.title)}</option>`)
             .join("")}</select></label>`
       : `<span class="mast-app">${esc(app.title)}</span>`;
   const nights = runs.filter((r) => r.control_id === run.control_id);
@@ -51,12 +51,21 @@ export function lede(run: RunResult): string {
   const pending = view.pending_count
     ? `<p class="pending">${view.pending_count} ${view.pending_count === 1 ? run.ui.noun.singular : run.ui.noun.plural} pending: seen, but billing data has not arrived yet.</p>`
     : "";
+  const sentences = view.headline_sentences?.length ? view.headline_sentences : [view.headline];
+  const [lead, ...rest] = sentences;
+  const more = rest.length
+    ? `<span class="headline-more">${rest.map((s) => `<span class="headline-line">${esc(s)}</span>`).join(" ")}</span>`
+    : "";
   return `<section class="lede${view.calm ? " calm" : ""}" aria-labelledby="headline">
-    <p class="tagline">${esc(run.ui.tagline)}</p>
-    <h1 id="headline" class="headline">${esc(view.headline)}</h1>
-    <p class="stamp">${esc(run.control_title || run.ui.title)} · night of ${esc(stampText(run.run_time))}</p>
-    ${missing}
-    ${lines ? `<dl class="money">${lines}</dl>` : ""}
-    ${pending}
+    <div class="lede-text">
+      <p class="tagline">${esc(run.ui.tagline)}</p>
+      <h1 id="headline" class="headline"><span class="headline-lead">${esc(lead)}</span>${rest.length ? " " : ""}${more}</h1>
+      <p class="stamp">${esc(run.control_title || run.ui.title)} · night of ${esc(stampText(run.run_time))}</p>
+      ${missing}
+    </div>
+    <div class="lede-side">
+      ${lines ? `<h2 class="rule-title">The bill</h2><dl class="money">${lines}</dl>` : ""}
+      ${pending}
+    </div>
   </section>`;
 }

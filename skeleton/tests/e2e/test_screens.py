@@ -41,7 +41,7 @@ def test_overview_states_what_is_compared_and_tonights_result(page: Any, base_ur
     # The headline is the largest text on the page below the masthead.
     sizes = page.evaluate(TEXT_SIZES)
     largest = max(sizes, key=lambda pair: pair[1])
-    assert largest[0] == "headline", largest
+    assert largest[0] == "headline-lead", largest
     assert_axe_clean(page)
 
 
@@ -64,9 +64,10 @@ def test_each_region_filter_names_the_region_and_its_meaning(
 def test_a_venn_region_click_filters_the_rows(page: Any, base_url: str, nights: Served) -> None:
     _, n = nights
     open_page(page, base_url, f"?app=vampires&run={n.demo[2]}")
-    box = page.locator("svg.venn").bounding_box()
-    # The OB label sits at (282, 222) of the 440 x 400 view box.
-    page.mouse.click(box["x"] + box["width"] * 282 / 440, box["y"] + box["height"] * 222 / 400)
+    venn = page.locator("svg.venn")
+    box = venn.bounding_box()
+    # The OB label sits at (282, 222) of the 440 x 400 view box. locator.click scrolls the diagram into view first.
+    venn.click(position={"x": box["width"] * 282 / 440, "y": box["height"] * 222 / 400})
     assert query(page)["region"] == ["OB"]
 
 
@@ -88,8 +89,11 @@ def test_a_deep_link_opens_and_scrolls_to_the_finding(page: Any, base_url: str, 
     open_page(page, base_url, f"?app=vampires&run={n.demo[2]}&region=OB&open={key}")
     head = page.locator(f'.row-head[data-key="{key}"]')
     assert head.get_attribute("aria-expanded") == "true"
-    assert page.evaluate("(el) => { const r = el.getBoundingClientRect(); return r.top >= 0 && r.top < innerHeight; }",
-                         head.element_handle())
+    page.wait_for_function(
+        "(el) => { const r = el.getBoundingClientRect(); return r.top >= 0 && r.top < innerHeight; }",
+        arg=head.element_handle(), timeout=2000,
+    )
+    assert page.evaluate("document.activeElement.dataset.key") == key
     assert query(page)["open"] == [key]
 
 
@@ -174,7 +178,7 @@ def test_a_clean_night_reads_as_finished(page: Any, base_url: str, nights: Serve
     _, n = nights
     open_page(page, base_url, f"?app=vampires&run={n.clean}")
     assert page.inner_text("#headline") == "All three ledgers agree. Nothing to report tonight."
-    labels = page.locator("svg.venn .venn-count").all_inner_texts()
+    labels = [t.strip() for t in page.locator("svg.venn .venn-count").all_text_contents()]
     assert labels == ["2"], labels
     assert page.locator(".legend").count() == 0
     assert "appear in all three ledgers" in page.inner_text("#rows")
