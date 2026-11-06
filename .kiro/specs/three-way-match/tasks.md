@@ -117,47 +117,47 @@ references are in brackets. Do not start implementation until this checklist is 
 Each test uses `hypothesis` (100 examples, `derandomize` in CI), is marked `@pytest.mark.property`, and
 its name starts with `test_property_`.
 
-- [ ] **18. Partition.** `tests/test_property_partition.py` — generate three random ledger snapshots,
+- [x] **18. Partition.** `tests/test_property_partition.py` — generate three random ledger snapshots,
       assert every key lands in exactly one region and the region matches the set of containing ledgers
       joined in I-O-B order. [Req 3.1]
 
-- [ ] **19. Order independence.** `tests/test_property_order_independence.py` — generate snapshots,
+- [x] **19. Order independence.** `tests/test_property_order_independence.py` — generate snapshots,
       shuffle records within each ledger, assert key→region assignments and per-region billed amounts
       are unchanged. [Req 3.2]
 
-- [ ] **20. Healthy control yields zero findings.** `tests/test_property_healthy_zero.py` — generate
+- [x] **20. Healthy control yields zero findings.** `tests/test_property_healthy_zero.py` — generate
       random keys, place the same set in all three ledgers, assert zero findings. [Req 3.3]
 
-- [ ] **21. Normaliser idempotence.** `tests/test_property_normaliser_idempotence.py` — for each
+- [x] **21. Normaliser idempotence.** `tests/test_property_normaliser_idempotence.py` — for each
       built-in normaliser and random strings, assert `n(n(s, ctx), ctx) == n(s, ctx)`. [Req 2.3]
 
-- [ ] **22. Amount conservation.** `tests/test_property_amount_conservation.py` — generate random
+- [x] **22. Amount conservation.** `tests/test_property_amount_conservation.py` — generate random
       billed records (including unkeyed and duplicate-key), assert sum of region billed amounts +
       billed_unkeyed == billed_total. [Req 3.5]
 
-- [ ] **23. Grace window.** `tests/test_property_grace_window.py` — generate an observed record
+- [x] **23. Grace window.** `tests/test_property_grace_window.py` — generate an observed record
       younger than grace_hours with no billed entry, assert the key is in `pending_keys` and produces
       no finding; generate one older than grace_hours, assert it gets its normal region. [Req 4.1]
 
-- [ ] **24. Evidence tamper detection.** `tests/test_property_evidence_tamper.py` — write a pack,
+- [x] **24. Evidence tamper detection.** `tests/test_property_evidence_tamper.py` — write a pack,
       flip a random byte in a random row of `evidence.jsonl`, assert `verify_evidence_pack` fails.
       [Req 6.3]
 
-- [ ] **25. Explanation guard.** `tests/test_property_explanation_guard.py` — generate a finding with
+- [x] **25. Explanation guard.** `tests/test_property_explanation_guard.py` — generate a finding with
       known evidence numbers, supply a synthetic model response containing a number not in the
       evidence, assert the template is returned and the rejection is recorded. [Req 7.2]
 
-- [ ] **26. Injection does not change regions.** `tests/test_property_injection.py` — generate a
+- [x] **26. Injection does not change regions.** `tests/test_property_injection.py` — generate a
       record with an instruction-like attrs value, assert the region is the same as with an equal-length
       benign string. [Req 7.4]
 
-- [ ] **27. Repeat-run determinism.** `tests/test_property_repeat_run_determinism.py` — run
+- [x] **27. Repeat-run determinism.** `tests/test_property_repeat_run_determinism.py` — run
       `match()` twice with identical inputs at the same `run_time`, assert identical findings (keys,
       regions, amounts) and identical evidence chain hash. [Req 5.3]
 
 ## Verification
 
-- [ ] **28. Lint and types.** `uv run ruff check . && uv run mypy skeleton` passes clean. [tech]
+- [x] **28. Lint and types.** `uv run ruff check . && uv run mypy skeleton` passes clean. [tech]
 
-- [ ] **29. All tests pass.** `uv run pytest` passes (unit, integration, property).
+- [x] **29. All tests pass.** `uv run pytest` passes (unit, integration, property).
       `uv run python scripts/score_casebook.py --set dev` reports all 18 dev cases passing. [all]

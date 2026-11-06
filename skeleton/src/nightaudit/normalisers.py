@@ -68,6 +68,27 @@ def _collapse_whitespace(value: str, ctx: dict[str, Any]) -> str:
     return re.sub(r"\s+", " ", value)
 
 
+def _canonical_domain(domain: str, alias_domains: dict[str, str]) -> str:
+    """Map *domain* through the alias table to a domain the table does not map any further.
+
+    Keys and targets are compared stripped and lower-cased, chains (a -> b -> c) are followed to their end, and a
+    cycle resolves to its smallest member, so the result is a fixed point (Req 2.3). A target containing ``@`` is not
+    a domain and is ignored.
+    """
+    aliases = {
+        k.strip().lower(): t
+        for k, v in alias_domains.items()
+        if "@" not in (t := v.strip().lower())
+    }
+    seen: list[str] = []
+    while domain in aliases and domain not in seen:
+        seen.append(domain)
+        domain = aliases[domain]
+    if domain in seen:
+        return min(seen[seen.index(domain):])
+    return domain
+
+
 @register("email_canonical")
 def _email_canonical(value: str, ctx: dict[str, Any]) -> str:
     """Canonicalise an email: strip, lower, remove ``+tag``, map alias domains."""
@@ -80,26 +101,28 @@ def _email_canonical(value: str, ctx: dict[str, Any]) -> str:
         local = local[: local.index("+")]
     # Map alias domains (e.g. hollowpines.org -> hollowpines.com).
     alias_domains: dict[str, str] = ctx.get("alias_domains", {})
-    if domain in alias_domains:
-        domain = alias_domains[domain]
-    return f"{local}@{domain}"
+    return f"{local}@{_canonical_domain(domain, alias_domains)}"
 
 
 @register("arn_resource_id")
 def _arn_resource_id(value: str, ctx: dict[str, Any]) -> str:
-    """Reduce an ARN to its resource id; return non-ARNs unchanged."""
+    """Reduce an ARN to its resource id; return non-ARNs unchanged (stripped).
+
+    The extracted id is stripped, and an id that is itself an ARN is reduced again, so a second pass is always a
+    no-op (Req 2.3). Each step drops the ``arn:`` prefix, so the loop ends.
+    """
     value = value.strip()
-    if not value.startswith("arn:"):
-        return value
-    parts = value.split(":", maxsplit=5)
-    if len(parts) < 6:
-        return value
-    resource = parts[5]
-    if "/" in resource:
-        return resource.rsplit("/", 1)[-1]
-    if ":" in resource:
-        return resource.rsplit(":", 1)[-1]
-    return resource
+    while value.startswith("arn:"):
+        parts = value.split(":", maxsplit=5)
+        if len(parts) < 6:
+            break
+        resource = parts[5]
+        if "/" in resource:
+            resource = resource.rsplit("/", 1)[-1]
+        elif ":" in resource:
+            resource = resource.rsplit(":", 1)[-1]
+        value = resource.strip()
+    return value
 
 
 def normalise(raw_key: str, chain: list[str], ctx: dict[str, Any]) -> str:

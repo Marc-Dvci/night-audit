@@ -97,17 +97,16 @@ def build_prompt(finding: Finding) -> str:
 
 # --- Number guard (Req 7.2) ------------------------------------------------
 
-_NUM_RE = re.compile(r"\d+(?:\.\d+)?")
+#: A number in text. A leading minus (ASCII or U+2212) is a sign unless it joins two words: "-41.20" and "$-5" are
+#: negative, while "i-0aa1" and "2026-11-04" hold only unsigned numbers. Ignoring the sign would let a response turn a
+#: charge into a refund and still pass the guard.
+_NUM_RE = re.compile(r"(?:(?<![\w.])[-\u2212])?\d+(?:\.\d+)?")
 
 
 def _add_numeric(target: set[Decimal], text: str | None) -> None:
     if text is None:
         return
-    for match in _NUM_RE.findall(text):
-        try:
-            target.add(Decimal(match))
-        except InvalidOperation:
-            pass
+    target.update(extract_numbers(text))
 
 
 def evidence_numbers(finding: Finding) -> set[Decimal]:
@@ -116,11 +115,7 @@ def evidence_numbers(finding: Finding) -> set[Decimal]:
     for record in finding.records:
         if record.amount is not None:
             nums.add(Decimal(record.amount))
-        for match in re.findall(r"\d+", record.row_id):
-            try:
-                nums.add(Decimal(match))
-            except InvalidOperation:
-                pass
+        _add_numeric(nums, record.row_id)
         for value in record.attrs.values():
             _add_numeric(nums, value)
         _add_numeric(nums, record.key)
@@ -140,11 +135,11 @@ def evidence_numbers(finding: Finding) -> set[Decimal]:
 
 
 def extract_numbers(text: str) -> set[Decimal]:
-    """Extract all integers and decimals from *text*."""
+    """Extract all integers and decimals from *text*, with their sign."""
     nums: set[Decimal] = set()
     for match in _NUM_RE.findall(text):
         try:
-            nums.add(Decimal(match))
+            nums.add(Decimal(match.replace("\u2212", "-")))
         except InvalidOperation:
             pass
     return nums
@@ -168,13 +163,31 @@ class _SafeTemplate(dict[str, object]):
         return ""
 
 
+def _money(amount: Decimal) -> str:
+    """Plain decimal notation: ``str()`` would write ``1E-7``, whose ``7`` is not an evidence number."""
+    return format(amount, "f")
+
+
+#: An ISO date at the start of a timestamp, ending where the timestamp's time part (or the text) begins.
+_LEADING_DATE = re.compile(r"\A([0-9]{4}-[0-9]{2}-[0-9]{2})(?=\Z|[T ])")
+
+
+def _leading_date(value: str) -> str:
+    """The ``YYYY-MM-DD`` that starts *value*, or ``""``.
+
+    Slicing the first ten characters could cut a number in two and cite a number that is not in the evidence.
+    """
+    found = _LEADING_DATE.match(value)
+    return found.group(1) if found else ""
+
+
 def _default_template(finding: Finding) -> str:
     """Deterministic wording built only from the finding's own fields."""
     parts = [f"{finding.key}: {finding.meaning}"]
     if finding.billed_amount != 0:
-        parts.append(f"On the bill: ${finding.billed_amount}.")
+        parts.append(f"On the bill: ${_money(finding.billed_amount)}.")
     created_by = finding.context.get("created_by")
-    created_at = finding.context.get("created_at", "")[:10]
+    created_at = _leading_date(finding.context.get("created_at", ""))
     if created_by and created_at:
         parts.append(f"Created on {created_at} by {created_by}.")
     if finding.nights_persisted:
@@ -192,7 +205,7 @@ def resolve_template(finding: Finding, control: ControlConfig) -> str:
         slots["name"] = finding.name
         slots["region_name"] = finding.name
         slots["region_code"] = finding.region_code
-        slots["billed_amount"] = str(finding.billed_amount)
+        slots["billed_amount"] = _money(finding.billed_amount)
         slots["meaning"] = finding.meaning
         slots["severity"] = finding.severity
         slots["nights_persisted"] = (

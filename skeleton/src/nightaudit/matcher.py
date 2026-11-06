@@ -7,6 +7,7 @@ The algorithm follows design §6.
 
 from __future__ import annotations
 
+import decimal
 import hashlib
 from datetime import datetime
 from decimal import Decimal
@@ -89,6 +90,16 @@ def in_scope(key: str, include: KeyScope | None) -> bool:
     return key in keys or key.startswith(prefixes)
 
 
+#: Money is added without rounding. The default 28-digit context silently drops digits, which loses amounts and makes
+#: totals depend on record order (Req 3.2, 3.5). ``Inexact`` is trapped so a rounding step raises instead.
+_EXACT = decimal.Context(
+    prec=decimal.MAX_PREC,
+    Emax=decimal.MAX_EMAX,
+    Emin=decimal.MIN_EMIN,
+    traps=[decimal.InvalidOperation, decimal.Inexact, decimal.Overflow],
+)
+
+
 def match(
     snapshots: list[LedgerSnapshot],
     control: ControlConfig,
@@ -102,6 +113,17 @@ def match(
     ``include``, when set, keeps only the listed keys and prefixes. Records outside the scope are dropped from
     every ledger before matching and only their count is reported.
     """
+    with decimal.localcontext(_EXACT):
+        return _match(snapshots, control, run_time, exclude_keys, include)
+
+
+def _match(
+    snapshots: list[LedgerSnapshot],
+    control: ControlConfig,
+    run_time: datetime,
+    exclude_keys: frozenset[str],
+    include: KeyScope | None,
+) -> RunResult:
     # Step 0 — Missing-ledger check (Req 9.4).
     missing = [s.name.value for s in snapshots if s.missing]
     if missing:

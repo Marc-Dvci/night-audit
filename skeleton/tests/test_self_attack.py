@@ -72,8 +72,12 @@ def test_injected_text_is_quoted_and_truncated_in_the_prompt() -> None:
         RUN,
     )
     seen: list[str] = []
-    explain_finding(result.findings[0], ModelConfig(enabled=True), CONTROL,
-                    model_call=lambda prompt: seen.append(prompt) or "Unapproved and billed 41.20.")
+
+    def fake_model(prompt: str) -> str:
+        seen.append(prompt)
+        return "Unapproved and billed 41.20."
+
+    explain_finding(result.findings[0], ModelConfig(enabled=True), CONTROL, model_call=fake_model)
     line = next(line for line in seen[0].splitlines() if line.strip().startswith("Name:"))
     assert len(line) < 220  # 200 characters of payload plus quoting
 

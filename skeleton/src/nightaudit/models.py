@@ -5,11 +5,11 @@ All money is ``decimal.Decimal``, never float.  Records are frozen.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # --- Region constants -------------------------------------------------------
 
@@ -88,6 +88,17 @@ class Record(BaseModel):
     attrs: dict[str, str] = Field(default_factory=dict)
     amount: Decimal | None = None
     timestamp: datetime | None = None
+
+    @field_validator("timestamp")
+    @classmethod
+    def _naive_timestamp_is_utc(cls, value: datetime | None) -> datetime | None:
+        """A timestamp without an offset is UTC, the rule the built-in connectors already apply.
+
+        Without it, one naive and one aware timestamp on the same key cannot be compared by the grace window.
+        """
+        if value is not None and value.tzinfo is None:
+            return value.replace(tzinfo=UTC)
+        return value
 
 
 class LedgerSnapshot(BaseModel):

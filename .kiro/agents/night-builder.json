@@ -8,7 +8,7 @@
     "rules": [
       { "capability": "fs_read", "match": ["**"], "exclude": ["casebook/heldout/**", "**/.aws/**", "**/.env"], "effect": "allow" },
       { "capability": "fs_read", "match": ["casebook/heldout/**", "**/.aws/**", "**/.env"], "effect": "deny" },
-      { "capability": "fs_write", "match": ["skeleton/**", "apps/**", "scripts/**", "docs/**", "lean/**", "power/**", "crew/**", "deploy/**", ".kiro/specs/**", "pyproject.toml", "README.md", ".github/**", "tests/**"], "exclude": ["scripts/hooks/**"], "effect": "allow" },
+      { "capability": "fs_write", "match": ["skeleton/**", "apps/**", "scripts/**", "docs/**", "lean/**", "power/**", "crew/**", "deploy/**", ".kiro/specs/**", "pyproject.toml", "uv.lock", "README.md", ".github/**", "tests/**", "Dockerfile", "compose.yaml", ".devcontainer/**", ".dockerignore", ".env.example", ".gitignore", ".gitattributes"], "exclude": ["scripts/hooks/**"], "effect": "allow" },
       { "capability": "fs_write", "match": ["casebook/**", ".kiro/hooks/**", ".kiro/agents/**", ".kiro/steering/**", ".kiro/settings/**", "scripts/hooks/**", "**/*.local.yaml"], "effect": "deny" },
       { "capability": "shell", "match": ["uv run pytest*", "uv run ruff*", "uv run mypy*", "uv run python scripts/score_casebook.py*", "uv run python apps/*", "uv run python scripts/bench.py*", "uv run nightaudit*", "uv run coverage*", "uv sync*", "uv add*", "npm run*", "npm ci*", "npm install*", "npx tsc*", "npx vitest*", "lake *", "lean *", "git status*", "git diff*", "git log*", "git show*"], "effect": "allow" },
       { "capability": "shell", "match": ["git push*", "git commit*", "git reset*", "git checkout*", "aws *", "rm -rf*", "del *", "*heldout*"], "effect": "deny" }
