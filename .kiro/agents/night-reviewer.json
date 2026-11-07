@@ -2,15 +2,71 @@
   "name": "night-reviewer",
   "description": "Independent reviewer on a different model from the builder. It reads the code, runs the checks and reports findings. It cannot change a file. Segregation of duties, applied to agents.",
   "prompt": "file://prompts/night-reviewer.md",
-  "tools": ["read", "shell"],
+  "tools": [
+    "read",
+    "shell"
+  ],
   "includeMcpJson": false,
   "permissions": {
     "rules": [
-      { "capability": "fs_read", "match": ["**"], "exclude": ["casebook/heldout/**", "**/.aws/**", "**/.env"], "effect": "allow" },
-      { "capability": "fs_read", "match": ["casebook/heldout/**", "**/.aws/**", "**/.env"], "effect": "deny" },
-      { "capability": "fs_write", "match": ["**"], "effect": "deny" },
-      { "capability": "shell", "match": ["uv run pytest*", "uv run ruff*", "uv run mypy*", "uv run python scripts/score_casebook.py*", "uv run nightaudit*", "git status*", "git diff*", "git log*", "git show*"], "effect": "allow" },
-      { "capability": "shell", "match": ["git push*", "git commit*", "git reset*", "git checkout*", "aws *", "rm *", "del *", "*heldout*"], "effect": "deny" }
+      {
+        "capability": "fs_read",
+        "match": [
+          "**"
+        ],
+        "exclude": [
+          "casebook/heldout/**",
+          "**/.aws/**",
+          "**/.env"
+        ],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_read",
+        "match": [
+          "casebook/heldout/**",
+          "**/.aws/**",
+          "**/.env"
+        ],
+        "effect": "deny"
+      },
+      {
+        "capability": "fs_write",
+        "match": [
+          "**"
+        ],
+        "effect": "deny"
+      },
+      {
+        "capability": "shell",
+        "match": [
+          "uv run pytest*",
+          "uv run ruff*",
+          "uv run mypy*",
+          "uv run python scripts/score_casebook.py*",
+          "uv run nightaudit*",
+          "git status*",
+          "git diff*",
+          "git log*",
+          "git show*",
+          "uv run python -c*"
+        ],
+        "effect": "allow"
+      },
+      {
+        "capability": "shell",
+        "match": [
+          "git push*",
+          "git commit*",
+          "git reset*",
+          "git checkout*",
+          "aws *",
+          "rm *",
+          "del *",
+          "*heldout*"
+        ],
+        "effect": "deny"
+      }
     ]
   }
 }
