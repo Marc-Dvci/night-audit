@@ -39,8 +39,8 @@ planted:
   - key: noor.haddad@hollowpines.com
     region: I
     name: Unprovisioned joiner
-    story: Starts 2026-11-02 per HR. No account and no seat yet; older than the 72-hour grace window by run time? No:
-      the grace window applies to observed records only, so the joiner is reported.
+    story: "Starts 2026-11-02 per HR. No account and no seat yet; older than the 72-hour grace window by run time? No:
+      the grace window applies to observed records only, so the joiner is reported."
   - key: e.castell@hollowpines.com
     region: IB
     name: Wraith
