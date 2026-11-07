@@ -18,6 +18,8 @@
 !apps/vampires/controls/
 !apps/ghosts/pyproject.toml
 !apps/ghosts/src/
+!apps/own-build/pyproject.toml
+!apps/own-build/src/
 
 **/__pycache__
 **/node_modules

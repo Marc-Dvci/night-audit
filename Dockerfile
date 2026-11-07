@@ -23,6 +23,7 @@ COPY pyproject.toml uv.lock ./
 COPY skeleton/pyproject.toml skeleton/pyproject.toml
 COPY apps/vampires/pyproject.toml apps/vampires/pyproject.toml
 COPY apps/ghosts/pyproject.toml apps/ghosts/pyproject.toml
+COPY apps/own-build/pyproject.toml apps/own-build/pyproject.toml
 COPY skeleton/src skeleton/src
 COPY apps apps
 RUN uv sync --no-dev
