@@ -7,7 +7,9 @@
 ![Decision core coverage: 96.86%](https://img.shields.io/badge/decision%20core%20coverage-96.86%25-brightgreen)
 ![Casebook: 18 of 18](https://img.shields.io/badge/casebook-18%20of%2018-brightgreen)
 
-![The cloud account demo, night of 6 Nov 2026: the headline says 2 resources are running and on the bill with no approval, $42.56 so far; the bill beside it; the three-circle Venn diagram of declared, running and billed resources, each region labelled by its meaning; and the first rows of the region list, each meaning followed by its small Halloween tag](docs/figures/ui-night-3.png)
+[![Night Audit, the film (2:46): the cloud account demo with the region "Running and billed, never approved" lit in the Venn diagram, and a play button](docs/figures/film-thumbnail.png)](https://youtu.be/TUfwu81KoaM)
+
+**Watch the film (2:46): https://youtu.be/TUfwu81KoaM**
 
 **Night Audit checks every night that what you approved, what is running and what you pay for are the same three
 lists, and names whatever appears in only one or two of them.** Every morning, it hands a CTO or an IT manager the short list of what nobody approved, from a server quietly adding to the bill to a former employee who still has access, with evidence an auditor can check.
@@ -18,6 +20,7 @@ invoice agree. Night Audit runs that three-way match on a cloud account.
 
 | | |
 |---|---|
+| Film | [Night Audit in 2:46, narrated by Marc](https://youtu.be/TUfwu81KoaM) |
 | Live app, no login | [The real lab account, audited every night](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/) · [Cloud account demo](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=vampires-demo) · [Staff access demo company](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=ghosts-demo) · [This repository's own build](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=own-build-demo) |
 | Category | Kiroween 2026, Skeleton Crew |
 | Built with | Kiro CLI (specs, custom agents, hooks, steering, MCP, a power, a Crew app), Python 3.12, FastAPI, TypeScript, Lean 4, AWS Lambda, EventBridge Scheduler, S3, Cost and Usage Report 2.0 |
@@ -37,9 +40,11 @@ Code links point at lines in the release tag `v1.0.1`.
 | Technological Implementation | [How Kiro is used](#how-kiro-is-used) and [`.kiro/`](.kiro). The matcher: [`_match`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/matcher.py#L110-L315). The number guard: [`numbers_are_safe`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/explain.py#L167-L172) and [`explain_finding`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/explain.py#L344-L380). The evidence chain: [`write_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/evidence.py#L149-L221) and [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/evidence.py#L528-L657). The partition theorem: [`Partition.lean`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/lean/NightAudit/Partition.lean#L166-L173) |
 | Design | [See it work](#see-it-work). The identity: [`ui-identity.md`](.kiro/steering/ui-identity.md). The Venn diagram: [`vennSvg`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/web/src/render/venn.ts#L71-L122). Accessibility: [Evidence](#evidence) |
 | Innovation / Idea | [How it works](#how-it-works). One skeleton, three controls: [the cloud account app (`apps/vampires`)](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/apps/vampires/controls/aws-account.yaml#L1-L95), [the staff access app (`apps/ghosts`)](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/apps/ghosts/controls/staff-access.yaml#L1-L72) and [this repository's own build](apps/own-build/README.md) |
-| Presentation | The three GIFs and the figures in [See it work](#see-it-work), the [architecture](#how-it-works), the [claims table](#claims-and-the-tests-that-pin-them) |
+| Presentation | [The film](https://youtu.be/TUfwu81KoaM) (2:46). The three GIFs and the figures in [See it work](#see-it-work), the [architecture](#how-it-works), the [claims table](#claims-and-the-tests-that-pin-them) |
 
 ## See it work
+
+![The cloud account demo, night of 6 Nov 2026: the headline says 2 resources are running and on the bill with no approval, $42.56 so far; the bill beside it; the three-circle Venn diagram of declared, running and billed resources, each region labelled by its meaning; and the first rows of the region list, each meaning followed by its small Halloween tag](docs/figures/ui-night-3.png)
 
 **Click a region.** The Venn diagram is the navigation: a click on a region filters the rows, and a row opens to the
 ledger lines it came from. Each region is named by what it means, such as "running and billed, never approved".
