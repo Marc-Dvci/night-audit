@@ -100,6 +100,7 @@ def test_a_control_without_ui_keeps_its_previous_hash() -> None:
     control = _control()
     data = control.model_dump(mode="json")
     assert data.pop("ui") is None
+    assert data.pop("summarisers") == []  # added by skeleton Req 10; left out of the hash while empty
     before_ui_kit = hashlib.sha256(json.dumps(data, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     assert control.canonical_hash() == before_ui_kit
 

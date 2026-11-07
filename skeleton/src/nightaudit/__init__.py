@@ -21,8 +21,10 @@ from .control import (
     LedgerConfig,
     RegionOverride,
     ScopeFilter,
+    SummariserConfig,
     resolve_region,
 )
+from .decisions import DecisionChain, verify_decision_chain
 from .evidence import VerifyResult, verify_evidence_pack, write_evidence_pack
 from .explain import Explanation, ModelConfig, explain_finding
 from .grace import find_pending
@@ -39,6 +41,7 @@ from .models import (
     LedgerSnapshot,
     Record,
     RegionSummary,
+    RunNote,
     RunResult,
     UnkeyedRow,
 )
@@ -46,6 +49,7 @@ from .normalisers import NormaliserRegistry, UnknownNormaliserError, normalise
 from .runner import load_control_file, load_run, run_control, run_summary
 from .scope import apply_scope
 from .state import FindingState, StateStore, compare_findings
+from .steps import ControlContext
 
 __all__ = [
     # constants
@@ -61,6 +65,7 @@ __all__ = [
     "LedgerSnapshot",
     "Record",
     "RegionSummary",
+    "RunNote",
     "RunResult",
     "UnkeyedRow",
     # normalisers
@@ -74,7 +79,12 @@ __all__ = [
     "LedgerConfig",
     "RegionOverride",
     "ScopeFilter",
+    "SummariserConfig",
     "resolve_region",
+    # steps and decisions (Req 10.3, 10.7)
+    "ControlContext",
+    "DecisionChain",
+    "verify_decision_chain",
     # scope / grace
     "apply_scope",
     "find_pending",

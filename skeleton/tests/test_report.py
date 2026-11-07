@@ -302,8 +302,8 @@ def test_the_report_lists_new_findings_first_and_says_since_when() -> None:
 
 
 def test_the_report_marks_a_recorded_run_in_words() -> None:
-    assert "synthetic account" in report_html(run_of(*matched("a")), recorded=True)
-    assert "synthetic account" not in report_html(run_of(*matched("a")))
+    assert "Recorded run of synthetic data" in report_html(run_of(*matched("a")), recorded=True)
+    assert "synthetic" not in report_html(run_of(*matched("a")))
 
 
 def test_the_report_policy_allows_only_its_own_style() -> None:

@@ -1,5 +1,5 @@
 // Data access. A live app reads the API; a demo app reads recorded runs shipped with the static build. Both expose the
-// same files per run: the run document, evidence.jsonl, manifest.json, report.html and the evidence zip.
+// same files per run: the run document, evidence.jsonl, manifest.json, report.html, the evidence zip and the downloads.
 
 import type { AppEntry, RunResult, RunSummary } from "./types";
 
@@ -33,6 +33,8 @@ export interface Source {
   manifest(id: string): string;
   report(id: string): string;
   zip(id: string): string;
+  /** A download listed by the control (Req 10.6). The server serves only listed, allow-listed names. */
+  file(id: string, name: string): string;
 }
 
 const enc = encodeURIComponent;
@@ -47,6 +49,7 @@ export function source(app: AppEntry): Source {
       manifest: (id) => `${base}${enc(id)}/manifest.json`,
       report: (id) => `${base}${enc(id)}/report.html`,
       zip: (id) => `${base}${enc(id)}/evidence.zip`,
+      file: (id, name) => `${base}${enc(id)}/${enc(name)}`,
     };
   }
   return {
@@ -56,5 +59,6 @@ export function source(app: AppEntry): Source {
     manifest: (id) => `${base}runs/${enc(id)}/manifest.json`,
     report: (id) => `${base}runs/${enc(id)}/report.html`,
     zip: (id) => `${base}runs/${enc(id)}/evidence.zip`,
+    file: (id, name) => `${base}runs/${enc(id)}/files/${enc(name)}`,
   };
 }

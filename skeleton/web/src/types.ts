@@ -57,6 +57,37 @@ export interface UiConfig {
   ledgers: Record<string, { label: string; source: string }>;
   columns: UiColumn[];
   headlines: Record<string, { one: string; other: string }>;
+  /** Words for billed lines with no key (Req 10.4). Absent in runs saved before it existed. */
+  unkeyed?: { singular: string; plural: string; explanation: string };
+  downloads?: Download[];
+}
+
+/** A file beside the run that the page links to (Req 10.6). */
+export interface Download {
+  label: string;
+  file: string;
+}
+
+/** A sentence a summariser added to the run; every number in it is evidence (Req 10.2). */
+export interface RunNote {
+  text: string;
+  numbers: string[];
+  source: string;
+}
+
+/** A review decision recorded against a finding, shown only when its chain verifies (Req 10.7). */
+export interface Decision {
+  key: string;
+  region_code: string;
+  decision: string;
+  decision_date: string;
+  reviewer: string;
+}
+
+export interface Decisions {
+  ok: boolean;
+  detail: string;
+  rows: Decision[];
 }
 
 export interface MoneyLine {
@@ -105,6 +136,10 @@ export interface RunResult {
   evidence_chain_hash: string | null;
   ui: UiConfig;
   view: RunView;
+  notes?: RunNote[];
+  /** The downloads that exist beside this run. */
+  downloads?: Download[];
+  decisions?: Decisions;
 }
 
 export interface RunSummary {

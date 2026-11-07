@@ -3,7 +3,8 @@
 * ``skeleton/web/public/og.png``: the demo overview at 1200 x 630, with the product name in the masthead. Sections that
   do not fit whole are left out, and the script stops if any text still touches an edge.
 * with ``--review``: full-page screenshots at 1440 and 390 px wide into ``build/screens/`` (gitignored), for the
-  overview, a region filter, an opened finding, verify, change one byte and the morning report.
+  overview, a region filter, an opened finding, verify, change one byte and the morning report. ``--app ghosts-demo``
+  reviews another demo (files are prefixed with its name); ``--no-card`` leaves ``og.png`` untouched.
 
 Needs ``npm run build`` in ``skeleton/web`` and Playwright with Chromium. Serves ``skeleton/web/dist`` with the static
 demo on a free local port, headless.
@@ -50,9 +51,9 @@ def _open(page: Page, url: str) -> None:
     page.wait_for_selector("#headline")
 
 
-def _review(page: Page, base: str, width: int) -> None:
-    tag = f"{width}"
-    _open(page, base + DEMO)
+def _review(page: Page, base: str, width: int, app: str = "vampires-demo") -> None:
+    tag = f"{width}" if app == "vampires-demo" else f"{app}-{width}"
+    _open(page, base + f"?app={app}")
     page.screenshot(path=str(SCREENS / f"{tag}-overview.png"), full_page=True)
     page.click('.legend-item[data-region="OB"]')
     page.screenshot(path=str(SCREENS / f"{tag}-filter-OB.png"), full_page=True)
@@ -119,6 +120,8 @@ def _fit_card(page: Page) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--review", action="store_true", help="also write review screenshots to build/screens")
+    parser.add_argument("--app", default="vampires-demo", help="the demo app to review (default: vampires-demo)")
+    parser.add_argument("--no-card", action="store_true", help="leave og.png as it is")
     args = parser.parse_args()
     if not (DIST / "index.html").exists():
         raise SystemExit("build the front end first: npm run build in skeleton/web")
@@ -126,16 +129,17 @@ def main() -> int:
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            card = browser.new_page(viewport=CARD_SIZE, reduced_motion="reduce")
-            _open(card, base + DEMO)
-            _fit_card(card)
-            card.screenshot(path=str(CARD))
-            print(f"wrote {CARD.relative_to(ROOT)}")
+            if not args.no_card:
+                card = browser.new_page(viewport=CARD_SIZE, reduced_motion="reduce")
+                _open(card, base + DEMO)
+                _fit_card(card)
+                card.screenshot(path=str(CARD))
+                print(f"wrote {CARD.relative_to(ROOT)}")
             if args.review:
                 SCREENS.mkdir(parents=True, exist_ok=True)
                 for width in (1440, 390):
                     page = browser.new_page(viewport={"width": width, "height": 900}, reduced_motion="reduce")
-                    _review(page, base, width)
+                    _review(page, base, width, args.app)
                     page.close()
                 print(f"wrote review screenshots to {SCREENS.relative_to(ROOT)}")
             browser.close()

@@ -5,6 +5,7 @@ All money is ``decimal.Decimal``, never float.  Records are frozen.
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
@@ -191,6 +192,43 @@ class HeadlineUi(BaseModel):
     other: str
 
 
+class UnkeyedUi(BaseModel):
+    """What the billed lines with no key are called, and why they are kept apart (Req 10.4)."""
+
+    singular: str = "line with no resource id"
+    plural: str = "lines with no resource id"
+    explanation: str = "Tax, credits and support lines carry no resource id, so they are kept apart."
+
+
+#: A download is a plain file name in the run's folder: no separator, no ``..``, no hidden file, a short list of types.
+DOWNLOAD_FILE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}\.(csv|html|json|txt)$")
+
+
+class DownloadUi(BaseModel):
+    """A file beside the run that the page links to (Req 10.6)."""
+
+    label: str = Field(min_length=1, max_length=80)
+    file: str
+
+    @field_validator("file")
+    @classmethod
+    def _plain_file_name(cls, value: str) -> str:
+        if not DOWNLOAD_FILE.fullmatch(value):
+            raise ValueError(
+                f"download file '{value[:80]}' must be a plain name like review.csv (letters, digits, '-', '_'; "
+                "csv, html, json or txt)"
+            )
+        return value
+
+
+class RunNote(BaseModel):
+    """A sentence an application adds to the run, with the numbers it cites (Req 10.2). Part of the evidence chain."""
+
+    text: str
+    numbers: list[str] = Field(default_factory=list)
+    source: str = ""
+
+
 DEFAULT_TAGLINE = "Three ledgers of the same reality, matched every night."
 
 DEFAULT_LEDGER_UI: dict[str, LedgerUi] = {
@@ -215,6 +253,8 @@ class UiConfig(BaseModel):
     ledgers: dict[str, LedgerUi] = Field(default_factory=lambda: dict(DEFAULT_LEDGER_UI))
     columns: list[ColumnUi] = Field(default_factory=lambda: list(DEFAULT_COLUMNS))
     headlines: dict[str, HeadlineUi] = Field(default_factory=dict)
+    unkeyed: UnkeyedUi = Field(default_factory=UnkeyedUi)
+    downloads: list[DownloadUi] = Field(default_factory=list)
 
 
 class RunResult(BaseModel):
@@ -246,3 +286,5 @@ class RunResult(BaseModel):
     evidence_chain_hash: str | None = None
     #: The control's resolved ``ui`` words. Runs saved before the UI kit load with the neutral defaults.
     ui: UiConfig = Field(default_factory=UiConfig)
+    #: Sentences the control's summarisers added, each checked against the run's evidence numbers (Req 10.2).
+    notes: list[RunNote] = Field(default_factory=list)

@@ -914,3 +914,89 @@ of benign characters.
 For any control config and set of ledger inputs, running the matcher twice with identical inputs at
 the same run time produces identical findings (same keys, regions, amounts) and an identical evidence
 chain hash.
+
+## 18. What the second app taught (Req 10)
+
+Ghosts was built without write access to `skeleton/`. Its design (§10 there) lists what it had to work around. Each
+item below is the skeleton's answer. A control that uses none of them hashes, runs and verifies exactly as before:
+new control fields that are empty are left out of the canonical hash, and a run with no notes writes the same
+evidence rows as before.
+
+### 18.1 Run time for connectors (Req 10.1)
+
+`Connector` gains a concrete `bind_run_time(when)` and a `run_time` property (`None` until bound). The runner calls
+`bind_run_time(now)` on each connector just before `fetch()`. Nothing is abstract, so an existing connector needs no
+change. `nightaudit run --at` therefore moves the date of every connector that reads `self.run_time`.
+
+### 18.2 Run notes (Req 10.2)
+
+A control may declare `summarisers`, each `{entry: "package.module:function", options: {...}}`, the same shape as an
+enricher without `regions`. A summariser is called after enrichers and explanations as
+`func(result, options[, control=ControlContext])` and returns a list of plain sentences.
+
+- At most 12 notes per summariser and 300 characters per note; whitespace is collapsed to single spaces.
+- Each note becomes `RunNote(text, numbers, source)`, where `numbers` are the numbers the guard extracts from the text.
+- The run's evidence numbers are every number the explanation guard would accept for any finding plus every number in
+  every in-scope record (amount, row id, raw key, key, attribute values, timestamp). IF any number of any note is
+  outside that set THEN all notes of that summariser are dropped and `ledger_errors["summariser:<entry>"]` names the
+  numbers. A summariser that raises is reported the same way.
+- Accepted notes are appended to the evidence chain after the finding rows as
+  `{"type": "note", "row_id": "note:<n>", "source", "text", "numbers"}`.
+- The page prints the notes under the headline; the report prints them under its headline. `run_numbers` includes
+  note numbers.
+
+### 18.3 Control context (Req 10.3)
+
+`ControlContext(folder, alias_domains, control_id, run_time)` is a frozen dataclass. The runner passes it as the
+keyword argument `control` to an enricher or summariser whose signature has a parameter named `control`. An enricher
+written as `(findings, options)` is called as before.
+
+### 18.4 Words for lines with no key (Req 10.4)
+
+`ui.unkeyed: {singular, plural, explanation}`. Defaults: "line with no resource id", "lines with no resource id",
+"Tax, credits and support lines carry no resource id, so they are kept apart." The negative-total sentence about
+credits is kept only while the default words are in use, because it describes a cloud bill.
+
+### 18.5 Context and attribute slots (Req 10.5)
+
+A region `template` may use `{context:<name>}` and `{attr:<name>}` beside the existing slots. They are replaced first,
+with braces in values doubled, and then the template is formatted with the existing safe mapping. An absent value is
+empty text. The rendered text then passes the number guard against `evidence_numbers(finding)`; if it fails, the
+default template is used. A date from context is evidence, so it passes.
+
+### 18.6 Downloads (Req 10.6)
+
+`ui.downloads: [{label, file}]`. `file` must match `^[A-Za-z0-9][A-Za-z0-9_-]{0,63}\.(csv|html|json|txt)$`: no
+separator, no `..`, no hidden file, no other type. The API serves `GET /api/runs/{id}/files/{file}` only when `file`
+is listed in that run's stored `ui.downloads`, matches the pattern and resolves to a regular file whose parent is the
+run's folder; it is sent as an attachment with `default-src 'none'; sandbox`. `run_document(result, run_dir)` lists the
+downloads that exist; the static demo copies them beside `run.json`.
+
+### 18.7 Review decisions on the page (Req 10.7)
+
+`nightaudit.decisions.verify_decision_chain(run_dir, result, allowed)` is the decision chain check Ghosts wrote (§7.3
+of its design), moved into the skeleton: the evidence pack verifies, the first `prev_hash` is the run's final chain
+hash, each row hash, index and link holds, and each key and region code is a finding of the run. `run_document`
+includes `decisions: {ok, detail, rows}` when the file exists, with rows only when the chain verifies. The page shows a
+decision line on the finding row and in its evidence.
+
+### 18.8 Demos per application (Req 10.8)
+
+Each application's `demo/build.py` exposes `build(target, runs)` and `APP_ENTRIES`. `scripts/build_demos.py` calls each
+with `skeleton/web/public/demo/<app>/` and writes `apps.json` from the entries, live first. A builder removes only its
+own target folder.
+
+### P11 — Notes cite only evidence (validates Req 10.2)
+
+For any run and any sentence, a summariser returning that sentence produces a note if and only if every number in the
+sentence is one of the run's evidence numbers; otherwise the run has no note from it and names it in its errors.
+
+### P12 — Template slots never fail and never invent a number (validates Req 10.5)
+
+For any template text built from literal words and `{context:*}`, `{attr:*}` and existing slots, and any finding,
+`resolve_template` returns a string without raising, and every number in it is in the finding's evidence.
+
+### P13 — No download escapes the run folder (validates Req 10.6)
+
+For any requested file name, the API returns a file only when the name is listed in the run's downloads and matches the
+allow-list, and the bytes returned are those of that file in the run's folder.

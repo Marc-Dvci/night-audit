@@ -35,7 +35,7 @@ def test_overview_states_what_is_compared_and_tonights_result(page: Any, base_ur
     assert headline.startswith("2 Vampires are running and on the bill with no approval:")
     assert page.inner_text(".tagline").startswith("Every night, this AWS account is checked")
     ledgers = page.inner_text(".ledgers")
-    for word in ("DECLARED", "RUNNING", "BILLED", "keys", "Cost and Usage Report 2.0 line items."):
+    for word in ("DECLARED", "RUNNING", "BILLED", "resources", "Cost and Usage Report 2.0 line items."):
         assert word in ledgers.upper() if word.isupper() else word in ledgers
     assert page.locator("svg.venn").is_visible()
     # The headline is the largest text on the page below the masthead.

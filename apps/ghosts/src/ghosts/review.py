@@ -18,14 +18,19 @@ import csv
 import hashlib
 import html
 import io
-import json
 import sys
-from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any
 
-from nightaudit.evidence import canonical_json, verify_evidence_pack
+from nightaudit.decisions import (
+    DECISIONS_FILE,
+    DecisionChain,
+    decision_row_hash,
+    pack_problem,
+    verify_decision_chain,
+)
+from nightaudit.evidence import canonical_json
 from nightaudit.models import Finding, RunResult
 
 from .connectors import Clock, system_clock
@@ -36,10 +41,12 @@ COLUMNS: tuple[str, ...] = (
     "person", "region", "region_code", "systems", "seats", "left_on", "last_sign_in", "manager",
     "decision", "decision_date", "run_id", "evidence_chain_hash",
 )
-DECISIONS_FILE = "decisions.jsonl"
 #: A cell starting with one of these is a formula to a spreadsheet; it is exported with a leading apostrophe.
 FORMULA_START: tuple[str, ...] = ("=", "+", "-", "@", "\t", "\r")
 MAX_REVIEWER = 200
+
+
+__all__ = ["DECISIONS_FILE", "DecisionVerdict", "ReviewError", "export", "import_sheet", "verify_decisions"]
 
 
 class ReviewError(ValueError):
@@ -188,76 +195,27 @@ def export(run_dir: Path, out: Path | None = None) -> tuple[Path, Path]:
 
 
 # --- Decisions (Req 5.2) ----------------------------------------------------------------------------------------------
+# The chain check lives in the skeleton (skeleton Req 10.7), so the page can show decisions it has verified itself.
 
-
-def _sha(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+DecisionVerdict = DecisionChain
 
 
 def _decision_row_hash(row: dict[str, Any]) -> str:
-    content = {k: v for k, v in row.items() if k != "row_hash"}
-    return _sha(str(content.get("prev_hash", "")) + canonical_json(content))
-
-
-@dataclass
-class DecisionVerdict:
-    ok: bool
-    detail: str
-    failed_row: int | None = None
-    rows: int = 0
-    head: str | None = None
+    return decision_row_hash(row)
 
 
 def _bound_result(run_dir: Path) -> RunResult:
     """The run, after checking its evidence pack verifies and ends at the hash the run recorded."""
     result = load_result(run_dir)
-    pack = verify_evidence_pack(run_dir / "evidence")
-    if not pack.ok:
-        raise ReviewError(f"the evidence pack of run {result.run_id} does not verify: {pack.detail}")
-    if not result.evidence_chain_hash or pack.final_hash != result.evidence_chain_hash:
-        raise ReviewError(f"run {result.run_id} does not record the hash its evidence pack ends with")
+    problem = pack_problem(run_dir, result)
+    if problem is not None:
+        raise ReviewError(problem)
     return result
 
 
-def verify_decisions(run_dir: Path) -> DecisionVerdict:
+def verify_decisions(run_dir: Path) -> DecisionChain:
     """Check the evidence pack, then every decision: hashes, links, binding to the run, and the key it names."""
-    try:
-        result = _bound_result(run_dir)
-    except ReviewError as exc:
-        return DecisionVerdict(False, str(exc))
-    findings = reported(result)
-    path = run_dir / "evidence" / DECISIONS_FILE
-    if not path.exists():
-        return DecisionVerdict(True, "evidence verifies; no decisions recorded", head=result.evidence_chain_hash)
-    lines = path.read_bytes().split(b"\n")
-    if lines and lines[-1] == b"":
-        lines.pop()
-    prev = result.evidence_chain_hash
-    for i, raw in enumerate(lines):
-        try:
-            row = json.loads(raw.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError):
-            return DecisionVerdict(False, f"decision {i}: not valid JSON", i, len(lines))
-        if not isinstance(row, dict):
-            return DecisionVerdict(False, f"decision {i}: not a JSON object", i, len(lines))
-        if canonical_json(row).encode("utf-8") != raw:
-            return DecisionVerdict(False, f"decision {i}: bytes differ from the canonical form", i, len(lines))
-        if row.get("index") != i:
-            return DecisionVerdict(False, f"decision {i}: index is {row.get('index')!r}", i, len(lines))
-        if row.get("prev_hash") != prev:
-            return DecisionVerdict(False, f"decision {i}: chain broken (prev_hash does not link)", i, len(lines))
-        if _decision_row_hash(row) != row.get("row_hash"):
-            return DecisionVerdict(False, f"decision {i}: hash mismatch", i, len(lines))
-        if row.get("run_id") != result.run_id or row.get("evidence_chain_hash") != result.evidence_chain_hash:
-            return DecisionVerdict(False, f"decision {i}: bound to another run", i, len(lines))
-        finding = findings.get(str(row.get("key")))
-        if finding is None or finding.region_code != row.get("region_code"):
-            return DecisionVerdict(False, f"decision {i}: names a finding run {result.run_id} did not report", i,
-                                   len(lines))
-        if row.get("decision") not in DECISIONS:
-            return DecisionVerdict(False, f"decision {i}: unknown decision", i, len(lines))
-        prev = str(row["row_hash"])
-    return DecisionVerdict(True, f"evidence verifies; {len(lines)} decisions verify", rows=len(lines), head=prev)
+    return verify_decision_chain(run_dir, load_result(run_dir), DECISIONS)
 
 
 def parse_sheet(text: str, result: RunResult) -> list[dict[str, str]]:
@@ -327,7 +285,7 @@ def import_sheet(run_dir: Path, sheet: Path, reviewer: str, clock: Clock = syste
     rows: list[dict[str, Any]] = []
     for offset, decision in enumerate(decided):
         row: dict[str, Any] = {
-            "index": existing.rows + offset,
+            "index": existing.count + offset,
             "prev_hash": prev,
             "type": "decision",
             "run_id": result.run_id,

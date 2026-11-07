@@ -119,21 +119,21 @@ class _FileConnector(Connector):
 class HrRoster(_FileConnector):
     """Intended ledger: one record per person who belongs on the run date, keyed by work email (Req 2).
 
-    The skeleton does not pass the run time to connectors, so the run date is the ``today`` option (an ISO date), or
-    the UTC date of the injected clock when the option is absent.
+    The run date is the UTC date of the run's time, which the skeleton gives every connector before ``fetch()``
+    (skeleton Req 10.1). Used outside a run, it is the UTC date of the injected clock.
     """
 
-    def __init__(self, path: str = "hr_roster.csv", today: str | None = None, clock: Clock = system_clock,
-                 **kwargs: Any) -> None:
+    def __init__(self, path: str = "hr_roster.csv", clock: Clock = system_clock, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self._path = path
-        self._today = date.fromisoformat(today) if today else clock().astimezone(UTC).date()
+        self._clock = clock
         #: Emails of people on the roster who do not belong on the run date (left, or not started).
         self.not_on_roster_today: list[str] = []
 
     @property
     def today(self) -> date:
-        return self._today
+        when = self.run_time if self.run_time is not None else self._clock()
+        return when.astimezone(UTC).date()
 
     @property
     def source(self) -> str:
@@ -142,12 +142,13 @@ class HrRoster(_FileConnector):
     def fetch(self) -> list[Record]:
         records: list[Record] = []
         self.not_on_roster_today = []
+        today = self.today
         for index, row in enumerate(read_csv(resolve_path(self._path, self._base_dir)), start=1):
             email = row.get("email", "")
             where = f"HR roster row {index}"
             start = parse_date(row.get("start_date", ""), f"{where} start_date")
             leaving = parse_date(row.get("leaving_date", ""), f"{where} leaving_date")
-            if not belongs_on(start, leaving, self._today):
+            if not belongs_on(start, leaving, today):
                 self.not_on_roster_today.append(email)
                 continue
             name = " ".join(p for p in (row.get("given_name", ""), row.get("family_name", "")) if p)
@@ -288,6 +289,9 @@ class SeatAssignments(_FileConnector):
             "period": invoice.period,
             "invoice_seats": str(invoice.seats),
             "assigned_seats": str(len(assigned)),
+            # The gaps themselves, so a note that cites them cites evidence (skeleton Req 10.2, audit rule 2).
+            "unnamed_seats": str(max(0, invoice.seats - len(assigned))),
+            "short_seats": str(max(0, len(assigned) - invoice.seats)),
             "unit_price": str(invoice.unit_price),
         }
         records: list[Record] = []

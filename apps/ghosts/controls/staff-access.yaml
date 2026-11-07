@@ -1,6 +1,7 @@
 # Night Audit control: staff access at Hollow Pines Credit Union (a fictional company), three ledgers.
 # Intended = HR roster on the run date. Observed = active accounts. Billed = paid seats per vendor invoice.
-# Paths are relative to this file. The data is synthetic and describes 2026-11-04, so the roster is read as of that date.
+# Paths are relative to this file. The data is synthetic and describes 2026-11-04. The roster is read as of the run date,
+# which the skeleton gives every connector, so `nightaudit run --at 2026-11-04T02:00Z` reads it as of that date.
 id: staff-access
 title: Hollow Pines Credit Union
 app: ghosts
@@ -13,7 +14,7 @@ ledgers:
     sources:
       - type: python
         entry: ghosts.connectors:HrRoster
-        options: {path: ../data/hr_roster.csv, today: "2026-11-04"}
+        options: {path: ../data/hr_roster.csv}
   observed:
     normalisers: [email_canonical]
     sources:
@@ -43,10 +44,15 @@ ledgers:
 enrichers:
   - entry: ghosts.context:people_context
     regions: [OB, O, B, I, IB, IO]
-    # Enrichers get no control directory: a relative roster path resolves against apps/ghosts/controls/.
-    # The alias table repeats the control's (a test keeps them equal).
-    options: {roster: ../data/hr_roster.csv, alias_domains: {hollowpines.org: hollowpines.com}}
+    # The skeleton passes the control: the roster path is relative to this file and the alias table is the one above.
+    options: {roster: ../data/hr_roster.csv}
 
+summarisers:
+  # Each vendor's invoice against its assignments, as run notes. Every number they cite is on a billed record.
+  - entry: ghosts.seats:seat_notes
+
+# Each template states the condition in words, from the HR facts the enricher added. Absent facts are empty text, and
+# every number (a date) comes from the evidence.
 regions:
   IOB:
     name: Living
@@ -54,26 +60,39 @@ regions:
   OB:
     name: Ghost
     meaning: Has an active account and a paid seat, but is not on the HR roster on the run date.
+    template: "{context:hr_status} Account still active, last sign-in {context:last_sign_in_on}. {context:seats_held}."
   O:
     name: Poltergeist
     meaning: Has an active account, but is not on the HR roster and holds no paid seat.
+    template: "{context:hr_status} Account active in {context:systems}, last sign-in {context:last_sign_in_on}. No paid seat."
   B:
     name: Phantom seat
     meaning: A paid seat is assigned to an address with no active account and no HR record.
+    template: "{context:hr_status} No active account. Seat paid for in {context:seats_in}."
   I:
     name: Unprovisioned joiner
     meaning: On the HR roster, but has no active account and no paid seat.
+    template: "{context:hr_status} No active account and no paid seat yet."
   IB:
     name: Wraith
     meaning: On the HR roster with a paid seat, but has no active account.
+    template: "{context:hr_status} Seat paid for in {context:seats_in}, but no active account."
   IO:
     name: Unlicensed user
     meaning: On the HR roster with an active account and no paid seat. Informational.
+    template: "{context:hr_status} Active account, last sign-in {context:last_sign_in_on}. No paid seat."
 
 ui:
   title: Ghosts
   tagline: Every night, the HR roster is checked against the accounts that exist and the seats that are paid for.
   noun: {singular: person, plural: people}
+  unkeyed:
+    singular: seat paid for nobody named
+    plural: seats paid for nobody named
+    explanation: The invoice counts more seats than there are assignments, so these seats have no person to match.
+  downloads:
+    - {label: Review sheet (CSV), file: review.csv}
+    - {label: Review sheet (HTML), file: review.html}
   ledgers:
     intended: {label: HR roster, source: Employees and contractors HR lists on the run date.}
     observed: {label: Accounts, source: Active accounts in the identity export.}

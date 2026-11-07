@@ -130,6 +130,11 @@ def write_evidence_pack(result: RunResult, pack_dir: Path) -> str:
         {"type": "record", **_content_from_record(r)} for r in records
     ]
     contents.extend(_finding_row(f) for f in result.findings)
+    # Notes come last, so a run without notes writes the same rows as before Req 10.2.
+    contents.extend(
+        {"type": "note", "row_id": f"note:{n}", "source": note.source, "text": note.text, "numbers": list(note.numbers)}
+        for n, note in enumerate(result.notes, start=1)
+    )
     rows: list[dict[str, object]] = []
     prev_hash = CHAIN_SEED
     for index, content in enumerate(contents):

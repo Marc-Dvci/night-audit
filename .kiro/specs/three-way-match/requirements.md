@@ -125,3 +125,34 @@ new controls.
 3. THE SYSTEM SHALL provide a CSV connector and a JSON Lines connector usable by any app.
 4. WHEN a connector fails THE SYSTEM SHALL mark the run as incomplete, name the ledger, and produce no findings that
    depend on the missing ledger.
+
+## Requirement 10: What the second app taught
+
+**User story:** As the author of a second application, I want the skeleton to give me what I had to work around, so
+that the next application needs no workaround at all.
+
+Source: `.kiro/specs/ghosts-app/design.md` §10, the gaps Ghosts met while it could not change the skeleton.
+
+1. WHEN a run fetches a ledger THE SYSTEM SHALL give every connector the run's time through the `Connector` base class
+   before `fetch()` is called, and a connector that does not read the run time SHALL need no change.
+2. WHERE a control declares `summarisers` THE SYSTEM SHALL add each summariser's sentences to the run as `notes`, write
+   them into the evidence chain, and show them under the headline on the page and in the morning report; IF a note
+   cites a number that does not appear in the run's evidence rows THEN THE SYSTEM SHALL refuse that summariser's notes
+   and name the summariser in the run's errors.
+3. WHEN the system calls an enricher or a summariser that accepts a `control` argument THE SYSTEM SHALL pass the
+   control file's folder, its alias domains, its id and the run time.
+4. WHERE a control declares `ui.unkeyed` THE SYSTEM SHALL use its `singular`, `plural` and `explanation` for the
+   billed lines with no key on the page and in the morning report, and SHALL otherwise use the wording used before
+   this requirement.
+5. WHEN a region template contains `{context:<name>}` or `{attr:<name>}` THE SYSTEM SHALL fill it from the finding's
+   context or the first record carrying that attribute, render an absent value as empty text without failing, and use
+   the default template IF the rendered text cites a number that is not in the finding's evidence.
+6. WHERE a control declares `ui.downloads` THE SYSTEM SHALL link each listed file that exists in the run's folder from
+   the page, serve it from the API and copy it into the static demo, and SHALL refuse any file name outside a strict
+   allow-list, so that no request can read a file outside the run's folder.
+7. WHEN a run's evidence folder holds a decision chain (`decisions.jsonl`) THE SYSTEM SHALL show each decision with its
+   reviewer and date on the finding it names, only after the chain verifies against the run's final evidence hash, and
+   SHALL otherwise say that the recorded decisions do not verify and show none.
+8. WHEN the static demos are built THE SYSTEM SHALL write each application's demo only into its own folder under
+   `skeleton/web/public/demo/<app>/`, list every live and demo entry in `apps.json`, and keep the `?demo=1` link
+   working.

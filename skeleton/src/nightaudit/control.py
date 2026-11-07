@@ -20,10 +20,12 @@ from .models import (
     DEFAULT_REGION_SEVERITIES,
     FINDING_REGIONS,
     ColumnUi,
+    DownloadUi,
     HeadlineUi,
     LedgerUi,
     NounUi,
     UiConfig,
+    UnkeyedUi,
 )
 from .normalisers import NormaliserRegistry, UnknownNormaliserError
 
@@ -55,6 +57,10 @@ class UiSection(BaseModel):
     ledgers: dict[str, LedgerUi] = Field(default_factory=dict)
     columns: list[ColumnUi] = Field(default_factory=list)
     headlines: dict[str, HeadlineUi] = Field(default_factory=dict)
+    #: The words for billed lines with no key (Req 10.4). Absent means the wording used before this field existed.
+    unkeyed: UnkeyedUi | None = None
+    #: Files beside the run that the page links to (Req 10.6).
+    downloads: list[DownloadUi] = Field(default_factory=list)
 
     @field_validator("headlines", mode="before")
     @classmethod
@@ -161,6 +167,19 @@ class EnricherConfig(BaseModel):
     options: dict[str, Any] = Field(default_factory=dict)
 
 
+class SummariserConfig(BaseModel):
+    """A read-only step that adds sentences to the run after matching (Req 10.2).
+
+    ``entry`` names a callable ``package.module:function`` with the signature ``(result, options) -> list[str]``, and
+    optionally a keyword parameter ``control``. Every number in a sentence must appear in the run's evidence rows.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    entry: str
+    options: dict[str, Any] = Field(default_factory=dict)
+
+
 class LedgerConfig(BaseModel):
     """Per-ledger configuration in a production control file.
 
@@ -239,6 +258,8 @@ def resolve_ui(control: ControlFile) -> UiConfig:
         ledgers=ledgers,
         columns=list(section.columns) if section.columns else list(defaults.columns),
         headlines=headlines,
+        unkeyed=section.unkeyed or defaults.unkeyed,
+        downloads=list(section.downloads),
     )
 
 
@@ -253,6 +274,8 @@ class ControlFile(BaseModel):
     #: Local, untracked list of the keys and name prefixes this deployment audits. Absent means everything.
     include_keys_file: str | None = None
     enrichers: list[EnricherConfig] = Field(default_factory=list)
+    #: Steps that add sentences to the run (Req 10.2). Part of the canonical hash when present.
+    summarisers: list[SummariserConfig] = Field(default_factory=list)
     ledgers: dict[str, LedgerConfig] = Field(default_factory=dict)
     grace_hours: int = 24
     scope: ScopeFilter | None = None
@@ -304,9 +327,18 @@ class ControlFile(BaseModel):
         """SHA-256 of the whole control file in canonical JSON: ledgers, sources, rules and wording (Req 1.3).
 
         A control without a ``ui`` section hashes as it did before the section existed, so its run ids do not change.
+        The same holds for the fields added by Req 10 (``summarisers``, ``ui.unkeyed``, ``ui.downloads``) while they
+        are empty.
         """
         data: dict[str, Any] = self.model_dump(mode="json")
         if data.get("ui") is None:
             data.pop("ui", None)
+        else:
+            if data["ui"].get("unkeyed") is None:
+                data["ui"].pop("unkeyed", None)
+            if not data["ui"].get("downloads"):
+                data["ui"].pop("downloads", None)
+        if not data.get("summarisers"):
+            data.pop("summarisers", None)
         canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

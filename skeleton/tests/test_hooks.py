@@ -3,13 +3,71 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 import pytest
 
-HOOKS = Path(__file__).resolve().parents[2] / "scripts" / "hooks"
+ROOT = Path(__file__).resolve().parents[2]
+HOOKS = ROOT / "scripts" / "hooks"
+HOOK_FILES = sorted((ROOT / ".kiro" / "hooks").glob("*"))
+#: The triggers the hook files in this repository use. A file with any other trigger never fires.
+KNOWN_TRIGGERS = frozenset({"PreToolUse", "PostToolUse", "PostFileSave", "UserPromptSubmit", "Stop"})
+#: A matcher of only ``*`` is the "every tool" wildcard, not a regular expression.
+WILDCARD = "*"
+
+
+@pytest.mark.parametrize("path", HOOK_FILES, ids=lambda p: p.name)
+def test_a_hook_file_kiro_would_skip_silently_fails_here_instead(path: Path) -> None:
+    """Kiro skips a hook file it cannot read without saying so. Two were invalid JSON for three days unnoticed.
+
+    Every file in ``.kiro/hooks/`` must be JSON, name a known trigger for each hook, and give each hook a matcher that
+    is the wildcard or a regular expression that compiles.
+    """
+    assert path.suffix == ".json", f"{path.name}: hook files are .json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        pytest.fail(f"{path.name} is not valid JSON, so Kiro skips it silently: {exc}")
+    hooks = data.get("hooks") if isinstance(data, dict) else None
+    assert isinstance(hooks, list) and hooks, f"{path.name}: needs a non-empty 'hooks' list"
+    for hook in hooks:
+        name = hook.get("name", "?")
+        assert hook.get("trigger") in KNOWN_TRIGGERS, f"{path.name}/{name}: unknown trigger {hook.get('trigger')!r}"
+        action = hook.get("action")
+        assert isinstance(action, dict) and action.get("type") in {"command", "agent"}, f"{path.name}/{name}: action"
+        matcher = hook.get("matcher")
+        if matcher is None or matcher == WILDCARD:
+            continue
+        assert isinstance(matcher, str), f"{path.name}/{name}: matcher must be a string"
+        try:
+            re.compile(matcher)
+        except re.error as exc:
+            pytest.fail(f"{path.name}/{name}: matcher {matcher!r} does not compile: {exc}")
+
+
+def test_there_are_hook_files_to_check() -> None:
+    assert len(HOOK_FILES) >= 6
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # A trailing comma, the mistake that kept two hooks from loading.
+        '{"version": "v1", "hooks": [{"name": "x", "trigger": "PostFileSave", "matcher": "a\\.py$",}]}',
+        '{"version": "v1", "hooks": [{"name": "x", "trigger": "OnSave", "action": {"type": "command"}}]}',
+        '{"version": "v1", "hooks": [{"name": "x", "trigger": "PreToolUse", "matcher": "(mcp_",'
+        ' "action": {"type": "command"}}]}',
+    ],
+    ids=["invalid-json", "unknown-trigger", "matcher-does-not-compile"],
+)
+def test_the_hook_check_fails_on_each_kind_of_broken_file(tmp_path: Path, text: str) -> None:
+    broken = tmp_path / "broken.json"
+    broken.write_text(text, encoding="utf-8")
+    with pytest.raises((pytest.fail.Exception, AssertionError)):
+        test_a_hook_file_kiro_would_skip_silently_fails_here_instead(broken)
 
 
 def _run(script: str, tool: str, tool_input: dict[str, object]) -> int:

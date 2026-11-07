@@ -46,7 +46,7 @@ function render(): void {
   }
   root.innerHTML = `${masthead(run, state.apps, state.app, state.runs, src, state.sweep)}
     <main class="page" id="main">
-      ${lede(run)}
+      ${lede(run, src)}
       ${compare(run, state.region)}
       ${nights(run, state.runs)}
       ${findings(run, state.region, state.open)}

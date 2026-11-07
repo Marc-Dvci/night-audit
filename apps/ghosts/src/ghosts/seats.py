@@ -1,19 +1,18 @@
 """Seat summary: each vendor's invoice against its licence assignments (Req 4.2, 4.3).
 
-``RunResult`` has no field for an application's own run-level notes, so the summary is a file written beside the run,
-``runs/<run_id>/seats.json``. It is computed only from the run's billed records, whose attributes carry the invoice
-and assignment counts, so the evidence pack alone is enough to recompute it.
+The summary is computed only from the run's billed records, whose attributes carry the invoice and assignment counts,
+so the evidence pack alone is enough to recompute it. ``seat_notes`` is the control's summariser: it states each gap
+as a sentence, and the skeleton adds those sentences to the run as notes, inside the evidence chain (skeleton
+Req 10.2). Every number a note cites is an attribute of a billed record.
 """
 
 from __future__ import annotations
 
 from decimal import Decimal
-from pathlib import Path
+from typing import Any
 
 from nightaudit.models import LedgerName, RunResult
 from pydantic import BaseModel, Field
-
-SUMMARY_FILE = "seats.json"
 
 
 class VendorSeats(BaseModel):
@@ -32,10 +31,9 @@ class VendorSeats(BaseModel):
 
 
 class SeatSummary(BaseModel):
-    """The seat summary of one run, bound to its evidence chain."""
+    """The seat summary of one run."""
 
     run_id: str
-    evidence_chain_hash: str | None
     vendors: list[VendorSeats] = Field(default_factory=list)
 
     @property
@@ -69,25 +67,34 @@ def seat_summary(result: RunResult) -> SeatSummary:
                 short_seats=max(0, assigned - invoice),
             )
     vendors = [seen[k] for k in sorted(seen)]
-    return SeatSummary(run_id=result.run_id, evidence_chain_hash=result.evidence_chain_hash, vendors=vendors)
+    return SeatSummary(run_id=result.run_id, vendors=vendors)
 
 
-def write_seat_summary(result: RunResult, run_dir: Path) -> Path:
-    """Write ``seats.json`` beside the run and return its path."""
-    run_dir.mkdir(parents=True, exist_ok=True)
-    path = run_dir / SUMMARY_FILE
-    path.write_text(seat_summary(result).model_dump_json(indent=2) + "\n", encoding="utf-8")
-    return path
+def _seats(n: int) -> str:
+    return f"{n} more seat" if n == 1 else f"{n} more seats"
+
+
+def _names(vendors: list[str]) -> str:
+    return vendors[0] if len(vendors) == 1 else ", ".join(vendors[:-1]) + " and " + vendors[-1]
 
 
 def summary_lines(summary: SeatSummary) -> list[str]:
-    """The seat summary as sentences for the terminal."""
+    """The seat summary as plain sentences: one per vendor with a gap, then the vendors whose invoice matches."""
     lines: list[str] = []
     for v in summary.vendors:
-        line = f"{v.vendor} {v.period}: invoice for {v.invoice_seats} seats, {v.assigned_seats} assigned"
         if v.unnamed_seats:
-            line += f"; {v.unnamed_seats} paid for nobody named"
+            lines.append(f"{v.vendor} invoices {_seats(v.unnamed_seats)} than it assigns "
+                         f"({v.invoice_seats} invoiced, {v.assigned_seats} assigned).")
         if v.short_seats:
-            line += f"; {v.short_seats} assigned beyond the invoice"
-        lines.append(line)
+            lines.append(f"{v.vendor} assigns {_seats(v.short_seats)} than its invoice pays for "
+                         f"({v.invoice_seats} invoiced, {v.assigned_seats} assigned).")
+    exact = [v.vendor for v in summary.vendors if not v.unnamed_seats and not v.short_seats]
+    if exact:
+        verb = "invoices" if len(exact) == 1 else "invoice"
+        lines.append(f"{_names(exact)} {verb} exactly the seats {'it assigns' if len(exact) == 1 else 'they assign'}.")
     return lines
+
+
+def seat_notes(result: RunResult, options: dict[str, Any]) -> list[str]:
+    """Summariser (skeleton Req 10.2): the seat summary as run notes."""
+    return summary_lines(seat_summary(result))

@@ -9,9 +9,9 @@ explanations, and persists the ``RunResult``.
 from __future__ import annotations
 
 import hashlib
-import importlib
 import json
 from datetime import UTC, datetime
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -20,10 +20,11 @@ import yaml
 from .connectors import Connector, make_connectors
 from .control import ControlConfig, ControlFile, region_meanings, region_names, resolve_ui
 from .evidence import write_evidence_pack
-from .explain import ModelConfig, explain_finding
+from .explain import ModelConfig, explain_finding, note_numbers, run_evidence_numbers
 from .matcher import KeyScope, match
-from .models import LedgerName, LedgerSnapshot, Record, RunResult
+from .models import LedgerName, LedgerSnapshot, Record, RunNote, RunResult
 from .state import StateStore, compare_findings
+from .steps import ControlContext, call_step, load_callable
 
 
 def load_control_file(control_path: Path) -> ControlFile:
@@ -38,11 +39,13 @@ def load_control_file(control_path: Path) -> ControlFile:
 def _fetch_snapshot(
     ledger_name: LedgerName,
     connectors: list[Connector],
+    run_time: datetime | None = None,
 ) -> tuple[LedgerSnapshot, str | None]:
     """Fetch one ledger from all its sources.
 
     Read-only is enforced per source (audit rule 3, Req 9.2). If any source fails, the ledger is
-    missing for this run (Req 9.4) and the error is returned so the run can name it.
+    missing for this run (Req 9.4) and the error is returned so the run can name it. Each connector is
+    given the run's time before it fetches (Req 10.1).
     """
     if not connectors:
         return (
@@ -58,6 +61,8 @@ def _fetch_snapshot(
                 f"{connector.source}: refused, connector is not read-only",
             )
         try:
+            if run_time is not None:
+                connector.bind_run_time(run_time)
             records.extend(connector.fetch())
         except Exception as exc:  # noqa: BLE001 - any connector failure makes the ledger missing
             return (
@@ -68,10 +73,45 @@ def _fetch_snapshot(
 
 
 def _load_callable(entry: str) -> Any:
-    module_name, _, attr = entry.partition(":")
-    if not module_name or not attr:
-        raise ValueError(f"entry '{entry}' must look like 'package.module:function'")
-    return getattr(importlib.import_module(module_name), attr)
+    return load_callable(entry)
+
+
+#: A short list of plain sentences (design §18.2).
+MAX_NOTES = 12
+MAX_NOTE_LENGTH = 300
+
+
+def summarise(result: RunResult, control_file: ControlFile, context: ControlContext) -> list[RunNote]:
+    """Run each summariser and keep its notes only when every number they cite is in the run's evidence rows.
+
+    A summariser that raises, returns something other than a list of strings, or cites another number adds no note,
+    and the run's errors name it. Audit rule 2: every number is evidence.
+    """
+    notes: list[RunNote] = []
+    allowed = run_evidence_numbers(result) if control_file.summarisers else set()
+    for summariser in control_file.summarisers:
+        name = f"summariser:{summariser.entry}"
+        try:
+            func = load_callable(summariser.entry)
+            sentences = call_step(func, result, summariser.options, context)
+            if not isinstance(sentences, list) or not all(isinstance(s, str) for s in sentences):
+                raise TypeError("a summariser returns a list of sentences")
+        except Exception as exc:  # noqa: BLE001 - notes are optional; the run keeps its findings
+            result.ledger_errors[name] = f"{type(exc).__name__}: {str(exc)[:300]}"
+            continue
+        texts = [" ".join(s.split()) for s in sentences if s.strip()]
+        if len(texts) > MAX_NOTES or any(len(t) > MAX_NOTE_LENGTH for t in texts):
+            result.ledger_errors[name] = (
+                f"notes refused: at most {MAX_NOTES} notes of {MAX_NOTE_LENGTH} characters each"
+            )
+            continue
+        cited = [note_numbers(t) for t in texts]
+        stray = sorted({n for numbers in cited for n in numbers if Decimal(n) not in allowed}, key=Decimal)
+        if stray:
+            result.ledger_errors[name] = f"notes refused: {', '.join(stray[:10])} not in the run's evidence rows"
+            continue
+        notes.extend(RunNote(text=t, numbers=n, source=summariser.entry) for t, n in zip(texts, cited, strict=True))
+    return notes
 
 
 def load_exclusions(path: Path) -> frozenset[str]:
@@ -125,7 +165,7 @@ def run_control(
                 connectors = make_connectors(ledger_name, ledger_config, base_dir)
             except (ValueError, ImportError) as exc:
                 errors[name] = str(exc)
-        snapshot, error = _fetch_snapshot(ledger_name, connectors)
+        snapshot, error = _fetch_snapshot(ledger_name, connectors, now)
         if error is not None and name not in errors:
             errors[name] = error
         snapshots.append(snapshot)
@@ -163,13 +203,16 @@ def run_control(
         state_store.save(control_id, new_state)
 
     # Enrichers: read-only context for chosen regions. They cannot change a region (audit rule 1).
+    context = ControlContext(
+        folder=base_dir, alias_domains=dict(control_file.alias_domains), control_id=control_id, run_time=now
+    )
     for enricher in control_file.enrichers:
         targets = [f for f in result.findings if f.region_code in enricher.regions]
         if not targets:
             continue
         try:
-            func = _load_callable(enricher.entry)
-            context_by_key = func(targets, enricher.options)
+            func = load_callable(enricher.entry)
+            context_by_key = call_step(func, targets, enricher.options, context)
         except Exception as exc:  # noqa: BLE001 - context is optional; the run keeps its findings
             result.ledger_errors[f"enricher:{enricher.entry}"] = f"{type(exc).__name__}: {str(exc)[:300]}"
             continue
@@ -183,7 +226,11 @@ def run_control(
         explanation = explain_finding(finding, cfg, control_config)
         finding.explanation = explanation.text
 
-    # Evidence pack (Req 6.1): ledger rows and the findings they produce.
+    # Summarisers (Req 10.2): sentences about the whole run, each number checked against the evidence rows.
+    if result.complete:
+        result.notes = summarise(result, control_file, context)
+
+    # Evidence pack (Req 6.1): ledger rows, the findings they produce and the run's notes.
     run_dir = runs_dir / result.run_id
     write_evidence_pack(result, run_dir / "evidence")
 

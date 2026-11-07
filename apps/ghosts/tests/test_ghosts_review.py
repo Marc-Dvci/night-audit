@@ -126,7 +126,7 @@ def test_decisions_are_recorded_bound_to_the_runs_evidence_chain(run_dir: Path, 
     lines = (run_dir / "evidence" / "decisions.jsonl").read_text("utf-8").splitlines()
     assert [json.loads(line)["row_hash"] for line in lines] == [r["row_hash"] for r in written]
     verdict = verify_decisions(run_dir)
-    assert verdict.ok and verdict.rows == 2
+    assert verdict.ok and verdict.count == 2
 
 
 def test_a_second_import_continues_the_chain(run_dir: Path, tmp_path: Path) -> None:
@@ -134,7 +134,7 @@ def test_a_second_import_continues_the_chain(run_dir: Path, tmp_path: Path) -> N
     first = import_sheet(run_dir, write_sheet(tmp_path / "a.csv", decide(rows, f_lowe="keep")), "A", clock=CLOCK)
     second = import_sheet(run_dir, write_sheet(tmp_path / "b.csv", decide(rows, e_ashby="revoke")), "B", clock=CLOCK)
     assert second[0]["prev_hash"] == first[-1]["row_hash"] and second[0]["index"] == 1
-    assert verify_decisions(run_dir).rows == 2
+    assert verify_decisions(run_dir).count == 2
 
 
 def test_a_decision_on_a_key_the_run_did_not_report_is_refused(

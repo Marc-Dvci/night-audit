@@ -1,4 +1,4 @@
-"""The recorded demo ships everything the UI kit reads, in Ghosts' words (Req 7.2)."""
+"""The recorded demo ships everything the UI kit reads, in Ghosts' words (Req 7.2; skeleton Req 10.6-10.8)."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from nightaudit.models import RunResult
 from nightaudit.report import run_numbers
 
 DEMO = Path(__file__).resolve().parents[1] / "demo"
+PUBLIC_DEMO = Path(__file__).resolve().parents[3] / "skeleton" / "web" / "public" / "demo" / "ghosts"
 
 
 def builder() -> ModuleType:
@@ -26,32 +27,62 @@ def files(folder: Path) -> dict[str, bytes]:
     return {str(p.relative_to(folder)).replace("\\", "/"): p.read_bytes() for p in folder.rglob("*") if p.is_file()}
 
 
-def test_a_fresh_build_has_every_file_and_its_evidence_verifies(tmp_path: Path) -> None:
+def document(folder: Path) -> tuple[RunResult, dict[str, object], dict[str, object]]:
+    data = json.loads((folder / "run.json").read_text("utf-8"))
+    view = data.pop("view")
+    extra = {k: data.pop(k) for k in ("downloads", "decisions") if k in data}
+    return RunResult.model_validate(data), view, extra
+
+
+def test_a_fresh_build_has_two_nights_one_without_and_one_with_decisions(tmp_path: Path) -> None:
     build = builder()
-    run_id = build.build(tmp_path / "out", tmp_path / "runs")
+    first, second = build.build(tmp_path / "out", tmp_path / "runs")
     out = tmp_path / "out"
-    (summary,) = json.loads((out / "runs.json").read_text("utf-8"))
-    assert summary["run_id"] == run_id and summary["findings"] == 8 and summary["app"] == "ghosts"
-    folder = out / run_id
-    for name in build.RUN_FILES:
-        assert (folder / name).exists(), name
-    document = json.loads((folder / "run.json").read_text("utf-8"))
-    view = document.pop("view")
-    run = RunResult.model_validate(document)
-    verdict = verify_evidence_pack(folder)
-    assert verdict.ok, verdict.detail
-    assert verdict.final_hash == run.evidence_chain_hash
-    assert view["finding_count"] == 8
-    assert run.ui.title == "Ghosts" and run.ui.noun.plural == "people"
-    assert view["headline"].startswith("3 Ghosts have active accounts and paid seats but are not on the HR roster")
-    assert "Recorded run of a synthetic account" in (folder / "report.html").read_text("utf-8")
-    assert run_numbers(run)
-    entry = json.loads((out / "apps.entry.json").read_text("utf-8"))
-    assert entry == {"name": "ghosts-demo", "title": "Hollow Pines demo company", "mode": "demo",
-                     "base": "demo/ghosts/"}
+    summaries = json.loads((out / "runs.json").read_text("utf-8"))
+    assert [s["run_id"] for s in summaries] == [second, first]
+    assert all(s["findings"] == 8 and s["app"] == "ghosts" for s in summaries)
+    for run_id in (first, second):
+        folder = out / run_id
+        for name in build.RUN_FILES:
+            assert (folder / name).exists(), name
+        run, view, extra = document(folder)
+        verdict = verify_evidence_pack(folder)
+        assert verdict.ok, verdict.detail
+        assert verdict.final_hash == run.evidence_chain_hash
+        assert view["finding_count"] == 8
+        assert run.ui.title == "Ghosts" and run.ui.noun.plural == "people"
+        assert str(view["headline"]).startswith("3 Ghosts have active accounts and paid seats but are not on the HR")
+        assert "Recorded run of synthetic data" in (folder / "report.html").read_text("utf-8")
+        assert run_numbers(run)
+        assert extra["downloads"] == [
+            {"label": "Review sheet (CSV)", "file": "review.csv"},
+            {"label": "Review sheet (HTML)", "file": "review.html"},
+        ]
+        assert "Lantern Chat invoices 3 more seats than it assigns (178 invoiced, 175 assigned)." in [
+            n.text for n in run.notes
+        ]
+
+    _, _, quiet = document(out / first)
+    assert "decisions" not in quiet and not (out / first / "decisions.jsonl").exists()
+    _, _, decided = document(out / second)
+    assert decided["decisions"] == {
+        "ok": True,
+        "detail": "evidence verifies; 3 decisions verify",
+        "rows": [
+            {"key": key, "region_code": code, "decision": decision, "decision_date": "2026-11-05",
+             "reviewer": "Dana Okafor, IT manager"}
+            for key, code, decision in (
+                ("j.marsh@hollowpines.com", "OB", "revoke"),
+                ("p.lindqvist@hollowpines.com", "OB", "revoke"),
+                ("svc-reporting@hollowpines.com", "O", "investigate"),
+            )
+        ],
+    }
+    assert (out / second / "decisions.jsonl").exists()
+    assert build.APP_ENTRIES == [{"name": "ghosts-demo", "title": "Ghosts demo company", "mode": "demo",
+                                  "base": "demo/ghosts/"}]
 
 
 def test_the_committed_demo_is_the_builders_output(tmp_path: Path) -> None:
-    build = builder()
-    build.build(tmp_path / "out", tmp_path / "runs")
-    assert files(build.OUT) == files(tmp_path / "out"), "run: uv run python apps/ghosts/demo/build.py"
+    builder().build(tmp_path / "out", tmp_path / "runs")
+    assert files(PUBLIC_DEMO) == files(tmp_path / "out"), "run: uv run python scripts/build_demos.py"

@@ -9,6 +9,7 @@ Endpoints:
 * ``GET /api/runs/{id}/evidence.jsonl``     the evidence chain, for verification in the browser
 * ``GET /api/runs/{id}/manifest.json``      the evidence manifest
 * ``GET /api/runs/{id}/report.html``        the one-page morning report
+* ``GET /api/runs/{id}/files/{name}``       a download the control lists in ``ui.downloads`` (Req 10.6)
 
 The static front end (Vite build output) is mounted at ``/`` when present, so the UI is served from the same origin.
 Every response carries a Content-Security-Policy that allows only same-origin scripts, styles, fonts and images.
@@ -28,11 +29,19 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from .models import Finding, RunResult
+from .decisions import page_decisions
+from .models import DOWNLOAD_FILE, Finding, RunResult
 from .report import report_csp, report_html, run_view
 from .runner import list_run_ids, load_run, run_summary
 
 _RUN_ID = re.compile(r"^[0-9a-f]{16}$")
+#: The media type of each allowed download type (``DOWNLOAD_FILE``).
+DOWNLOAD_TYPES: dict[str, str] = {
+    ".csv": "text/csv; charset=utf-8",
+    ".html": "text/html; charset=utf-8",
+    ".json": "application/json",
+    ".txt": "text/plain; charset=utf-8",
+}
 
 #: Same-origin only (ui-kit Req 11.2). The page has no inline script or style, so nothing else is needed.
 CONTENT_SECURITY_POLICY = (
@@ -61,11 +70,39 @@ def _as_json_dict(model: Any) -> dict[str, Any]:
     return data
 
 
-def run_document(result: RunResult) -> dict[str, Any]:
-    """The run as the page reads it: the stored result plus the view computed by ``report.py``."""
+def run_document(result: RunResult, run_dir: Path | None = None) -> dict[str, Any]:
+    """The run as the page reads it: the stored result plus the view computed by ``report.py``.
+
+    With the run's folder it also lists the downloads that exist there (Req 10.6) and the review decisions when the
+    evidence folder holds a decision chain (Req 10.7).
+    """
     data = _as_json_dict(result)
     data["view"] = _as_json_dict(run_view(result))
+    data["downloads"] = (
+        [{"label": d.label, "file": d.file} for d in result.ui.downloads if download_path(run_dir, result, d.file)]
+        if run_dir is not None
+        else []
+    )
+    decisions = page_decisions(run_dir, result) if run_dir is not None else None
+    if decisions is not None:
+        data["decisions"] = decisions
     return data
+
+
+def download_path(run_dir: Path, result: RunResult, name: str) -> Path | None:
+    """The file a download names, or ``None``. Only a listed, allow-listed name of a regular file in the run's folder.
+
+    Three independent checks, so no one mistake lets a request read another file (design §18.6): the name is listed in
+    the run's own downloads, it matches the allow-list (no separator, no ``..``), and its resolved path sits directly
+    in the run's folder.
+    """
+    if name not in {d.file for d in result.ui.downloads} or not DOWNLOAD_FILE.fullmatch(name):
+        return None
+    folder = run_dir.resolve()
+    path = (run_dir / name).resolve()
+    if path.parent != folder or not path.is_file():
+        return None
+    return path
 
 
 def create_app(runs_dir: Path, static_dir: Path | None = None) -> FastAPI:
@@ -100,11 +137,26 @@ def create_app(runs_dir: Path, static_dir: Path | None = None) -> FastAPI:
         ids = list_run_ids(runs_dir)
         if not ids:
             raise HTTPException(status_code=404, detail="no runs yet")
-        return run_document(_run_or_404(runs_dir, ids[0]))
+        return run_document(_run_or_404(runs_dir, ids[0]), runs_dir / ids[0])
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str) -> dict[str, Any]:
-        return run_document(_run_or_404(runs_dir, run_id))
+        return run_document(_run_or_404(runs_dir, run_id), runs_dir / run_id)
+
+    @app.get("/api/runs/{run_id}/files/{name}")
+    def get_download(run_id: str, name: str) -> FileResponse:
+        result = _run_or_404(runs_dir, run_id)
+        path = download_path(runs_dir / run_id, result, name)
+        if path is None:
+            raise HTTPException(status_code=404, detail="no such download")
+        return FileResponse(
+            path,
+            media_type=DOWNLOAD_TYPES[path.suffix],
+            headers={
+                "Content-Disposition": f'attachment; filename="{path.name}"',
+                "Content-Security-Policy": "default-src 'none'; sandbox",
+            },
+        )
 
     @app.get("/api/runs/{run_id}/findings")
     def get_findings(run_id: str, region: str | None = None) -> list[dict[str, Any]]:

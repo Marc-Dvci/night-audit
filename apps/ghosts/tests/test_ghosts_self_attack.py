@@ -34,12 +34,18 @@ HOSTILE = [
 
 
 def run_folder(data: Path, work: Path) -> RunResult:
-    """Read *data* with the shipped control's connectors and match it at the demo run time."""
+    """Read *data* with the shipped control's connectors and match it at the demo run time.
+
+    Each connector is given the run time first, as the skeleton's runner does (skeleton Req 10.1).
+    """
     control = load_control_file(control_for(data, work))
     snapshots = []
     for name in ("intended", "observed", "billed"):
         ledger = LedgerName(name)
-        records = [r for c in make_connectors(ledger, control.ledgers[name], work) for r in c.fetch()]
+        connectors = make_connectors(ledger, control.ledgers[name], work)
+        for connector in connectors:
+            connector.bind_run_time(RUN_TIME)
+        records = [r for c in connectors for r in c.fetch()]
         snapshots.append(LedgerSnapshot(name=ledger, source=name, records=records))
     return match(snapshots, control.to_config(), RUN_TIME)
 

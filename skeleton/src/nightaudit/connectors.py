@@ -65,7 +65,22 @@ def _parse_amount(value: object) -> Decimal | None:
 
 
 class Connector(ABC):
-    """Returns records for one ledger and declares whether it is read-only."""
+    """Returns records for one ledger and declares whether it is read-only.
+
+    The runner calls ``bind_run_time`` before ``fetch()`` (Req 10.1). A connector that needs the run date reads
+    ``self.run_time``; one that does not needs no change, because neither member is abstract.
+    """
+
+    _bound_run_time: datetime | None = None
+
+    def bind_run_time(self, when: datetime) -> None:
+        """Record the run's time (UTC). Called by the runner just before ``fetch()``."""
+        self._bound_run_time = when if when.tzinfo is not None else when.replace(tzinfo=UTC)
+
+    @property
+    def run_time(self) -> datetime | None:
+        """The run's time, or ``None`` when the connector is used outside a run."""
+        return self._bound_run_time
 
     @property
     @abstractmethod

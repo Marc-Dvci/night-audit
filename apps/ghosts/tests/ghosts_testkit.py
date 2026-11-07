@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime, time
 from pathlib import Path
 from typing import Any
 
 import yaml
+from nightaudit.connectors import Connector
 
 APP = Path(__file__).resolve().parents[1]
 CONTROL = APP / "controls" / "staff-access.yaml"
@@ -15,11 +16,17 @@ DATA = APP / "data"
 RUN_TIME = datetime(2026, 11, 4, 2, 0, tzinfo=UTC)
 _PATH_OPTIONS = ("path", "assignments", "invoice", "roster")
 
+def on[C: Connector](day: str, connector: C) -> C:
+    """The connector as the runner hands it over: bound to 02:00 UTC on *day* (skeleton Req 10.1)."""
+    connector.bind_run_time(datetime.combine(date.fromisoformat(day), time(2, 0), tzinfo=UTC))
+    return connector
 
-def control_for(data_dir: Path, folder: Path, today: str = "2026-11-04", name: str = "control.yaml") -> Path:
+
+def control_for(data_dir: Path, folder: Path, name: str = "control.yaml") -> Path:
     """Write the shipped Hollow Pines control into *folder*, reading its files from *data_dir* (absolute paths).
 
-    Only the file locations and the run date change; the ledgers, normalisers, regions and words stay the shipped ones.
+    Only the file locations change; the ledgers, normalisers, regions and words stay the shipped ones. The run date is
+    the run's time, as in production.
     """
     raw: dict[str, Any] = yaml.safe_load(CONTROL.read_text(encoding="utf-8"))
 
@@ -31,10 +38,8 @@ def control_for(data_dir: Path, folder: Path, today: str = "2026-11-04", name: s
     for ledger in raw["ledgers"].values():
         for source in ledger["sources"]:
             relocate(source["options"])
-            if "today" in source["options"]:
-                source["options"]["today"] = today
-    for enricher in raw.get("enrichers", []):
-        relocate(enricher["options"])
+    for step in [*raw.get("enrichers", []), *raw.get("summarisers", [])]:
+        relocate(step.setdefault("options", {}))
     folder.mkdir(parents=True, exist_ok=True)
     path = folder / name
     path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")

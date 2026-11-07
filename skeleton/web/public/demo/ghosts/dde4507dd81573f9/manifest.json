@@ -1,0 +1,26 @@
+{
+  "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+  "control_hash": "f8c42b1f46888c7560c3d38967d8fc7c0c5c4708fa94aaeef69ac639aa284c4b",
+  "final_chain_hash": "478448abe90c24fdfdbccaa3597f1843a4daaf72f1c1c65ac2fa805641a66cd3",
+  "finding_count": 12,
+  "ledgers": {
+    "billed": {
+      "count": 364,
+      "hash": "bb238be3a73ca65f26f0509d0b19b4189310a1c1a5c95012aa9c47963d3daa6a",
+      "source": "seats:lantern-chat, seats:crypt-docs, seats:belfry-crm, seats:ossuary-design"
+    },
+    "intended": {
+      "count": 180,
+      "hash": "82e895be464d62a7dc4943b5bc06cb0557c613a480358ac30936d836893a9b2e",
+      "source": "hr:../data/hr_roster.csv"
+    },
+    "observed": {
+      "count": 183,
+      "hash": "8d8057f7a891b39ab40f974c5b8f21b467733cac8568a4d175f52f870b96821b",
+      "source": "identity:../data/identity_export.csv"
+    }
+  },
+  "row_count": 741,
+  "run_id": "dde4507dd81573f9",
+  "run_time": "2026-11-05T02:00:00Z"
+}

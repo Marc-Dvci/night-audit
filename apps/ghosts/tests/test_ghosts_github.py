@@ -14,6 +14,7 @@ from typing import Any
 import pytest
 from ghosts.connectors import HrRoster, IdentityExport, SeatAssignments
 from ghosts.github import GitHubMembers, HttpResponse, TokenNotReadOnly, UrllibClient, next_link
+from ghosts_testkit import on
 from nightaudit.matcher import match
 from nightaudit.models import LedgerName, LedgerSnapshot
 from nightaudit.runner import load_control_file
@@ -132,7 +133,7 @@ def test_github_is_a_second_observed_source_in_one_run() -> None:
         for r in SeatAssignments(ledger=LedgerName.billed, base_dir=FIXTURES, vendor=vendor,
                                  assignments=f"licences/{name}.csv", invoice=f"invoices/{name}.csv").fetch()
     ]
-    intended = HrRoster(ledger=LedgerName.intended, base_dir=FIXTURES, path="hr_roster.csv", today="2026-11-04").fetch()
+    intended = on("2026-11-04", HrRoster(ledger=LedgerName.intended, base_dir=FIXTURES, path="hr_roster.csv")).fetch()
     result = match(
         [
             LedgerSnapshot(name=LedgerName.intended, source="hr", records=intended),

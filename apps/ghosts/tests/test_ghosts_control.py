@@ -60,12 +60,40 @@ def test_the_page_speaks_about_people(path: Path) -> None:
 
 
 @pytest.mark.parametrize("path", ALL, ids=lambda p: p.name)
-def test_the_enricher_repeats_the_controls_alias_table(path: Path) -> None:
+def test_the_enricher_inherits_the_controls_folder_and_alias_table(path: Path) -> None:
     control = load_control_file(path)
     (enricher,) = control.enrichers
     assert enricher.entry == "ghosts.context:people_context"
-    assert enricher.options["alias_domains"] == control.alias_domains
+    assert enricher.options == {"roster": "../data/hr_roster.csv"}  # no alias table repeated (skeleton Req 10.3)
     assert set(enricher.regions) == {"OB", "O", "B", "I", "IB", "IO"}
+    assert [s.entry for s in control.summarisers] == ["ghosts.seats:seat_notes"]
+
+
+@pytest.mark.parametrize("path", ALL, ids=lambda p: p.name)
+def test_the_roster_date_is_the_run_date_not_an_option(path: Path) -> None:
+    (roster,) = load_control_file(path).ledgers["intended"].sources
+    assert "today" not in roster.options
+
+
+@pytest.mark.parametrize("path", ALL, ids=lambda p: p.name)
+def test_the_lines_with_no_key_and_the_downloads_are_in_the_companys_words(path: Path) -> None:
+    ui = resolve_ui(load_control_file(path))
+    assert (ui.unkeyed.singular, ui.unkeyed.plural) == ("seat paid for nobody named", "seats paid for nobody named")
+    assert "resource" not in ui.unkeyed.explanation
+    assert [(d.label, d.file) for d in ui.downloads] == [
+        ("Review sheet (CSV)", "review.csv"),
+        ("Review sheet (HTML)", "review.html"),
+    ]
+
+
+@pytest.mark.parametrize("path", ALL, ids=lambda p: p.name)
+def test_every_finding_region_has_a_template_with_no_accusation(path: Path) -> None:
+    control = load_control_file(path)
+    for code in ("OB", "O", "B", "I", "IB", "IO"):
+        template = control.regions[code].template
+        assert template and template.startswith("{context:hr_status} "), code
+        assert not any(ch.isdigit() for ch in template), code  # numbers come from the evidence
+        assert not {"malicious", "stole", "fraud", "abuse"} & set(template.lower().split()), code
 
 
 def test_the_github_variant_only_adds_one_observed_source() -> None:

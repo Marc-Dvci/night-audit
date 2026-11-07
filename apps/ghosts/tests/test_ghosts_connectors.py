@@ -6,9 +6,11 @@ import tempfile
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
+from typing import Any
 
 import pytest
 from ghosts.connectors import HrRoster, IdentityExport, SeatAssignments, belongs_on
+from ghosts_testkit import on
 from hypothesis import given
 from hypothesis import strategies as st
 from nightaudit.models import LedgerName
@@ -17,8 +19,9 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures"
 RUN_DATE = date(2026, 11, 4)
 
 
-def roster(today: str | None = "2026-11-04", **kwargs: object) -> HrRoster:
-    return HrRoster(ledger=LedgerName.intended, base_dir=FIXTURES, path="hr_roster.csv", today=today, **kwargs)
+def roster(today: str | None = "2026-11-04", **kwargs: Any) -> HrRoster:
+    connector = HrRoster(ledger=LedgerName.intended, base_dir=FIXTURES, path="hr_roster.csv", **kwargs)
+    return on(today, connector) if today else connector
 
 
 def seats(vendor: str) -> SeatAssignments:
@@ -83,7 +86,7 @@ def test_a_future_leaving_date_keeps_the_person_and_their_leaving_date() -> None
 )
 def test_leaving_date_boundary(tmp_path: Path, leaving: str, belongs: bool) -> None:
     path = write_roster(tmp_path, "2020-01-01", leaving)
-    records = HrRoster(ledger=LedgerName.intended, path=str(path), today="2026-11-04").fetch()
+    records = on("2026-11-04", HrRoster(ledger=LedgerName.intended, path=str(path))).fetch()
     assert bool(records) is belongs
 
 
@@ -94,20 +97,26 @@ def test_leaving_date_boundary(tmp_path: Path, leaving: str, belongs: bool) -> N
 )
 def test_start_date_boundary(tmp_path: Path, start: str, belongs: bool) -> None:
     path = write_roster(tmp_path, start, "")
-    records = HrRoster(ledger=LedgerName.intended, path=str(path), today="2026-11-04").fetch()
+    records = on("2026-11-04", HrRoster(ledger=LedgerName.intended, path=str(path))).fetch()
     assert bool(records) is belongs
 
 
-def test_without_a_today_option_the_run_date_comes_from_the_clock() -> None:
+def test_outside_a_run_the_run_date_comes_from_the_clock() -> None:
     connector = roster(today=None, clock=lambda: datetime(2026, 11, 5, 23, 30, tzinfo=UTC))
     assert connector.today == date(2026, 11, 5)
     assert "e.ashby@hollowpines.com" not in [r.raw_key for r in connector.fetch()]
 
 
+def test_the_run_time_wins_over_the_clock() -> None:
+    connector = on("2026-11-04", roster(today=None, clock=lambda: datetime(2031, 1, 1, tzinfo=UTC)))
+    assert connector.today == date(2026, 11, 4)
+    assert "e.ashby@hollowpines.com" in [r.raw_key for r in connector.fetch()]
+
+
 def test_a_roster_with_a_bad_date_is_not_read(tmp_path: Path) -> None:
     path = write_roster(tmp_path, "2020-01-01", "12/09/2026")
     with pytest.raises(ValueError, match="leaving_date"):
-        HrRoster(ledger=LedgerName.intended, path=str(path), today="2026-11-04").fetch()
+        on("2026-11-04", HrRoster(ledger=LedgerName.intended, path=str(path))).fetch()
 
 
 dates = st.dates(min_value=date(2020, 1, 1), max_value=date(2030, 12, 31))
@@ -121,7 +130,7 @@ def test_property_intended_membership_follows_the_run_date(
     """G1 (Req 2.1, 2.2): the roster connector emits a person if and only if the run date lies in [start, leaving)."""
     with tempfile.TemporaryDirectory() as folder:
         path = write_roster(Path(folder), start.isoformat() if start else "", leaving.isoformat() if leaving else "")
-        connector = HrRoster(ledger=LedgerName.intended, path=str(path), today=today.isoformat())
+        connector = on(today.isoformat(), HrRoster(ledger=LedgerName.intended, path=str(path)))
         emitted = bool(connector.fetch())
     first_day = start or date.min
     after_last_day = leaving or date.max

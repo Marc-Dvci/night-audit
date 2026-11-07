@@ -26,7 +26,7 @@ from typing import Any
 from pydantic import BaseModel
 
 from .control import ControlConfig
-from .models import Finding
+from .models import Finding, RunResult
 
 _PROMPT_FIELD_LIMIT = 200
 
@@ -201,7 +201,12 @@ def _default_template(finding: Finding) -> str:
 
 
 def resolve_template(finding: Finding, control: ControlConfig) -> str:
-    """Resolve the deterministic template from the control override or default."""
+    """Resolve the deterministic template from the control override or default.
+
+    A control template may use ``{context:<name>}`` and ``{attr:<name>}`` (Req 10.5); an absent value is empty text.
+    The rendered text passes the same number guard as a model's text, so a control template cannot cite a number that
+    is not evidence; if it does, or if it cannot be formatted, the default template is used.
+    """
     override = control.regions.get(finding.region_code)
     if override is not None and override.template is not None:
         slots: _SafeTemplate = _SafeTemplate()
@@ -216,10 +221,61 @@ def resolve_template(finding: Finding, control: ControlConfig) -> str:
             str(finding.nights_persisted) if finding.nights_persisted is not None else "0"
         )
         try:
-            return override.template.format_map(slots)
-        except (KeyError, IndexError, ValueError):
+            text = _fill_value_slots(override.template, finding).format_map(slots)
+        except (KeyError, IndexError, ValueError, AttributeError):
             return _default_template(finding)
+        if not numbers_are_safe(text, finding)[0]:
+            return _default_template(finding)
+        return text
     return _default_template(finding)
+
+
+#: ``{context:<name>}`` and ``{attr:<name>}`` in a region template (Req 10.5).
+_VALUE_SLOT = re.compile(r"\{(context|attr):([A-Za-z0-9_.\-]+)\}")
+
+
+def attr_value(finding: Finding, name: str) -> str:
+    """The attribute from the first record that has it, in I, O, B order, as the page's ``attr:`` column shows it."""
+    for ledger in ("intended", "observed", "billed"):
+        for record in finding.records:
+            if record.ledger.value == ledger and record.attrs.get(name):
+                return record.attrs[name]
+    return ""
+
+
+def _fill_value_slots(template: str, finding: Finding) -> str:
+    """Replace value slots with their text, braces doubled so the values stay literal in ``format_map``."""
+
+    def value(found: re.Match[str]) -> str:
+        kind, name = found.group(1), found.group(2)
+        text = finding.context.get(name, "") if kind == "context" else attr_value(finding, name)
+        return text.replace("{", "{{").replace("}", "}}")
+
+    return _VALUE_SLOT.sub(value, template)
+
+
+# --- Run notes (Req 10.2) -----------------------------------------------------------------------------------------
+
+
+def run_evidence_numbers(result: RunResult) -> set[Decimal]:
+    """Every number in the run's evidence rows: each record of each ledger and each finding row."""
+    nums: set[Decimal] = set()
+    for snapshot in result.snapshots:
+        for record in snapshot.records:
+            if record.amount is not None:
+                nums.add(Decimal(record.amount))
+            for text in (record.row_id, record.raw_key, record.key, *record.attrs.values()):
+                _add_numeric(nums, text)
+            if record.timestamp is not None:
+                _add_numeric(nums, record.timestamp.isoformat())
+    for finding in result.findings:
+        nums.update(evidence_numbers(finding))
+    return nums
+
+
+def note_numbers(text: str) -> list[str]:
+    """The numbers a note cites, as the guard reads them, in a fixed order."""
+    return sorted({str(n) for n in extract_numbers(text)})
 
 
 # --- Bedrock call (behind configuration) ------------------------------------

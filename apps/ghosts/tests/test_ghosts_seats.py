@@ -16,13 +16,15 @@ from ghosts_testkit import FIXTURES, control_for
 from hypothesis import given
 from hypothesis import strategies as st
 from nightaudit.control import ControlConfig
+from nightaudit.evidence import verify_evidence_pack
 from nightaudit.matcher import match
 from nightaudit.models import LedgerName, LedgerSnapshot
+from nightaudit.runner import load_run
 
 PEOPLE = ControlConfig(normalisers={n: ["email_canonical"] for n in ("intended", "observed", "billed")})
 
 
-def test_an_invoice_below_its_assignments_is_reported_beside_the_run(
+def test_an_invoice_below_its_assignments_is_a_note_in_the_run_and_its_evidence(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     control = control_for(FIXTURES, tmp_path)
@@ -30,18 +32,22 @@ def test_an_invoice_below_its_assignments_is_reported_beside_the_run(
     out = capsys.readouterr().out
     assert code == 0
     (run_dir,) = [p for p in (tmp_path / "runs").iterdir() if (p / "result.json").exists()]
-    summary = json.loads((run_dir / "seats.json").read_text("utf-8"))
-    vendors = {v["vendor"]: v for v in summary["vendors"]}
-    assert vendors["Crypt Docs"]["invoice_seats"] == 2
-    assert vendors["Crypt Docs"]["assigned_seats"] == 3
-    assert vendors["Crypt Docs"]["short_seats"] == 1
-    assert vendors["Lantern Chat"]["unnamed_seats"] == 3
-    assert vendors["Belfry CRM"]["unnamed_seats"] == vendors["Belfry CRM"]["short_seats"] == 0
-    assert summary["run_id"] == run_dir.name
-    result = json.loads((run_dir / "result.json").read_text("utf-8"))
-    assert summary["evidence_chain_hash"] == result["evidence_chain_hash"]
-    assert "Crypt Docs 2026-10: invoice for 2 seats, 3 assigned; 1 assigned beyond the invoice" in out
-    assert "Lantern Chat 2026-10: invoice for 5 seats, 2 assigned; 3 paid for nobody named" in out
+    result = load_run(tmp_path / "runs", run_dir.name)
+    assert result.ledger_errors == {}
+    notes = [n.text for n in result.notes]
+    assert notes == [
+        "Crypt Docs assigns 1 more seat than its invoice pays for (2 invoiced, 3 assigned).",
+        "Lantern Chat invoices 3 more seats than it assigns (5 invoiced, 2 assigned).",
+        "Belfry CRM invoices exactly the seats it assigns.",
+    ]
+    assert all(n.source == "ghosts.seats:seat_notes" for n in result.notes)
+    rows = [json.loads(line) for line in (run_dir / "evidence" / "evidence.jsonl").read_text("utf-8").splitlines()]
+    assert [r["text"] for r in rows if r["type"] == "note"] == notes
+    assert verify_evidence_pack(run_dir / "evidence").ok
+    assert not (run_dir / "seats.json").exists()
+    assert {"review.csv", "review.html"} <= {p.name for p in run_dir.iterdir()}
+    for note in notes:
+        assert note in out
 
 
 def write_vendor(folder: Path, assigned: int, invoiced: int, price: Decimal) -> SeatAssignments:

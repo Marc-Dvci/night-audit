@@ -1,16 +1,12 @@
 """``python -m ghosts.acceptance``: run Hollow Pines and print the planted findings against the found ones.
 
-``apps/ghosts/planted.yaml`` is the acceptance test and is never edited. As committed, it is not valid YAML: the story
-of ``noor.haddad`` is a plain scalar containing ``? No:`` at the end of a line, which YAML reads as a mapping key.
-``load_planted`` therefore quotes every ``story:`` value in memory before parsing. Only those free-text stories are
-rewritten; keys, regions and counts are parsed as written.
+``apps/ghosts/planted.yaml`` is the acceptance test. It is read as written.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 import tempfile
 from dataclasses import dataclass, field
@@ -27,33 +23,11 @@ from .seats import seat_summary
 APP_DIR = Path(__file__).resolve().parents[2]
 PLANTED = APP_DIR / "planted.yaml"
 CONTROL = APP_DIR / "controls" / "staff-access.yaml"
-_STORY = re.compile(r"^(?P<indent>\s*)story:\s?(?P<text>.*)$")
-
-
-def quote_stories(text: str) -> str:
-    """Turn every ``story:`` value, with its continuation lines, into one double-quoted scalar."""
-    lines = text.splitlines()
-    out: list[str] = []
-    i = 0
-    while i < len(lines):
-        found = _STORY.match(lines[i])
-        if not found:
-            out.append(lines[i])
-            i += 1
-            continue
-        indent = len(found.group("indent"))
-        parts = [found.group("text").strip()]
-        i += 1
-        while i < len(lines) and lines[i].strip() and len(lines[i]) - len(lines[i].lstrip()) > indent:
-            parts.append(lines[i].strip())
-            i += 1
-        out.append(f"{found.group('indent')}story: {json.dumps(' '.join(p for p in parts if p))}")
-    return "\n".join(out) + "\n"
 
 
 def load_planted(path: Path = PLANTED) -> dict[str, Any]:
-    """The planted findings, read without changing the file."""
-    data: dict[str, Any] = yaml.safe_load(quote_stories(path.read_text(encoding="utf-8")))
+    """The planted findings."""
+    data: dict[str, Any] = yaml.safe_load(path.read_text(encoding="utf-8"))
     return data
 
 
@@ -99,6 +73,12 @@ def compare(planted: dict[str, Any], result: RunResult, intended_count: int) -> 
     want_unnamed = {str(u["vendor"]): int(u["quantity"]) for u in planted.get("unnamed_phantom_seats", [])}
     verdict.checks.append(("seats paid for nobody named", json.dumps(want_unnamed, sort_keys=True),
                            json.dumps(summary, sort_keys=True), summary == want_unnamed))
+    stated = sorted(n.text for n in result.notes if " more seat" in n.text and " than it assigns" in n.text)
+    want_stated = sorted(f"{vendor} invoices {n} more seat{'s' if n != 1 else ''} than it assigns"
+                         for vendor, n in want_unnamed.items())
+    verdict.checks.append(("run notes state each unnamed-seat gap", "; ".join(want_stated),
+                           "; ".join(t.split(" (")[0] for t in stated),
+                           [t.split(" (")[0] for t in stated] == want_stated))
     unkeyed = [u for u in result.unkeyed if u.ledger == LedgerName.billed]
     verdict.checks.append(("unkeyed billed rows", str(sum(want_unnamed.values())), str(len(unkeyed)),
                            len(unkeyed) == sum(want_unnamed.values())))

@@ -226,7 +226,11 @@ class DeclaredStacks(_AwsConnector):
 
 
 class ApprovedChanges(_AwsConnector):
-    """Intended ledger: resources approved outside a stack, with approver, reason and expiry."""
+    """Intended ledger: resources approved outside a stack, with approver, reason and expiry.
+
+    An approval is expired when its expiry date is before the run date: the ``today`` option when set, else the UTC
+    date of the run's time (skeleton Req 10.1), else today's UTC date when used outside a run.
+    """
 
     def __init__(
         self, path: str = "approved-changes.yaml", today: str | None = None, optional: bool = False, **kwargs: Any
@@ -234,8 +238,15 @@ class ApprovedChanges(_AwsConnector):
         super().__init__(**kwargs)
         self._path = path
         self._optional = optional
-        self._today = date.fromisoformat(today) if today else datetime.now(UTC).date()
+        self._fixed_today = date.fromisoformat(today) if today else None
         self.expired: list[str] = []
+
+    @property
+    def today(self) -> date:
+        if self._fixed_today is not None:
+            return self._fixed_today
+        when = self.run_time if self.run_time is not None else datetime.now(UTC)
+        return when.astimezone(UTC).date()
 
     @property
     def source(self) -> str:
@@ -249,9 +260,10 @@ class ApprovedChanges(_AwsConnector):
             return []
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         records: list[Record] = []
+        today = self.today
         for index, entry in enumerate(raw.get("approved", []), start=1):
             expires = entry.get("expires")
-            if expires and date.fromisoformat(str(expires)) < self._today:
+            if expires and date.fromisoformat(str(expires)) < today:
                 self.expired.append(str(entry.get("id")))
                 continue
             records.append(

@@ -103,6 +103,13 @@ function matched(run: RunResult): string {
     <ul class="matched">${keys.map((k) => `<li class="mono">${esc(k)}</li>`).join("")}</ul>`;
 }
 
+/** A verified review decision on this finding, in words (Req 10.7). The page only receives decisions that verify. */
+function decisionLine(run: RunResult, f: Finding): string {
+  const d = run.decisions?.ok ? run.decisions.rows.find((r) => r.key === f.key && r.region_code === f.region_code) : undefined;
+  if (!d) return "";
+  return `<p class="row-decision"><span class="decision-word">Decision: ${esc(d.decision)}</span> <span class="nowrap">by ${esc(d.reviewer)}</span> <span class="nowrap">on ${esc(d.decision_date)}</span></p>`;
+}
+
 export function findings(run: RunResult, region: string | null, open: string | null): string {
   const columns = run.ui.columns.length ? run.ui.columns : [{ label: "Key", from: "key" }];
   const hasName = columns.some((c) => c.from === "name");
@@ -122,6 +129,7 @@ export function findings(run: RunResult, region: string | null, open: string | n
           .map((c) => cell(f, c))
           .join("")}</button>
         <p class="row-explain">${esc(f.explanation ?? f.meaning)}</p>
+        ${decisionLine(run, f)}
         <div id="ev-${i}" class="row-body"${isOpen ? "" : " hidden"}>${isOpen ? evidence(f, i) : ""}</div>
       </li>`;
     })

@@ -1,6 +1,8 @@
-"""``python -m ghosts.run <control>``: run a control through the skeleton, then write the seat summary beside it.
+"""``python -m ghosts.run <control>``: run a control through the skeleton, then write the review sheet beside it.
 
-The run itself is the skeleton's ``run_control``; this adds ``runs/<run_id>/seats.json`` (Req 4.3) and prints it.
+The run itself is the skeleton's ``run_control``: it gives the roster the run's date, adds the seat summary as run notes
+and writes the evidence pack. This adds ``review.csv`` and ``review.html`` to the run's folder, which the control lists
+as downloads (skeleton Req 10.6), and prints the run.
 """
 
 from __future__ import annotations
@@ -13,7 +15,7 @@ from pathlib import Path
 from nightaudit.models import RunResult
 from nightaudit.runner import run_control
 
-from .seats import seat_summary, summary_lines, write_seat_summary
+from .review import export
 
 
 def parse_run_time(text: str | None) -> datetime | None:
@@ -25,9 +27,9 @@ def parse_run_time(text: str | None) -> datetime | None:
 
 
 def run(control: Path, runs: Path, run_time: datetime | None = None) -> RunResult:
-    """Run *control* and write its seat summary. Returns the skeleton's result."""
+    """Run *control* and write its review sheet. Returns the skeleton's result."""
     result = run_control(control, runs, run_time=run_time)
-    write_seat_summary(result, runs / result.run_id)
+    export(runs / result.run_id)
     return result
 
 
@@ -49,9 +51,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"    {finding.region_code:<3} {finding.name:<22} {finding.key}")
     print(f"  unkeyed billed rows: {sum(1 for u in result.unkeyed if u.ledger.value == 'billed')}")
     print(f"  billed total: {result.billed_total}")
-    print("  seats:")
-    for line in summary_lines(seat_summary(result)):
-        print(f"    {line}")
+    print("  notes:")
+    for note in result.notes:
+        print(f"    {note.text}")
     print(f"  evidence chain: {result.evidence_chain_hash}")
     return 0 if result.complete else 1
 

@@ -17,7 +17,7 @@ function ledgerList(run: RunResult): string {
   return LEDGERS.map((name, i) => {
     const words = run.ui.ledgers[name] ?? { label: name, source: "" };
     const keys = run.view.ledger_keys[name];
-    const noun = keys === 1 ? "key" : "keys";
+    const noun = keys === 1 ? run.ui.noun.singular : run.ui.noun.plural;
     const count =
       keys === null || keys === undefined
         ? run.missing_ledgers.includes(name)
@@ -49,12 +49,12 @@ export function compare(run: RunResult, selected: string | null): string {
   const labels: Record<string, string> = {};
   for (const name of LEDGERS) labels[name] = run.ui.ledgers[name]?.label ?? name;
   const calm = run.view.calm;
-  const venn = vennSvg({ counts: counts(run), names: run.region_names, ledgerLabels: labels, selected, calm });
+  const venn = vennSvg({ counts: counts(run), names: run.region_names, ledgerLabels: labels, selected, calm, noun: run.ui.noun.plural });
   return `<section class="compare" aria-label="What is compared">
     <div class="venn-wrap">${venn}</div>
     <div class="compare-side">
       <h2 class="rule-title">Three ledgers</h2>
-      <p class="compare-intro">Every key is looked up in all three. Found in all three, it is matched. Any other combination is a finding, named by the region it falls in.</p>
+      <p class="compare-intro">Every ${esc(run.ui.noun.singular)} is looked up in all three. Found in all three, it is matched. Any other combination is a finding, named by the region it falls in.</p>
       <ol class="ledgers">${ledgerList(run)}</ol>
       ${calm ? "" : legend(run, selected)}
     </div>

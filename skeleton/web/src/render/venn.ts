@@ -34,12 +34,30 @@ export function regionAt(x: number, y: number): string | null {
   return code || null;
 }
 
+const capital = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** A region name longer than fits inside its region ("UNPROVISIONED JOINER") is drawn on two lines, split at a space
+ * as near the middle as possible. Names of one word, or short names, stay on one line. */
+export const NAME_FITS = 12;
+export function nameLines(name: string): string[] {
+  if (name.length <= NAME_FITS || !name.includes(" ")) return [name];
+  const words = name.split(" ");
+  let best = 1;
+  for (let i = 1; i < words.length; i += 1) {
+    const diff = (s: number): number => Math.abs(words.slice(0, s).join(" ").length - words.slice(s).join(" ").length);
+    if (diff(i) < diff(best)) best = i;
+  }
+  return [words.slice(0, best).join(" "), words.slice(best).join(" ")];
+}
+
 export interface VennInput {
   counts: Record<string, number>;
   names: Record<string, string>;
   ledgerLabels: Record<string, string>;
   selected: string | null;
   calm: boolean;
+  /** What the control counts, plural ("resources", "people"). */
+  noun?: string;
 }
 
 function regionClass(code: string, count: number, selected: boolean): string {
@@ -83,8 +101,10 @@ export function vennSvg(input: VennInput): string {
       const tone = code === "IOB" ? " living" : code === "IO" ? "" : n > 0 ? " hot" : " zero";
       const sel = input.selected === code ? " sel" : "";
       const name = (input.names[code] ?? code).toUpperCase();
-      return `<text class="venn-count${tone}${sel}" x="${x}" y="${y}" text-anchor="middle">${n}</text>
-        <text class="venn-name${sel}" x="${x}" y="${y + 17}" text-anchor="middle">${esc(name)}</text>`;
+      const lines = nameLines(name);
+      const lift = (lines.length - 1) * 12; // a second line would cross into the region below
+      return `<text class="venn-count${tone}${sel}" x="${x}" y="${y - lift}" text-anchor="middle">${n}</text>
+        ${lines.map((line, i) => `<text class="venn-name${sel}" x="${x}" y="${y - lift + 17 + i * 13}" text-anchor="middle">${esc(line)}</text>`).join("")}`;
     })
     .join("");
 
@@ -93,7 +113,7 @@ export function vennSvg(input: VennInput): string {
     .join(", ");
 
   return `<svg class="venn${input.calm ? " calm" : ""}" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="venn-title venn-desc">
-    <title id="venn-title">Keys by region across the three ledgers</title>
+    <title id="venn-title">${esc(capital(input.noun ?? "keys"))} by region across the three ledgers</title>
     <desc id="venn-desc">${esc(description)}</desc>
     <defs>${defs}</defs>${regions}${rings}${ledgerLabels}${labels}</svg>`;
 }

@@ -17,7 +17,7 @@ from decimal import Decimal
 from pydantic import BaseModel, Field
 
 from .control import DEFAULT_HEADLINES, fill_region_name
-from .models import REGION_CODES, Finding, HeadlineUi, LedgerName, RunResult
+from .models import REGION_CODES, Finding, HeadlineUi, LedgerName, RunResult, UnkeyedUi
 
 #: Headline order: the regions on the bill first, then the unbilled ones, as in the Req 2.2 example (OB, O, I).
 HEADLINE_ORDER: tuple[str, ...] = ("OB", "B", "IB", "O", "I")
@@ -25,6 +25,8 @@ HEADLINE_ORDER: tuple[str, ...] = ("OB", "B", "IB", "O", "I")
 DISPLAY_ORDER: tuple[str, ...] = ("OB", "B", "IB", "I", "O", "IO", "IOB")
 
 CALM_HEADLINE = "All three ledgers agree. Nothing to report tonight."
+#: How a recorded demo run is marked, in the report and on the page. It names no domain, so it fits every app.
+RECORDED_TEXT = "Recorded run of synthetic data, not live data"
 MINUS = "\u2212"
 _MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 #: Sums of money never round: the default 28-digit context drops digits (the matcher uses the same rule).
@@ -171,14 +173,16 @@ def run_view(run: RunResult) -> RunView:
         )
         rows = _unkeyed_billed_rows(run)
         if rows:
+            words = run.ui.unkeyed
+            # The credits sentence describes a cloud bill, so it is only used while the default words are (Req 10.4).
             note = (
                 "Negative because credits are larger than tax and support. A credit is expected here."
-                if unkeyed_total < 0
-                else "Tax, credits and support lines carry no resource id, so they are kept apart."
+                if unkeyed_total < 0 and words == UnkeyedUi()
+                else words.explanation
             )
             lines.append(
                 MoneyLine(
-                    label=f"{rows} {'line' if rows == 1 else 'lines'} with no resource id",
+                    label=f"{rows} {words.singular if rows == 1 else words.plural}",
                     value=money_text(unkeyed_total),
                     amount=str(unkeyed_total),
                     note=note,
@@ -234,6 +238,8 @@ def run_numbers(run: RunResult) -> set[Decimal]:
             nums.add(Decimal(finding.nights_persisted))
         nums.update(_date_numbers(finding.first_seen))
         nums.update(r.amount for r in finding.records if r.amount is not None)
+    # Notes cite only evidence numbers, checked when the run was made (Req 10.2).
+    nums.update(Decimal(n) for note in run.notes for n in note.numbers)
     return nums
 
 
@@ -269,6 +275,7 @@ h1 { margin: 1mm 0 0; font-size: 14pt; }
 .night { margin: 0 0 4mm; font-size: 8.5pt; color: #3c4252; }
 .recorded { font-weight: 600; }
 .headline { margin: 0 0 4mm; font-size: 12.5pt; line-height: 1.35; max-width: 40em; }
+.notes { margin: -2mm 0 4mm; padding-left: 5mm; max-width: 44em; }
 h2 { margin: 4mm 0 1mm; font: 600 8pt ui-monospace, Consolas, monospace; letter-spacing: 0.2em; color: #1e5c3a;
   text-transform: uppercase; border-bottom: 0.3mm solid #1e5c3a; padding-bottom: 0.6mm; }
 table { width: 100%; border-collapse: collapse; font-size: 8.3pt; }
@@ -316,13 +323,17 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
         f'<p class="night">Night of {_e(when)} · run {_e(run.run_id)}',
     ]
     if recorded:
-        parts.append(' · <span class="recorded">Recorded run of a synthetic account, not live data</span>')
+        parts.append(f' · <span class="recorded">{_e(RECORDED_TEXT)}</span>')
     parts.append("</p></header>")
     parts.append(f'<p class="headline">{_e(view.headline)}</p>')
+    if run.notes:
+        parts.append('<ul class="notes">' + "".join(f"<li>{_e(n.text)}</li>" for n in run.notes) + "</ul>")
+    key_label = next((c.label for c in ui.columns if c.from_ == "key"), "Key")
+    count_label = ui.noun.plural[:1].upper() + ui.noun.plural[1:] if ui.noun.plural else "Keys"
 
     # Counts per region.
     parts.append('<h2>Regions</h2><table class="regions"><thead><tr><th scope="col">Region</th>'
-                 '<th scope="col">Code</th><th scope="col" class="num">Keys</th>'
+                 f'<th scope="col">Code</th><th scope="col" class="num">{_e(count_label)}</th>'
                  '<th scope="col" class="num">Billed</th></tr></thead><tbody>')
     for code in DISPLAY_ORDER:
         summary = run.region_summaries.get(code)
@@ -337,7 +348,8 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
     parts.append(f"<h2>Findings · {len(findings)}</h2>")
     if findings:
         parts.append('<table class="findings"><thead><tr><th scope="col">Status</th><th scope="col">Region</th>'
-                     '<th scope="col">Key</th><th scope="col">First seen</th><th scope="col" class="num">Nights</th>'
+                     f'<th scope="col">{_e(key_label)}</th><th scope="col">First seen</th>'
+                     '<th scope="col" class="num">Nights</th>'
                      '<th scope="col" class="num">Billed</th></tr></thead><tbody>')
         for f in findings:
             status = "New tonight" if f.status == "new" else "Persisting"
@@ -355,7 +367,8 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
     resolved = sorted((f for f in run.resolved if not f.informational), key=_rank)
     if resolved:
         parts.append(f"<h2>Laid to rest · {len(resolved)}</h2>")
-        parts.append('<table class="resolved"><thead><tr><th scope="col">Region</th><th scope="col">Key</th>'
+        parts.append('<table class="resolved"><thead><tr><th scope="col">Region</th>'
+                     f'<th scope="col">{_e(key_label)}</th>'
                      '<th scope="col">First seen</th><th scope="col" class="num">Lasted</th></tr></thead><tbody>')
         for f in resolved:
             parts.append(f'<tr><td>{_e(f.name)}</td><td class="key">{_e(f.key)}</td>'
@@ -382,6 +395,7 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
 
 __all__ = [
     "CALM_HEADLINE",
+    "RECORDED_TEXT",
     "MoneyLine",
     "RunView",
     "date_text",

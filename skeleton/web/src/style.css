@@ -118,6 +118,15 @@ a { color: var(--phosphor); }
 .money-value { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .money-note { grid-column: 1 / -1; font: 15px/1.45 var(--sans); color: var(--bone-dim); }
 .pending { margin-top: 0.8rem; font: 14px var(--mono); color: var(--bone-dim); }
+/* Run notes (Req 10.2): plain sentences under the headline, ruled like the headline's other lines. */
+.notes { margin: 1rem 0 0; padding: 0; list-style: none; max-width: 62ch; }
+.notes li { padding: 0.3rem 0; border-top: 1px solid var(--hairline); font-size: 1rem; color: var(--bone); }
+/* Review (Req 10.6, 10.7): downloads and the state of the decisions. */
+.lede-side .rule-title + .review-state { margin-top: 0.5rem; }
+.review-state { margin-top: 0.5rem; font-size: 15px; color: var(--bone-dim); max-width: 46ch; }
+.review-state.failed { color: var(--amber); }
+.downloads { margin: 0.3rem 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0 1.4rem; }
+.lede-side .money + .rule-title, .lede-side .pending + .rule-title { margin-top: 1.4rem; }
 
 .incomplete { margin: 1.4rem 0 0; padding: 0.8rem 0.9rem; background: var(--ink-2); border-left: 3px solid var(--amber); }
 .incomplete-title { font: 600 13px var(--mono); letter-spacing: 0.2em; color: var(--amber); margin-bottom: 0.3rem; }
@@ -230,7 +239,7 @@ a { color: var(--phosphor); }
 .cell-label {
   position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
-.cell .mono { font-size: 14.5px; }
+.cell .mono { font-size: 14.5px; overflow-wrap: anywhere; }
 .finding-name, .row-region { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 600; }
 .row-region { margin-bottom: 0.3rem; }
 .row.new .finding-name, .row.new .row-region { color: var(--amber); }
@@ -242,6 +251,8 @@ a { color: var(--phosphor); }
 .status.haunting { color: var(--bone); }
 .status.old { color: var(--blood); }
 .row-explain { margin-top: 0.4rem; max-width: 78ch; color: var(--bone-dim); }
+.row-decision { margin-top: 0.25rem; font: 14px var(--mono); color: var(--bone); }
+.decision-word { color: var(--phosphor); }
 .row-body { margin-top: 0.8rem; }
 
 .context { margin-bottom: 0.6rem; font-size: 14px; }

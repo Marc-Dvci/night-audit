@@ -11,7 +11,7 @@ an auditor. Nothing under `skeleton/` changes (Req 7.1). The app supplies:
 - four read-only connectors (`HrRoster`, `IdentityExport`, `SeatAssignments`, `GitHubMembers`) that subclass
   `nightaudit.connectors.Connector` and are referenced from the control with `type: python` (Req 2, 3, 4),
 - an enricher, `people_context`, that adds the HR facts and the per-person summaries a reviewer reads (Req 2.2, 5.1),
-- a seat summary written beside each run (Req 4.3),
+- a seat summary summariser that adds run notes (Req 4.3),
 - the review campaign: export, import, verify (Req 5),
 - a seeded generator for the synthetic company (Req 6),
 - a recorded demo for the shared page (Req 7.2).
@@ -37,13 +37,12 @@ apps/ghosts/
     invoices/<vendor>.csv         one per vendor
   demo/
     build.py                      the recorded demo (Req 7.2)
-    out/                          its static files when skeleton/web/public is not writable
   src/ghosts/
     connectors.py                 HrRoster, IdentityExport, SeatAssignments
     github.py                     GitHubMembers, HttpClient, UrllibClient
     context.py                    people_context enricher
-    seats.py                      seat summary (Req 4.3)
-    run.py                        python -m ghosts.run: run_control + seat summary
+    seats.py                      seat summary as run notes (Req 4.3)
+    run.py                        python -m ghosts.run: run_control + review sheet
     acceptance.py                 python -m ghosts.acceptance: planted against found
     review.py                     python -m ghosts.review export | import | verify (Req 5)
     generate.py                   python -m ghosts.generate (Req 6)
@@ -91,9 +90,7 @@ Relative paths resolve against `base_dir`, the control file's directory.
 Reads `hr_roster.csv`: `employee_id, email, given_name, family_name, department, title, manager_email,
 employment_type, location, start_date, leaving_date, github_login`.
 
-The skeleton does not pass the run time to connectors. `HrRoster` therefore takes a `today` option (an ISO date), as
-Vampires' `ApprovedChanges` does; without it, it reads the UTC date from an injected clock that defaults to the system
-clock. The Hollow Pines control sets `today: "2026-11-04"`, the date its data describes.
+The run date is the UTC date of the run's time, which the skeleton gives every connector before `fetch()` (skeleton Req 10.1), so `nightaudit run --at` moves it. Outside a run it is the UTC date of an injected clock.
 
 `belongs_on(start, leaving, today)` is a pure function:
 
@@ -179,19 +176,12 @@ The enricher decides "left" from ledger membership, not from a date, so it needs
 
 ## 6. Seat summary (Req 4.3)
 
-`RunResult` has no field for an application's own run-level notes. The seat summary is therefore a file written
-beside the run, `runs/<run_id>/seats.json`, by `ghosts.seats.write_seat_summary(result, run_dir)`:
-
-```json
-{"run_id": "...", "evidence_chain_hash": "...",
- "vendors": [{"vendor": "Lantern Chat", "invoice_id": "...", "period": "2026-10", "unit_price": "8.00",
-              "invoice_seats": 151, "assigned_seats": 148, "unnamed_seats": 3, "short_seats": 0}]}
-```
-
-It is computed only from the billed records of the run, whose attributes carry the invoice and assignment counts, so
-the evidence pack is enough to recompute it. `python -m ghosts.run <control>` runs the control through the skeleton's
-`run_control`, writes `seats.json` and prints the summary, including every vendor whose invoice is below its
-assignments.
+The seat summary is a list of run notes, made by the control's summariser `ghosts.seats:seat_notes` (skeleton
+Req 10.2). It is computed only from the billed records of the run, whose attributes carry the invoice and assignment
+counts and the two gaps (`unnamed_seats`, `short_seats`), so every number a note cites is on a billed record. For the
+demo: "Lantern Chat invoices 3 more seats than it assigns (178 invoiced, 175 assigned)." A vendor whose invoice is
+below its assignments gets "<vendor> assigns N more seats than its invoice pays for (...)". The notes are evidence
+rows, shown under the headline and printed by `python -m ghosts.run`.
 
 ## 7. Review campaign (Req 5)
 
@@ -264,21 +254,26 @@ It prints `OK` or `FAIL` with the first failing row and exits non-zero on failur
 
 ## 9. Demo (Req 7.2)
 
-`apps/ghosts/demo/build.py` runs `controls/staff-access.yaml` at 2026-11-04T02:00Z into `runs/ghosts-demo`, writes the
-seat summary, and exports the same files as `apps/vampires/demo/build.py`: `runs.json` and, per run, `run.json`,
-`report.html` (recorded), `evidence.jsonl`, `manifest.json`, `evidence.zip` (fixed zip time). The target is
-`skeleton/web/public/demo/ghosts/`; this builder cannot write there, so the default target is `apps/ghosts/demo/out/`,
-with `apps.entry.json` holding the `apps.json` entry to add (`base: "demo/ghosts/"`).
+`apps/ghosts/demo/build.py` runs `controls/staff-access.yaml` at 2026-11-04T02:00Z and 2026-11-05T02:00Z into
+`runs/ghosts-demo`. Each run writes its review sheet (the control's downloads). Three synthetic decisions by "Dana
+Okafor, IT manager", dated 2026-11-05, are imported into the second night through `ghosts.review` with a fixed clock,
+so the first night shows no decision and the second shows three. The skeleton's `nightaudit.demo.export_run` writes
+each night into `skeleton/web/public/demo/ghosts/<run id>/`; `scripts/build_demos.py` runs this build and lists
+`ghosts-demo` (`base: "demo/ghosts/"`) in `apps.json`.
 
-## 10. What the skeleton does not provide
+## 10. What the skeleton did not provide, and what it provides now
 
-| Gap | Effect on Ghosts | What the app does |
+Ghosts was first built without write access to `skeleton/`. These were the gaps; skeleton Requirement 10 (design §18
+of the three-way match) closed each one, and Ghosts no longer has any of the workarounds.
+
+| Gap | Workaround at `ec92469` | Now |
 |---|---|---|
-| Connectors are not given the run time | `HrRoster` cannot see `--at` | `today` option, as Vampires does; the demo and tests set it to the run date |
-| `RunResult` has no field for app notes | an invoice below its assignments has nowhere to go in the run | `seats.json` beside the run (§6) |
-| Enrichers are not given the control's directory or its alias domains | the roster path and alias table cannot be inherited | path resolved against `apps/ghosts/controls/`; alias table repeated and tested equal |
-| The unkeyed money line's words are fixed in `report.py` ("lines with no resource id", "Tax, credits and support lines ...") | the three unnamed Lantern Chat seats are labelled with cloud words on the page and in the report | none possible from the app; reported |
-| Region templates have no `context` slots | the template explanation cannot cite the leaving date | the Left on column and the evidence show it |
+| Connectors are not given the run time | `today` option, set to the run date | `HrRoster` reads `self.run_time` (skeleton Req 10.1); the control has no `today` |
+| `RunResult` has no field for app notes | `seats.json` beside the run | `ghosts.seats:seat_notes` is a summariser; the notes are in the evidence chain, on the page and in the report (Req 10.2) |
+| Enrichers are not given the control's directory or its alias domains | path resolved against `apps/ghosts/controls/`; alias table repeated and tested equal | `people_context(findings, options, control)` reads both from the control (Req 10.3) |
+| The unkeyed money line's words are fixed in `report.py` | none possible | `ui.unkeyed`: "seats paid for nobody named" (Req 10.4) |
+| Region templates have no `context` slots | the Left on column and the evidence show the date | each region's template states the condition from `{context:hr_status}` and other slots (Req 10.5) |
+| No downloads, no decisions on the page | the sheet only on disk | `ui.downloads` links the review sheet; verified decisions show on the page (Req 10.6, 10.7) |
 
 ## 11. Correctness properties
 
@@ -340,7 +335,4 @@ the original text while no cell starts with a formula character.
 - there are no pending keys and the run is complete,
 - 180 people are in the intended ledger.
 
-As committed, `planted.yaml` is not valid YAML: the `noor.haddad` story is a plain scalar with `? No:` at the end of a
-line, which YAML reads as a mapping key. The file is never edited. `ghosts.acceptance.load_planted` quotes every
-`story:` value in memory before parsing; keys, regions and counts are parsed as written, and a test checks the file
-still equals its committed bytes.
+`planted.yaml` is read as written. The `noor.haddad` story is quoted in the file (commit `d7c668b`), so it parses.

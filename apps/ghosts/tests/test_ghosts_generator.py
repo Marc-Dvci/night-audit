@@ -17,7 +17,7 @@ from ghosts.generate import (
     build_company,
     main,
 )
-from ghosts_testkit import APP, DATA
+from ghosts_testkit import APP, DATA, on
 from hypothesis import given
 from hypothesis import strategies as st
 from nightaudit.models import LedgerName
@@ -60,7 +60,7 @@ def test_property_the_same_seed_gives_the_same_bytes(seed: int) -> None:
 
 
 def test_180_people_belong_on_the_run_date() -> None:
-    records = HrRoster(ledger=LedgerName.intended, path=str(DATA / "hr_roster.csv"), today=PLANTED["run_date"]).fetch()
+    records = on(PLANTED["run_date"], HrRoster(ledger=LedgerName.intended, path=str(DATA / "hr_roster.csv"))).fetch()
     assert len(records) == PLANTED["staff_total"] == 180
     assert len({r.raw_key for r in records}) == 180
 
