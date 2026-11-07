@@ -30,8 +30,12 @@ RECORDED_TEXT = "Recorded run of synthetic data, not live data"
 MINUS = "\u2212"
 _MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 #: Sums of money never round: the default 28-digit context drops digits (the matcher uses the same rule).
-_EXACT = decimal.Context(prec=decimal.MAX_PREC, Emax=decimal.MAX_EMAX, Emin=decimal.MIN_EMIN,
-                         traps=[decimal.InvalidOperation, decimal.Inexact, decimal.Overflow])
+_EXACT = decimal.Context(
+    prec=decimal.MAX_PREC,
+    Emax=decimal.MAX_EMAX,
+    Emin=decimal.MIN_EMIN,
+    traps=[decimal.InvalidOperation, decimal.Inexact, decimal.Overflow],
+)
 
 
 # --- Money --------------------------------------------------------------------------------------------------------
@@ -168,8 +172,9 @@ def run_view(run: RunResult) -> RunView:
         billed_keys = keys["billed"] or 0
         noun = run.ui.noun.singular if billed_keys == 1 else run.ui.noun.plural
         lines.append(
-            MoneyLine(label=f"On the bill for {billed_keys} {noun}", value=money_text(keyed_total),
-                      amount=str(keyed_total))
+            MoneyLine(
+                label=f"On the bill for {billed_keys} {noun}", value=money_text(keyed_total), amount=str(keyed_total)
+            )
         )
         rows = _unkeyed_billed_rows(run)
         if rows:
@@ -221,9 +226,16 @@ def run_numbers(run: RunResult) -> set[Decimal]:
     """
     view = run_view(run)
     nums: set[Decimal] = {
-        Decimal(view.finding_count), Decimal(view.new_count), Decimal(view.persisting_count),
-        Decimal(view.pending_count), Decimal(view.resolved_count), Decimal(len(run.findings)),
-        Decimal(_unkeyed_billed_rows(run)), view.keyed_total, view.unkeyed_total, view.billed_total,
+        Decimal(view.finding_count),
+        Decimal(view.new_count),
+        Decimal(view.persisting_count),
+        Decimal(view.pending_count),
+        Decimal(view.resolved_count),
+        Decimal(len(run.findings)),
+        Decimal(_unkeyed_billed_rows(run)),
+        view.keyed_total,
+        view.unkeyed_total,
+        view.billed_total,
     }
     nums.update(Decimal(n) for n in view.ledger_keys.values() if n is not None)
     for code in REGION_CODES:
@@ -298,8 +310,7 @@ def report_csp() -> str:
     """The report's own policy: nothing loads, and only its one style block applies (Req 7.1, 11.2)."""
     digest = base64.b64encode(hashlib.sha256(REPORT_CSS.encode("utf-8")).digest()).decode("ascii")
     return (
-        f"default-src 'none'; style-src 'sha256-{digest}'; "
-        "base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+        f"default-src 'none'; style-src 'sha256-{digest}'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
     )
 
 
@@ -332,25 +343,31 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
     count_label = ui.noun.plural[:1].upper() + ui.noun.plural[1:] if ui.noun.plural else "Keys"
 
     # Counts per region.
-    parts.append('<h2>Regions</h2><table class="regions"><thead><tr><th scope="col">Region</th>'
-                 f'<th scope="col">Code</th><th scope="col" class="num">{_e(count_label)}</th>'
-                 '<th scope="col" class="num">Billed</th></tr></thead><tbody>')
+    parts.append(
+        '<h2>Regions</h2><table class="regions"><thead><tr><th scope="col">Region</th>'
+        f'<th scope="col">Code</th><th scope="col" class="num">{_e(count_label)}</th>'
+        '<th scope="col" class="num">Billed</th></tr></thead><tbody>'
+    )
     for code in DISPLAY_ORDER:
         summary = run.region_summaries.get(code)
         count = summary.key_count if summary else 0
         amount = money_text(summary.billed_amount) if summary and "B" in code else ""
-        parts.append(f"<tr><td>{_e(run.region_names.get(code, code))}</td><td>{code}</td>"
-                     f'<td class="num">{count}</td><td class="num">{_e(amount)}</td></tr>')
+        parts.append(
+            f"<tr><td>{_e(run.region_names.get(code, code))}</td><td>{code}</td>"
+            f'<td class="num">{count}</td><td class="num">{_e(amount)}</td></tr>'
+        )
     parts.append("</tbody></table>")
 
     # Findings, new first.
     findings = sorted(_findings(run), key=_rank)
     parts.append(f"<h2>Findings · {len(findings)}</h2>")
     if findings:
-        parts.append('<table class="findings"><thead><tr><th scope="col">Status</th><th scope="col">Region</th>'
-                     f'<th scope="col">{_e(key_label)}</th><th scope="col">First seen</th>'
-                     '<th scope="col" class="num">Nights</th>'
-                     '<th scope="col" class="num">Billed</th></tr></thead><tbody>')
+        parts.append(
+            '<table class="findings"><thead><tr><th scope="col">Status</th><th scope="col">Region</th>'
+            f'<th scope="col">{_e(key_label)}</th><th scope="col">First seen</th>'
+            '<th scope="col" class="num">Nights</th>'
+            '<th scope="col" class="num">Billed</th></tr></thead><tbody>'
+        )
         for f in findings:
             status = "New tonight" if f.status == "new" else "Persisting"
             billed = money_text(f.billed_amount) if "B" in f.region_code else "not billed"
@@ -367,13 +384,17 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
     resolved = sorted((f for f in run.resolved if not f.informational), key=_rank)
     if resolved:
         parts.append(f"<h2>Laid to rest · {len(resolved)}</h2>")
-        parts.append('<table class="resolved"><thead><tr><th scope="col">Region</th>'
-                     f'<th scope="col">{_e(key_label)}</th>'
-                     '<th scope="col">First seen</th><th scope="col" class="num">Lasted</th></tr></thead><tbody>')
+        parts.append(
+            '<table class="resolved"><thead><tr><th scope="col">Region</th>'
+            f'<th scope="col">{_e(key_label)}</th>'
+            '<th scope="col">First seen</th><th scope="col" class="num">Lasted</th></tr></thead><tbody>'
+        )
         for f in resolved:
-            parts.append(f'<tr><td>{_e(f.name)}</td><td class="key">{_e(f.key)}</td>'
-                         f'<td>{_e(date_text(f.first_seen))}</td>'
-                         f'<td class="num">{_e(_nights_text(f.nights_persisted))}</td></tr>')
+            parts.append(
+                f'<tr><td>{_e(f.name)}</td><td class="key">{_e(f.key)}</td>'
+                f"<td>{_e(date_text(f.first_seen))}</td>"
+                f'<td class="num">{_e(_nights_text(f.nights_persisted))}</td></tr>'
+            )
         parts.append("</tbody></table>")
 
     parts.append("<h2>Money</h2><dl>")

@@ -53,9 +53,7 @@ def pack_problem(run_dir: Path, result: RunResult) -> str | None:
     return None
 
 
-def verify_decision_chain(
-    run_dir: Path, result: RunResult, allowed: Collection[str] | None = None
-) -> DecisionChain:
+def verify_decision_chain(run_dir: Path, result: RunResult, allowed: Collection[str] | None = None) -> DecisionChain:
     """Check the evidence pack, then every decision: bytes, index, link, hash, binding, and the finding it names.
 
     ``allowed`` is the application's set of decisions; ``None`` accepts any non-empty decision.

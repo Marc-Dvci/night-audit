@@ -23,8 +23,14 @@ from hypothesis import strategies as st
 from nightaudit.models import LedgerName
 
 PLANTED = load_planted(APP / "planted.yaml")
-PLANTED_NAMES = {("Jonah", "Marsh"), ("Petra", "Lindqvist"), ("Rowan", "Voss"), ("Elena", "Castell"),
-                 ("Noor", "Haddad"), ("Nadia", "Haddad")}
+PLANTED_NAMES = {
+    ("Jonah", "Marsh"),
+    ("Petra", "Lindqvist"),
+    ("Rowan", "Voss"),
+    ("Elena", "Castell"),
+    ("Noor", "Haddad"),
+    ("Nadia", "Haddad"),
+}
 
 
 def rows(files: dict[str, bytes], name: str) -> list[dict[str, str]]:
@@ -133,12 +139,14 @@ def test_the_healthy_company_plants_nothing() -> None:
         assert int(rows(healthy, f"invoices/{vendor.slug}.csv")[-1]["seat_quantity"]) == len(seats)
 
 
+@pytest.mark.integration
 def test_healthy_output_needs_an_explicit_folder(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit):
         main(["--healthy"])
     assert "--healthy needs --out" in capsys.readouterr().err
 
 
+@pytest.mark.integration
 def test_the_cli_writes_the_files(tmp_path: Path) -> None:
     assert main(["--out", str(tmp_path)]) == 0
     assert (tmp_path / "hr_roster.csv").read_bytes() == FILES["hr_roster.csv"]

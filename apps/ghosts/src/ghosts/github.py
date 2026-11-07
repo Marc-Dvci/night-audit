@@ -60,8 +60,9 @@ class UrllibClient:
         request = urllib.request.Request(url, headers=dict(headers), method="GET")
         try:
             with urllib.request.urlopen(request, timeout=self._timeout) as response:
-                return HttpResponse(response.status, {k.lower(): v for k, v in response.headers.items()},
-                                    response.read())
+                return HttpResponse(
+                    response.status, {k.lower(): v for k, v in response.headers.items()}, response.read()
+                )
         except urllib.error.HTTPError as exc:
             return HttpResponse(exc.code, {k.lower(): v for k, v in exc.headers.items()}, exc.read())
 

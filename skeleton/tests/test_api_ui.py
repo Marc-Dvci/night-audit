@@ -10,12 +10,12 @@ from fastapi.testclient import TestClient
 from nightaudit.api import CONTENT_SECURITY_POLICY, create_app
 from nightaudit.evidence import verify_evidence_pack
 from nightaudit.runner import run_control
-from test_end_to_end import RUN_TIME, _write_fixture
+from nightkit import RUN_TIME, write_account
 
 
 @pytest.fixture()
 def served(tmp_path: Path) -> tuple[TestClient, str, Path]:
-    control = _write_fixture(tmp_path)
+    control = write_account(tmp_path)
     result = run_control(control, tmp_path / "runs", run_time=RUN_TIME)
     static = tmp_path / "dist"
     static.mkdir()
@@ -23,6 +23,7 @@ def served(tmp_path: Path) -> tuple[TestClient, str, Path]:
     return TestClient(create_app(tmp_path / "runs", static_dir=static)), result.run_id, tmp_path / "runs"
 
 
+@pytest.mark.integration
 def test_the_run_document_carries_the_view(served: tuple[TestClient, str, Path]) -> None:
     http, run_id, _ = served
     data = http.get(f"/api/runs/{run_id}").json()
@@ -33,11 +34,13 @@ def test_the_run_document_carries_the_view(served: tuple[TestClient, str, Path])
     assert data["ui"]["columns"][0] == {"label": "Key", "from": "key"}
 
 
+@pytest.mark.integration
 def test_the_run_list_counts_new_findings(served: tuple[TestClient, str, Path]) -> None:
     http, _, _ = served
     assert http.get("/api/runs").json()[0]["new_findings"] == 3
 
 
+@pytest.mark.integration
 def test_the_evidence_files_are_served_as_written(served: tuple[TestClient, str, Path]) -> None:
     http, run_id, runs = served
     pack = runs / run_id / "evidence"
@@ -50,6 +53,7 @@ def test_the_evidence_files_are_served_as_written(served: tuple[TestClient, str,
     assert manifest.json()["final_chain_hash"] == verify_evidence_pack(pack).final_hash
 
 
+@pytest.mark.integration
 def test_the_morning_report_is_served_with_its_own_policy(served: tuple[TestClient, str, Path]) -> None:
     http, run_id, _ = served
     report = http.get(f"/api/runs/{run_id}/report.html")
@@ -61,6 +65,7 @@ def test_the_morning_report_is_served_with_its_own_policy(served: tuple[TestClie
     assert "script-src" not in policy
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize("name", ["evidence.jsonl", "manifest.json", "report.html"])
 def test_unknown_runs_are_not_found(served: tuple[TestClient, str, Path], name: str) -> None:
     http, _, _ = served
@@ -68,6 +73,7 @@ def test_unknown_runs_are_not_found(served: tuple[TestClient, str, Path], name: 
     assert http.get(f"/api/runs/..%2F..%2Fetc/{name}").status_code == 404
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize("path", ["/api/runs", "/api/health", "/", "/index.html", "/missing.js"])
 def test_every_response_carries_the_security_headers(served: tuple[TestClient, str, Path], path: str) -> None:
     http, _, _ = served

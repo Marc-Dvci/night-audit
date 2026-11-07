@@ -19,7 +19,7 @@ def _iso(ts: datetime | None) -> str | None:
 
 
 def _iso_text() -> st.SearchStrategy[str]:
-    return st.builds(lambda seconds: (RUN_TIME + timedelta(seconds=seconds)).isoformat(), st.integers(-10**8, 10**6))
+    return st.builds(lambda seconds: (RUN_TIME + timedelta(seconds=seconds)).isoformat(), st.integers(-(10**8), 10**6))
 
 
 def evidence_numbers(finding: Finding) -> set[Decimal]:
@@ -59,11 +59,16 @@ def findings(draw: st.DrawFn) -> Finding:
         duplicate_counts=counts,
         nights_persisted=draw(st.one_of(st.none(), st.integers(0, 400))),
         first_seen=draw(st.one_of(st.none(), st.just(RUN_TIME))),
-        context=draw(st.fixed_dictionaries({}, optional={
-            "created_by": st.text(max_size=24),
-            "created_at": st.one_of(_iso_text(), st.text(max_size=24), st.from_regex(r"\A\d{8,14}\Z")),
-            "event_id": st.text(max_size=24),
-        })),
+        context=draw(
+            st.fixed_dictionaries(
+                {},
+                optional={
+                    "created_by": st.text(max_size=24),
+                    "created_at": st.one_of(_iso_text(), st.text(max_size=24), st.from_regex(r"\A\d{8,14}\Z")),
+                    "event_id": st.text(max_size=24),
+                },
+            )
+        ),
     )
 
 
@@ -80,9 +85,12 @@ def poisoned(draw: st.DrawFn) -> tuple[Finding, str, Decimal]:
     finding = draw(findings())
     evidence = evidence_numbers(finding)
     near = sorted(evidence)
-    derived = st.sampled_from(near).flatmap(lambda e: st.sampled_from(
-        [-e, e * 10, e + 1, e - Decimal("0.01"), e.scaleb(-1)])) if near else st.nothing()
-    stray = draw(st.one_of(amounts(), st.integers(-10**6, 10**9).map(Decimal), derived))
+    derived = (
+        st.sampled_from(near).flatmap(lambda e: st.sampled_from([-e, e * 10, e + 1, e - Decimal("0.01"), e.scaleb(-1)]))
+        if near
+        else st.nothing()
+    )
+    stray = draw(st.one_of(amounts(), st.integers(-(10**6), 10**9).map(Decimal), derived))
     assume(stray not in evidence)
     cited = [_render(e, draw) for e in draw(st.lists(st.sampled_from(near), max_size=3))] if near else []
     words = st.text("abcdefghijklmnopqrstuvwxyz", min_size=1, max_size=8)
@@ -122,15 +130,22 @@ def test_property_a_response_citing_a_number_outside_the_evidence_is_replaced_by
 def _phantom(records: list[Record], context: dict[str, str] | None = None) -> Finding:
     name, severity, meaning = resolve_region("B", CLOUD)
     return Finding(
-        key="i-0aa1", region_code="B", name=name, severity=severity, meaning=meaning, informational=False,
-        records=records, context=context or {},
+        key="i-0aa1",
+        region_code="B",
+        name=name,
+        severity=severity,
+        meaning=meaning,
+        informational=False,
+        records=records,
+        context=context or {},
         billed_amount=exact_sum(r.amount for r in records if r.ledger == LedgerName.billed and r.amount is not None),
     )
 
 
 def _row(ledger: LedgerName, **fields: object) -> Record:
-    return Record.model_validate({"ledger": ledger, "source": "src", "row_id": "1", "raw_key": "i-0aa1",
-                                  "key": "i-0aa1", **fields})
+    return Record.model_validate(
+        {"ledger": ledger, "source": "src", "row_id": "1", "raw_key": "i-0aa1", "key": "i-0aa1", **fields}
+    )
 
 
 def test_regression_a_response_that_negates_an_evidence_number_is_rejected() -> None:
@@ -138,8 +153,9 @@ def test_regression_a_response_that_negates_an_evidence_number_is_rejected() -> 
     because the guard read numbers without their sign.
     """
     finding = _phantom([_row(LedgerName.intended, attrs={"project": "41.20"})])
-    explanation = explain_finding(finding, ModelConfig(enabled=True, model_id="fake"), CLOUD,
-                                  model_call=lambda prompt: "-41.20.")
+    explanation = explain_finding(
+        finding, ModelConfig(enabled=True, model_id="fake"), CLOUD, model_call=lambda prompt: "-41.20."
+    )
     assert explanation.source == "template"
     assert explanation.rejected
     assert "-41.20" in str(explanation.rejection_reason)
@@ -179,8 +195,9 @@ def test_a_custom_template_can_still_write_the_key() -> None:
 
 def test_the_number_guard_still_rejects_a_stray_number_when_the_template_has_no_key() -> None:
     finding = _phantom([_row(LedgerName.billed, amount=Decimal("41.20"))])
-    explanation = explain_finding(finding, ModelConfig(enabled=True, model_id="fake"), CLOUD,
-                                  model_call=lambda prompt: "It costs 99.99 a night.")
+    explanation = explain_finding(
+        finding, ModelConfig(enabled=True, model_id="fake"), CLOUD, model_call=lambda prompt: "It costs 99.99 a night."
+    )
     assert explanation.source == "template"
     assert explanation.rejected
     assert explanation.text.startswith(finding.meaning)

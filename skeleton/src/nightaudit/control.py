@@ -91,16 +91,8 @@ def resolve_region(code: str, control: ControlConfig) -> tuple[str, str, str]:
     override = control.regions.get(code)
     if override is not None:
         name = override.name if override.name is not None else DEFAULT_REGION_NAMES[code]
-        severity = (
-            override.severity
-            if override.severity is not None
-            else DEFAULT_REGION_SEVERITIES[code]
-        )
-        meaning = (
-            override.meaning
-            if override.meaning is not None
-            else DEFAULT_REGION_MEANINGS[code]
-        )
+        severity = override.severity if override.severity is not None else DEFAULT_REGION_SEVERITIES[code]
+        meaning = override.meaning if override.meaning is not None else DEFAULT_REGION_MEANINGS[code]
     else:
         name = DEFAULT_REGION_NAMES[code]
         severity = DEFAULT_REGION_SEVERITIES[code]
@@ -286,10 +278,7 @@ class ControlFile(BaseModel):
 
     def to_config(self) -> ControlConfig:
         """Extract a ``ControlConfig`` for the matcher and scorer."""
-        normalisers = {
-            name: ledger_config.normalisers
-            for name, ledger_config in self.ledgers.items()
-        }
+        normalisers = {name: ledger_config.normalisers for name, ledger_config in self.ledgers.items()}
         return ControlConfig(
             normalisers=normalisers,
             grace_hours=self.grace_hours,
@@ -319,9 +308,7 @@ class ControlFile(BaseModel):
                 try:
                     NormaliserRegistry.get(norm_name)
                 except UnknownNormaliserError:
-                    raise ValueError(
-                        f"Unknown normaliser '{norm_name}' in ledger '{ledger_name}'"
-                    ) from None
+                    raise ValueError(f"Unknown normaliser '{norm_name}' in ledger '{ledger_name}'") from None
 
     def canonical_hash(self) -> str:
         """SHA-256 of the whole control file in canonical JSON: ledgers, sources, rules and wording (Req 1.3).

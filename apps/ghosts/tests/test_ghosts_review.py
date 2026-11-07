@@ -83,6 +83,7 @@ def decide(rows: list[dict[str, str]], **decisions: str) -> list[dict[str, str]]
 # --- Export -----------------------------------------------------------------------------------------------------------
 
 
+@pytest.mark.integration
 def test_the_sheet_has_one_line_per_finding_with_the_review_columns(run_dir: Path) -> None:
     rows = exported_rows(run_dir)
     assert {r["person"]: r["region_code"] for r in rows} == FINDINGS
@@ -98,6 +99,7 @@ def test_the_sheet_has_one_line_per_finding_with_the_review_columns(run_dir: Pat
     assert (run_dir / "review.html").exists()
 
 
+@pytest.mark.integration
 def test_the_html_sheet_is_self_contained(run_dir: Path) -> None:
     exported_rows(run_dir)
     page = (run_dir / "review.html").read_text(encoding="utf-8")
@@ -109,6 +111,7 @@ def test_the_html_sheet_is_self_contained(run_dir: Path) -> None:
 # --- Import -----------------------------------------------------------------------------------------------------------
 
 
+@pytest.mark.integration
 def test_decisions_are_recorded_bound_to_the_runs_evidence_chain(run_dir: Path, tmp_path: Path) -> None:
     rows = decide(exported_rows(run_dir), c_wren="revoke", svc_backup="investigate")
     sheet = write_sheet(tmp_path / "done.csv", rows)
@@ -129,6 +132,7 @@ def test_decisions_are_recorded_bound_to_the_runs_evidence_chain(run_dir: Path, 
     assert verdict.ok and verdict.count == 2
 
 
+@pytest.mark.integration
 def test_a_second_import_continues_the_chain(run_dir: Path, tmp_path: Path) -> None:
     rows = exported_rows(run_dir)
     first = import_sheet(run_dir, write_sheet(tmp_path / "a.csv", decide(rows, f_lowe="keep")), "A", clock=CLOCK)
@@ -137,6 +141,7 @@ def test_a_second_import_continues_the_chain(run_dir: Path, tmp_path: Path) -> N
     assert verify_decisions(run_dir).count == 2
 
 
+@pytest.mark.integration
 def test_a_decision_on_a_key_the_run_did_not_report_is_refused(
     run_dir: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -151,6 +156,7 @@ def test_a_decision_on_a_key_the_run_did_not_report_is_refused(
     assert not (run_dir / "evidence" / "decisions.jsonl").exists()  # nothing written, not even c.wren
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize(
     ("change", "message"),
     [
@@ -172,6 +178,7 @@ def test_a_sheet_with_a_bad_line_is_refused_whole(
     assert not (run_dir / "evidence" / "decisions.jsonl").exists()
 
 
+@pytest.mark.integration
 def test_a_person_decided_twice_an_empty_sheet_and_no_reviewer_are_refused(run_dir: Path, tmp_path: Path) -> None:
     rows = decide(exported_rows(run_dir), c_wren="revoke")
     twice = write_sheet(tmp_path / "twice.csv", rows + [r for r in rows if r["decision"]])
@@ -193,8 +200,14 @@ def test_property_decisions_only_on_reported_findings(pristine: Path, person: st
     before = decisions.read_bytes() if decisions.exists() else None
     row = {c: "" for c in COLUMNS}
     result = json.loads((pristine / "result.json").read_text("utf-8"))
-    row.update(person=neutralise(person), region_code="O", decision="keep", decision_date="2026-11-05",
-               run_id=result["run_id"], evidence_chain_hash=result["evidence_chain_hash"])
+    row.update(
+        person=neutralise(person),
+        region_code="O",
+        decision="keep",
+        decision_date="2026-11-05",
+        run_id=result["run_id"],
+        evidence_chain_hash=result["evidence_chain_hash"],
+    )
     sheet = pristine.parent / "property-sheet.csv"
     write_sheet(sheet, [row])
     with pytest.raises(ReviewError):
@@ -212,6 +225,7 @@ def recorded(run_dir: Path, tmp_path: Path) -> Path:
     return run_dir / "evidence" / "decisions.jsonl"
 
 
+@pytest.mark.integration
 def test_changing_a_decision_is_detected(run_dir: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     path = recorded(run_dir, tmp_path)
     path.write_bytes(path.read_bytes().replace(b'"decision":"revoke"', b'"decision":"keep"'))
@@ -219,6 +233,7 @@ def test_changing_a_decision_is_detected(run_dir: Path, tmp_path: Path, capsys: 
     assert "FAIL  decision 0: hash mismatch" in capsys.readouterr().out
 
 
+@pytest.mark.integration
 def test_dropping_a_decision_is_detected(run_dir: Path, tmp_path: Path) -> None:
     path = recorded(run_dir, tmp_path)
     lines = path.read_bytes().splitlines(keepends=True)
@@ -227,6 +242,7 @@ def test_dropping_a_decision_is_detected(run_dir: Path, tmp_path: Path) -> None:
     assert not verdict.ok and verdict.failed_row == 1
 
 
+@pytest.mark.integration
 def test_a_tampered_evidence_pack_fails_verify_and_refuses_import(run_dir: Path, tmp_path: Path) -> None:
     rows = decide(exported_rows(run_dir), c_wren="revoke")
     evidence = run_dir / "evidence" / "evidence.jsonl"
@@ -236,6 +252,7 @@ def test_a_tampered_evidence_pack_fails_verify_and_refuses_import(run_dir: Path,
         import_sheet(run_dir, write_sheet(tmp_path / "done.csv", rows), "R", clock=CLOCK)
 
 
+@pytest.mark.integration
 def test_the_cli_reports_ok(run_dir: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     recorded(run_dir, tmp_path)
     assert main(["--runs", str(run_dir.parent), "verify", run_dir.name]) == 0
@@ -252,6 +269,7 @@ def decided(pristine: Path, tmp_path_factory: pytest.TempPathFactory) -> Path:
     return target
 
 
+@pytest.mark.integration
 @pytest.mark.property
 @given(data=st.data())
 def test_property_decision_tampering_is_detected(decided: Path, data: st.DataObject) -> None:
@@ -262,7 +280,7 @@ def test_property_decision_tampering_is_detected(decided: Path, data: st.DataObj
     position = data.draw(st.integers(min_value=0, max_value=len(original) - 1))
     replacement = data.draw(st.integers(min_value=0, max_value=255).filter(lambda b: b != original[position]))
     try:
-        path.write_bytes(original[:position] + bytes([replacement]) + original[position + 1:])
+        path.write_bytes(original[:position] + bytes([replacement]) + original[position + 1 :])
         assert not verify_decisions(decided).ok
     finally:
         path.write_bytes(original)
@@ -274,17 +292,42 @@ def _result(run_dir: Path) -> RunResult:
 
 # --- Values are text --------------------------------------------------------------------------------------------------
 
-values = st.text(alphabet=st.characters(blacklist_categories=("Cs",), blacklist_characters="\x00"), min_size=1,
-                 max_size=60) | st.sampled_from(["<script>alert(1)</script>", '"><img src=x onerror=alert(1)>',
-                                                 "=cmd|' /C calc'!A0", "+1-555", "@SUM(A1)", "'=already", "-x@y.z"])
+values = st.text(
+    alphabet=st.characters(exclude_categories=["Cs"], exclude_characters="\x00"), min_size=1, max_size=60
+) | st.sampled_from(
+    [
+        "<script>alert(1)</script>",
+        '"><img src=x onerror=alert(1)>',
+        "=cmd|' /C calc'!A0",
+        "+1-555",
+        "@SUM(A1)",
+        "'=already",
+        "-x@y.z",
+    ]
+)
 
 
 def synthetic(person: str, name: str, manager: str) -> RunResult:
     record = Record(ledger=LedgerName.observed, source="s", row_id="r", raw_key=person, key=person)
-    finding = Finding(key=person, region_code="O", name=name, severity="low", meaning="m", informational=False,
-                      records=[record], context={"manager": manager, "systems": name, "seats": manager})
-    return RunResult(run_id="0123456789abcdef", run_time=RUN_TIME, control_hash="c", complete=True,
-                     control_title=name, findings=[finding], evidence_chain_hash="e" * 64)
+    finding = Finding(
+        key=person,
+        region_code="O",
+        name=name,
+        severity="low",
+        meaning="m",
+        informational=False,
+        records=[record],
+        context={"manager": manager, "systems": name, "seats": manager},
+    )
+    return RunResult(
+        run_id="0123456789abcdef",
+        run_time=RUN_TIME,
+        control_hash="c",
+        complete=True,
+        control_title=name,
+        findings=[finding],
+        evidence_chain_hash="e" * 64,
+    )
 
 
 class Markup(HTMLParser):

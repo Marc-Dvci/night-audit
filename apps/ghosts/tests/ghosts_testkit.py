@@ -16,6 +16,7 @@ DATA = APP / "data"
 RUN_TIME = datetime(2026, 11, 4, 2, 0, tzinfo=UTC)
 _PATH_OPTIONS = ("path", "assignments", "invoice", "roster")
 
+
 def on[C: Connector](day: str, connector: C) -> C:
     """The connector as the runner hands it over: bound to 02:00 UTC on *day* (skeleton Req 10.1)."""
     connector.bind_run_time(datetime.combine(date.fromisoformat(day), time(2, 0), tzinfo=UTC))

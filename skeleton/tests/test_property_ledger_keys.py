@@ -26,8 +26,15 @@ def test_property_ledger_counts_are_distinct_keys(
     ledger = data.draw(st.sampled_from(list(LedgerName)))
     target = next(s for s in snapshots if s.name == ledger)
     extra: list[Record] = [r.model_copy(update={"row_id": r.row_id + "-again"}) for r in target.records[:1]]
-    extra.append(Record(ledger=ledger, source="extra", row_id="no-key", raw_key="",
-                        attrs=dict(target.records[0].attrs) if target.records else {}))
+    extra.append(
+        Record(
+            ledger=ledger,
+            source="extra",
+            row_id="no-key",
+            raw_key="",
+            attrs=dict(target.records[0].attrs) if target.records else {},
+        )
+    )
     grown = [s.model_copy(update={"records": [*s.records, *extra]}) if s.name == ledger else s for s in snapshots]
     assert ledger_key_counts(match(grown, control, RUN_TIME)) == counts
 

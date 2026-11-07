@@ -510,7 +510,9 @@ class Inventory(_AwsConnector):
 
 #: Sums of money never round: the default 28-digit context drops digits.
 _EXACT = decimal.Context(
-    prec=decimal.MAX_PREC, Emax=decimal.MAX_EMAX, Emin=decimal.MIN_EMIN,
+    prec=decimal.MAX_PREC,
+    Emax=decimal.MAX_EMAX,
+    Emin=decimal.MIN_EMIN,
     traps=[decimal.InvalidOperation, decimal.Inexact, decimal.Overflow],
 )
 

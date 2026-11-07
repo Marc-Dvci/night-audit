@@ -83,11 +83,15 @@ def summary_lines(summary: SeatSummary) -> list[str]:
     lines: list[str] = []
     for v in summary.vendors:
         if v.unnamed_seats:
-            lines.append(f"{v.vendor} invoices {_seats(v.unnamed_seats)} than it assigns "
-                         f"({v.invoice_seats} invoiced, {v.assigned_seats} assigned).")
+            lines.append(
+                f"{v.vendor} invoices {_seats(v.unnamed_seats)} than it assigns "
+                f"({v.invoice_seats} invoiced, {v.assigned_seats} assigned)."
+            )
         if v.short_seats:
-            lines.append(f"{v.vendor} assigns {_seats(v.short_seats)} than its invoice pays for "
-                         f"({v.invoice_seats} invoiced, {v.assigned_seats} assigned).")
+            lines.append(
+                f"{v.vendor} assigns {_seats(v.short_seats)} than its invoice pays for "
+                f"({v.invoice_seats} invoiced, {v.assigned_seats} assigned)."
+            )
     exact = [v.vendor for v in summary.vendors if not v.unnamed_seats and not v.short_seats]
     if exact:
         verb = "invoices" if len(exact) == 1 else "invoice"

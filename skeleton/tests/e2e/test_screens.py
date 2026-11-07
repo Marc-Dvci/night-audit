@@ -91,7 +91,8 @@ def test_a_deep_link_opens_and_scrolls_to_the_finding(page: Any, base_url: str, 
     assert head.get_attribute("aria-expanded") == "true"
     page.wait_for_function(
         "(el) => { const r = el.getBoundingClientRect(); return r.top >= 0 && r.top < innerHeight; }",
-        arg=head.element_handle(), timeout=2000,
+        arg=head.element_handle(),
+        timeout=2000,
     )
     assert page.evaluate("document.activeElement.dataset.key") == key
     assert query(page)["open"] == [key]

@@ -28,7 +28,8 @@ _ID_FIELDS = {"row_id", "id"}
 
 
 def _parse_ts(value: object) -> datetime | None:
-    """Parse an ISO-8601 timestamp; naive values are assumed UTC."""
+    """Parse an ISO-8601 timestamp; naive values are assumed UTC. Empty is ``None``; any other text that is not a
+    timestamp raises, so a damaged export makes the ledger missing instead of skipping the grace window (Req 9.4)."""
     if value is None:
         return None
     if isinstance(value, datetime):
@@ -43,14 +44,15 @@ def _parse_ts(value: object) -> datetime | None:
     try:
         dt = datetime.fromisoformat(text)
     except ValueError:
-        return None
+        raise ValueError(f"timestamp {str(value)[:40]!r} is not ISO-8601") from None
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=UTC)
     return dt
 
 
 def _parse_amount(value: object) -> Decimal | None:
-    """Parse a money value as ``Decimal``; empty/None becomes ``None``."""
+    """Parse a money value as ``Decimal``. Empty is ``None``; any other text that is not a number raises, so a damaged
+    bill makes the ledger missing instead of reporting a smaller total (Req 9.4, audit rule 2)."""
     if value is None:
         return None
     if isinstance(value, Decimal):
@@ -61,7 +63,7 @@ def _parse_amount(value: object) -> Decimal | None:
     try:
         return Decimal(text)
     except InvalidOperation:
-        return None
+        raise ValueError(f"amount {str(value)[:40]!r} is not a number") from None
 
 
 class Connector(ABC):
@@ -132,17 +134,10 @@ class CSVConnector(Connector):
             for index, row in enumerate(reader, start=1):
                 raw_key = str(row.get(self._key_field, "") or "")
                 row_id = str(row.get("row_id") or row.get("id") or index)
-                amount = _parse_amount(next(
-                    (row.get(name) for name in _AMOUNT_FIELDS if name in row), None
-                ))
+                amount = _parse_amount(next((row.get(name) for name in _AMOUNT_FIELDS if name in row), None))
                 ts_value = next((row.get(name) for name in _TS_FIELDS if name in row), None)
                 timestamp = _parse_ts(ts_value)
-                excluded = (
-                    {self._key_field}
-                    | _AMOUNT_FIELDS
-                    | _TS_FIELDS
-                    | _ID_FIELDS
-                )
+                excluded = {self._key_field} | _AMOUNT_FIELDS | _TS_FIELDS | _ID_FIELDS
                 attrs = {
                     name: str(value)
                     for name, value in row.items()
@@ -199,22 +194,11 @@ class JSONLConnector(Connector):
                 row: dict[str, Any] = json.loads(line)
                 raw_key = str(row.get(self._key_field, "") or "")
                 row_id = str(row.get("row_id") or row.get("id") or index)
-                amount = _parse_amount(next(
-                    (row.get(name) for name in _AMOUNT_FIELDS if name in row), None
-                ))
+                amount = _parse_amount(next((row.get(name) for name in _AMOUNT_FIELDS if name in row), None))
                 ts_value = next((row.get(name) for name in _TS_FIELDS if name in row), None)
                 timestamp = _parse_ts(ts_value)
-                excluded = (
-                    {self._key_field}
-                    | _AMOUNT_FIELDS
-                    | _TS_FIELDS
-                    | _ID_FIELDS
-                )
-                attrs = {
-                    name: str(value)
-                    for name, value in row.items()
-                    if name not in excluded and value is not None
-                }
+                excluded = {self._key_field} | _AMOUNT_FIELDS | _TS_FIELDS | _ID_FIELDS
+                attrs = {name: str(value) for name, value in row.items() if name not in excluded and value is not None}
                 records.append(
                     Record(
                         ledger=self._ledger,
@@ -260,9 +244,7 @@ def make_source(
         if source.path is None:
             raise ValueError(f"{source.type} source for ledger '{ledger.value}' has no path")
         path = _resolve_path(source.path, base_dir)
-        cls: type[CSVConnector] | type[JSONLConnector] = (
-            CSVConnector if source.type == "csv" else JSONLConnector
-        )
+        cls: type[CSVConnector] | type[JSONLConnector] = CSVConnector if source.type == "csv" else JSONLConnector
         return cls(path, ledger, field, source=source.path)
     if source.type == "python":
         if source.entry is None:
@@ -274,9 +256,7 @@ def make_source(
     raise ValueError(f"unknown connector type '{source.type}' for ledger '{ledger.value}'")
 
 
-def make_connectors(
-    ledger: LedgerName, config: LedgerConfig, base_dir: Path | None = None
-) -> list[Connector]:
+def make_connectors(ledger: LedgerName, config: LedgerConfig, base_dir: Path | None = None) -> list[Connector]:
     """Build every connector configured for a ledger."""
     sources = config.all_sources()
     if not sources:

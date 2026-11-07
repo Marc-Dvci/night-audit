@@ -46,13 +46,21 @@ def control(folder: Path, extra: dict[str, Any] | None = None, sources: dict[str
     ledgers: dict[str, Any] = {
         "intended": {"key_field": "id", "normalisers": ["strip"], "connector": {"type": "csv", "path": "intended.csv"}},
         "observed": {"key_field": "id", "normalisers": ["strip"], "connector": {"type": "csv", "path": "observed.csv"}},
-        "billed": {"key_field": "resource", "normalisers": ["strip"],
-                   "connector": {"type": "csv", "path": "billed.csv"}},
+        "billed": {
+            "key_field": "resource",
+            "normalisers": ["strip"],
+            "connector": {"type": "csv", "path": "billed.csv"},
+        },
     }
     for name, source in (sources or {}).items():
         ledgers[name]["sources"] = [source]
-    raw: dict[str, Any] = {"id": "second-app", "title": "Second app", "alias_domains": {"old.example": "example"},
-                           "ledgers": ledgers, **(extra or {})}
+    raw: dict[str, Any] = {
+        "id": "second-app",
+        "title": "Second app",
+        "alias_domains": {"old.example": "example"},
+        "ledgers": ledgers,
+        **(extra or {}),
+    }
     path = folder / "control.yaml"
     path.write_text(yaml.safe_dump(raw, sort_keys=False), "utf-8")
     return path
@@ -70,6 +78,7 @@ def evidence_rows(runs: Path, result: RunResult) -> list[dict[str, Any]]:
 # --- Req 10.1: run time ---------------------------------------------------------------------------------------------
 
 
+@pytest.mark.integration
 def test_every_connector_is_given_the_run_time_before_it_fetches(tmp_path: Path) -> None:
     dated = {"type": "python", "entry": "second_app_steps:DatedRows"}
     path = control(tmp_path / "c", sources={"intended": dated, "observed": dated, "billed": dated})
@@ -78,6 +87,7 @@ def test_every_connector_is_given_the_run_time_before_it_fetches(tmp_path: Path)
     assert result.regions["row-2026-11-04"] == "IOB"
 
 
+@pytest.mark.integration
 def test_a_connector_that_ignores_the_run_time_needs_no_change(tmp_path: Path) -> None:
     undated = {"type": "python", "entry": "second_app_steps:Undated"}
     path = control(tmp_path / "c", sources={"intended": undated})
@@ -97,6 +107,7 @@ def test_nightaudit_run_at_moves_the_date_for_every_connector(tmp_path: Path) ->
 # --- Req 10.2: notes ------------------------------------------------------------------------------------------------
 
 
+@pytest.mark.integration
 def test_a_summarisers_sentences_are_notes_in_the_evidence_the_page_and_the_report(tmp_path: Path) -> None:
     sentence = "Key c is billed 41.20 with no approval; 3 keys are observed."
     path = control(tmp_path / "c", say(sentence, "Every   other line\nmatches."))
@@ -115,10 +126,11 @@ def test_a_summarisers_sentences_are_notes_in_the_evidence_the_page_and_the_repo
     assert verify_evidence_pack(runs / result.run_id / "evidence").ok
     assert run_document(result)["notes"][0]["text"] == sentence
     report = report_html(result)
-    assert f"<p class=\"headline\">{run_view(result).headline}</p><ul class=\"notes\"><li>{sentence}</li>" in report
+    assert f'<p class="headline">{run_view(result).headline}</p><ul class="notes"><li>{sentence}</li>' in report
     assert {Decimal("41.20"), Decimal("3")} <= run_numbers(result)
 
 
+@pytest.mark.integration
 def test_a_note_that_cites_a_number_outside_the_evidence_is_refused_and_named(tmp_path: Path) -> None:
     path = control(tmp_path / "c", say("Key c is billed 41.20.", "Seven keys, 7 of them new."))
     result = run_control(path, tmp_path / "runs", run_time=RUN_TIME)
@@ -129,19 +141,24 @@ def test_a_note_that_cites_a_number_outside_the_evidence_is_refused_and_named(tm
     assert result.findings  # the run keeps its findings
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize(
     ("entry", "message"),
-    [("second_app_steps:fail", "RuntimeError: summariser failed"),
-     ("second_app_steps:not_a_list", "TypeError: a summariser returns a list of sentences"),
-     ("second_app_steps:missing", "AttributeError")],
+    [
+        ("second_app_steps:fail", "RuntimeError: summariser failed"),
+        ("second_app_steps:not_a_list", "TypeError: a summariser returns a list of sentences"),
+        ("second_app_steps:missing", "AttributeError"),
+    ],
 )
 def test_a_summariser_that_fails_adds_no_note_and_is_named(tmp_path: Path, entry: str, message: str) -> None:
-    result = run_control(control(tmp_path / "c", {"summarisers": [{"entry": entry}]}), tmp_path / "runs",
-                         run_time=RUN_TIME)
+    result = run_control(
+        control(tmp_path / "c", {"summarisers": [{"entry": entry}]}), tmp_path / "runs", run_time=RUN_TIME
+    )
     assert result.notes == [] and result.complete
     assert result.ledger_errors[f"summariser:{entry}"].startswith(message)
 
 
+@pytest.mark.integration
 def test_notes_are_a_short_list_of_short_sentences(tmp_path: Path) -> None:
     too_many = run_control(control(tmp_path / "a", say(*(["A note."] * 13))), tmp_path / "ra", run_time=RUN_TIME)
     too_long = run_control(control(tmp_path / "b", say("x" * 301)), tmp_path / "rb", run_time=RUN_TIME)
@@ -150,6 +167,7 @@ def test_notes_are_a_short_list_of_short_sentences(tmp_path: Path) -> None:
         assert result.ledger_errors["summariser:second_app_steps:say"].startswith("notes refused: at most 12 notes")
 
 
+@pytest.mark.integration
 def test_an_incomplete_run_has_no_notes(tmp_path: Path) -> None:
     path = control(tmp_path / "c", say("A note."))
     (tmp_path / "c" / "billed.csv").unlink()
@@ -160,6 +178,7 @@ def test_an_incomplete_run_has_no_notes(tmp_path: Path) -> None:
 words = st.text(alphabet=string.ascii_letters + " ", min_size=1, max_size=20)
 
 
+@pytest.mark.integration
 @pytest.mark.property
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
 @given(left=words, number=st.decimals(min_value=-1000, max_value=1000, places=2), right=words)
@@ -194,15 +213,26 @@ def _record_numbers(record: Record) -> set[Decimal]:
 # --- Req 10.3: control context --------------------------------------------------------------------------------------
 
 
+@pytest.mark.integration
 def test_an_enricher_that_takes_control_gets_the_folder_alias_domains_id_and_run_time(tmp_path: Path) -> None:
-    extra = {"enrichers": [{"entry": "second_app_steps:where", "regions": ["OB"]},
-                           {"entry": "second_app_steps:old_style", "regions": ["OB"]}]}
+    extra = {
+        "enrichers": [
+            {"entry": "second_app_steps:where", "regions": ["OB"]},
+            {"entry": "second_app_steps:old_style", "regions": ["OB"]},
+        ]
+    }
     result = run_control(control(tmp_path / "my-controls", extra), tmp_path / "runs", run_time=RUN_TIME)
     (c,) = [f for f in result.findings if f.key == "c"]
-    assert c.context == {"folder": "my-controls", "aliases": "old.example>example", "control_id": "second-app",
-                         "run_date": "2026-11-04", "seen_by": "old_style"}
+    assert c.context == {
+        "folder": "my-controls",
+        "aliases": "old.example>example",
+        "control_id": "second-app",
+        "run_date": "2026-11-04",
+        "seen_by": "old_style",
+    }
 
 
+@pytest.mark.integration
 def test_a_summariser_that_takes_control_gets_it_too(tmp_path: Path) -> None:
     extra = {"summarisers": [{"entry": "second_app_steps:count_billed", "options": {"amount": "41.20"}}]}
     result = run_control(control(tmp_path / "folder", extra), tmp_path / "runs", run_time=RUN_TIME)
@@ -212,9 +242,13 @@ def test_a_summariser_that_takes_control_gets_it_too(tmp_path: Path) -> None:
 # --- Req 10.4: words for lines with no key --------------------------------------------------------------------------
 
 
+@pytest.mark.integration
 def test_the_lines_with_no_key_use_the_controls_words(tmp_path: Path) -> None:
-    words = {"singular": "seat paid for nobody named", "plural": "seats paid for nobody named",
-             "explanation": "The invoice counts more seats than there are assignments."}
+    words = {
+        "singular": "seat paid for nobody named",
+        "plural": "seats paid for nobody named",
+        "explanation": "The invoice counts more seats than there are assignments.",
+    }
     result = run_control(control(tmp_path / "c", {"ui": {"unkeyed": words}}), tmp_path / "runs", run_time=RUN_TIME)
     line = run_view(result).lines[1]
     assert (line.label, line.note) == ("1 seat paid for nobody named", words["explanation"])
@@ -222,6 +256,7 @@ def test_the_lines_with_no_key_use_the_controls_words(tmp_path: Path) -> None:
     assert "1 seat paid for nobody named" in report and "resource id" not in report
 
 
+@pytest.mark.integration
 def test_without_unkeyed_words_the_wording_is_the_one_used_before(tmp_path: Path) -> None:
     result = run_control(control(tmp_path / "c"), tmp_path / "runs", run_time=RUN_TIME)
     line = run_view(result).lines[1]
@@ -234,8 +269,16 @@ def test_without_unkeyed_words_the_wording_is_the_one_used_before(tmp_path: Path
 
 def _finding(context: dict[str, str] | None = None, attrs: dict[str, str] | None = None) -> Finding:
     record = Record(ledger=LedgerName.observed, source="s", row_id="o1", raw_key="k", key="k", attrs=attrs or {})
-    return Finding(key="k", region_code="OB", name="Ghost", severity="high", meaning="Exists, unapproved.",
-                   informational=False, records=[record], context=context or {})
+    return Finding(
+        key="k",
+        region_code="OB",
+        name="Ghost",
+        severity="high",
+        meaning="Exists, unapproved.",
+        informational=False,
+        records=[record],
+        context=context or {},
+    )
 
 
 def _with_template(template: str) -> ControlConfig:
@@ -264,11 +307,22 @@ def test_a_template_that_cites_a_number_outside_the_evidence_falls_back_to_the_d
     assert resolve_template(finding, _with_template("Left {context:left_on}, 30 days ago.")) == default
 
 
-slot = st.sampled_from(["{context:a}", "{context:b}", "{attr:a}", "{attr:missing}", "{key}", "{billed_amount}",
-                        "{meaning}", "{name}", "{nights_persisted}", "{unknown}"])
+slot = st.sampled_from(
+    [
+        "{context:a}",
+        "{context:b}",
+        "{attr:a}",
+        "{attr:missing}",
+        "{key}",
+        "{billed_amount}",
+        "{meaning}",
+        "{name}",
+        "{nights_persisted}",
+        "{unknown}",
+    ]
+)
 literal = st.text(alphabet=string.ascii_letters + " .,;:-", max_size=12)
-values = st.dictionaries(st.sampled_from(["a", "b", "c"]),
-                         st.text(alphabet=string.printable, max_size=20), max_size=3)
+values = st.dictionaries(st.sampled_from(["a", "b", "c"]), st.text(alphabet=string.printable, max_size=20), max_size=3)
 
 
 @pytest.mark.property
@@ -286,9 +340,24 @@ def test_property_template_slots_never_fail_and_never_invent_a_number(
 # --- Req 10.6: downloads --------------------------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("name", ["../result.json", "evidence/manifest.json", ".hidden.csv", "a/b.csv", "a\\b.csv",
-                                  "review.exe", "review", "review.csv.", "C:review.csv", "%2e%2e.csv", "", "x" * 70 +
-                                  ".csv", "review.CSV"])
+@pytest.mark.parametrize(
+    "name",
+    [
+        "../result.json",
+        "evidence/manifest.json",
+        ".hidden.csv",
+        "a/b.csv",
+        "a\\b.csv",
+        "review.exe",
+        "review",
+        "review.csv.",
+        "C:review.csv",
+        "%2e%2e.csv",
+        "",
+        "x" * 70 + ".csv",
+        "review.CSV",
+    ],
+)
 def test_a_download_name_outside_the_allow_list_is_refused(name: str) -> None:
     with pytest.raises(ValidationError):
         DownloadUi(label="Sheet", file=name)
@@ -303,6 +372,7 @@ def _served(tmp_path: Path) -> tuple[TestClient, RunResult, Path]:
     return TestClient(create_app(runs)), result, runs
 
 
+@pytest.mark.integration
 def test_a_listed_download_is_served_as_an_attachment_and_linked_only_when_it_exists(tmp_path: Path) -> None:
     http, result, runs = _served(tmp_path)
     response = http.get(f"/api/runs/{result.run_id}/files/sheet.csv")
@@ -313,17 +383,32 @@ def test_a_listed_download_is_served_as_an_attachment_and_linked_only_when_it_ex
     assert http.get(f"/api/runs/{result.run_id}/files/later.txt").status_code == 404  # listed, not written yet
 
 
-@pytest.mark.parametrize("name", ["unlisted.csv", "result.json", "..%2Fresult.json", "%2e%2e%2fresult.json",
-                                  "evidence%2Fmanifest.json", "..%5Cresult.json"])
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    "name",
+    [
+        "unlisted.csv",
+        "result.json",
+        "..%2Fresult.json",
+        "%2e%2e%2fresult.json",
+        "evidence%2Fmanifest.json",
+        "..%5Cresult.json",
+    ],
+)
 def test_no_request_reads_a_file_the_control_does_not_list(tmp_path: Path, name: str) -> None:
     http, result, _ = _served(tmp_path)
     assert http.get(f"/api/runs/{result.run_id}/files/{name}").status_code == 404
 
 
+@pytest.mark.integration
 @pytest.mark.property
 @settings(suppress_health_check=[HealthCheck.function_scoped_fixture], max_examples=100)
-@given(name=st.one_of(st.text(max_size=30), st.sampled_from(["sheet.csv", "unlisted.csv", "result.json",
-                                                              "../result.json", "evidence/manifest.json"])))
+@given(
+    name=st.one_of(
+        st.text(max_size=30),
+        st.sampled_from(["sheet.csv", "unlisted.csv", "result.json", "../result.json", "evidence/manifest.json"]),
+    )
+)
 def test_property_no_download_escapes_the_run_folder(tmp_path_factory: pytest.TempPathFactory, name: str) -> None:
     """P13 (Req 10.6): a file is returned only for a listed, allow-listed name, and it is that file's bytes."""
     folder = tmp_path_factory.getbasetemp() / "p13"
@@ -343,6 +428,7 @@ def _served_into(folder: Path) -> None:
     _served(folder)
 
 
+@pytest.mark.integration
 def test_the_static_demo_copies_the_downloads_beside_the_run(tmp_path: Path) -> None:
     _, result, runs = _served(tmp_path)
     export_run(runs, result.run_id, tmp_path / "out" / result.run_id, (2026, 11, 4, 2, 0, 0))
@@ -368,28 +454,46 @@ def test_a_demo_build_may_replace_only_its_own_folder(tmp_path: Path) -> None:
 
 
 def _decide(runs: Path, result: RunResult, key: str = "c", code: str = "OB") -> Path:
-    row: dict[str, Any] = {"index": 0, "prev_hash": result.evidence_chain_hash, "type": "decision",
-                           "run_id": result.run_id, "evidence_chain_hash": result.evidence_chain_hash, "key": key,
-                           "region_code": code, "decision": "revoke", "decision_date": "2026-11-05",
-                           "reviewer": "R. Reviewer"}
+    row: dict[str, Any] = {
+        "index": 0,
+        "prev_hash": result.evidence_chain_hash,
+        "type": "decision",
+        "run_id": result.run_id,
+        "evidence_chain_hash": result.evidence_chain_hash,
+        "key": key,
+        "region_code": code,
+        "decision": "revoke",
+        "decision_date": "2026-11-05",
+        "reviewer": "R. Reviewer",
+    }
     row["row_hash"] = decision_row_hash(row)
     path = runs / result.run_id / "evidence" / DECISIONS_FILE
     path.write_bytes(canonical_json(row).encode("utf-8") + b"\n")
     return path
 
 
+@pytest.mark.integration
 def test_verified_decisions_are_shown_with_their_reviewer_and_date(tmp_path: Path) -> None:
     runs = tmp_path / "runs"
     result = run_control(control(tmp_path / "c"), runs, run_time=RUN_TIME)
     assert page_decisions(runs / result.run_id, result) is None
     _decide(runs, result)
     assert run_document(result, runs / result.run_id)["decisions"] == {
-        "ok": True, "detail": "evidence verifies; 1 decisions verify",
-        "rows": [{"key": "c", "region_code": "OB", "decision": "revoke", "decision_date": "2026-11-05",
-                  "reviewer": "R. Reviewer"}],
+        "ok": True,
+        "detail": "evidence verifies; 1 decisions verify",
+        "rows": [
+            {
+                "key": "c",
+                "region_code": "OB",
+                "decision": "revoke",
+                "decision_date": "2026-11-05",
+                "reviewer": "R. Reviewer",
+            }
+        ],
     }
 
 
+@pytest.mark.integration
 def test_decisions_that_do_not_verify_are_not_shown(tmp_path: Path) -> None:
     runs = tmp_path / "runs"
     result = run_control(control(tmp_path / "c"), runs, run_time=RUN_TIME)
@@ -413,6 +517,7 @@ def test_a_control_without_the_new_sections_keeps_its_run_ids() -> None:
     assert digest == "2a6b3e85b13673ed"
 
 
+@pytest.mark.integration
 def test_a_run_without_notes_writes_no_note_row(tmp_path: Path) -> None:
     runs = tmp_path / "runs"
     result = run_control(control(tmp_path / "c"), runs, run_time=RUN_TIME)

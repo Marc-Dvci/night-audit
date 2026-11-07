@@ -69,8 +69,13 @@ def test_a_fresh_build_has_two_nights_one_without_and_one_with_decisions(tmp_pat
         "ok": True,
         "detail": "evidence verifies; 3 decisions verify",
         "rows": [
-            {"key": key, "region_code": code, "decision": decision, "decision_date": "2026-11-05",
-             "reviewer": "Dana Okafor, IT manager"}
+            {
+                "key": key,
+                "region_code": code,
+                "decision": decision,
+                "decision_date": "2026-11-05",
+                "reviewer": "Dana Okafor, IT manager",
+            }
             for key, code, decision in (
                 ("j.marsh@hollowpines.com", "OB", "revoke"),
                 ("p.lindqvist@hollowpines.com", "OB", "revoke"),
@@ -79,8 +84,9 @@ def test_a_fresh_build_has_two_nights_one_without_and_one_with_decisions(tmp_pat
         ],
     }
     assert (out / second / "decisions.jsonl").exists()
-    assert build.APP_ENTRIES == [{"name": "ghosts-demo", "title": "Ghosts demo company", "mode": "demo",
-                                  "base": "demo/ghosts/"}]
+    assert build.APP_ENTRIES == [
+        {"name": "ghosts-demo", "title": "Ghosts demo company", "mode": "demo", "base": "demo/ghosts/"}
+    ]
 
 
 def test_the_committed_demo_is_the_builders_output(tmp_path: Path) -> None:

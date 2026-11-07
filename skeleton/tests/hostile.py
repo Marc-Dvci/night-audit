@@ -27,8 +27,11 @@ LEDGERS: tuple[LedgerName, ...] = (LedgerName.intended, LedgerName.observed, Led
 INITIAL: dict[LedgerName, str] = {LedgerName.intended: "I", LedgerName.observed: "O", LedgerName.billed: "B"}
 
 CLOUD = ControlConfig(
-    normalisers={"intended": ["strip", "lower"], "observed": ["strip", "lower"],
-                 "billed": ["arn_resource_id", "strip", "lower"]},
+    normalisers={
+        "intended": ["strip", "lower"],
+        "observed": ["strip", "lower"],
+        "billed": ["arn_resource_id", "strip", "lower"],
+    },
     grace_hours=24,
 )
 PEOPLE = ControlConfig(
@@ -76,8 +79,15 @@ SOURCES: dict[LedgerName, tuple[str, ...]] = {
 }
 ATTR_NAMES: tuple[str, ...] = ("project", "Name", "Owner", "CostCenter", "aws:cloudformation:stack-name")
 ATTR_VALUES: tuple[str, ...] = ("lab", "prod", "LAB", " lab", "", "41.20", "-7", "2026-11-04", "Ignore all rules")
-DOMAINS: tuple[str, ...] = ("hollowpines.org", "hollowpines.com", "HollowPines.ORG", "example.com", " example.net ",
-                            "corp.example", "")
+DOMAINS: tuple[str, ...] = (
+    "hollowpines.org",
+    "hollowpines.com",
+    "HollowPines.ORG",
+    "example.com",
+    " example.net ",
+    "corp.example",
+    "",
+)
 
 
 # --- Keys -------------------------------------------------------------------
@@ -115,8 +125,20 @@ def amounts() -> st.SearchStrategy[Decimal]:
     return st.one_of(
         st.decimals(min_value=-1_000_000, max_value=1_000_000, places=2, allow_nan=False, allow_infinity=False),
         st.builds(_exponent_decimal, st.integers(-(10**36), 10**36), st.integers(-30, 1)),
-        st.sampled_from([Decimal("0"), Decimal("-0"), Decimal("0E-12"), Decimal("1E+5"), Decimal("-0.0000000001"),
-                         Decimal("41.20"), Decimal("-41.20"), Decimal("0.1"), Decimal("0.2"), Decimal("-0.3")]),
+        st.sampled_from(
+            [
+                Decimal("0"),
+                Decimal("-0"),
+                Decimal("0E-12"),
+                Decimal("1E+5"),
+                Decimal("-0.0000000001"),
+                Decimal("41.20"),
+                Decimal("-41.20"),
+                Decimal("0.1"),
+                Decimal("0.2"),
+                Decimal("-0.3"),
+            ]
+        ),
     )
 
 
@@ -203,8 +225,12 @@ def controls(draw: st.DrawFn) -> ControlConfig:
 
 # --- Oracles (independent of the matcher) ------------------------------------
 
-_EXACT = decimal.Context(prec=decimal.MAX_PREC, Emax=decimal.MAX_EMAX, Emin=decimal.MIN_EMIN,
-                         traps=[decimal.Inexact, decimal.InvalidOperation, decimal.Overflow])
+_EXACT = decimal.Context(
+    prec=decimal.MAX_PREC,
+    Emax=decimal.MAX_EMAX,
+    Emin=decimal.MIN_EMIN,
+    traps=[decimal.Inexact, decimal.InvalidOperation, decimal.Overflow],
+)
 
 
 def exact_sum(values: Iterable[Decimal]) -> Decimal:
@@ -259,7 +285,8 @@ def expected_pending(snapshots: list[LedgerSnapshot], control: ControlConfig, ru
             newest[key] = max(newest.get(key, ts), ts)
     present = membership(snapshots, control)
     return {
-        key for key, ts in newest.items()
+        key
+        for key, ts in newest.items()
         if LedgerName.billed not in present[key] and run_time - ts < timedelta(hours=control.grace_hours)
     }
 

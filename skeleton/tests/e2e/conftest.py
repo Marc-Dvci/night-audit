@@ -57,26 +57,38 @@ def nights(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Nights]:
         pytest.skip("build the front end first: npm run build in skeleton/web")
     runs = tmp_path_factory.mktemp("runs")
     demo = [
-        run_control(DEMO / f"night-{n}" / "control.yaml", runs, run_time=datetime(2026, 11, 3 + n, 2, tzinfo=UTC))
-        .run_id
+        run_control(
+            DEMO / f"night-{n}" / "control.yaml", runs, run_time=datetime(2026, 11, 3 + n, 2, tzinfo=UTC)
+        ).run_id
         for n in (1, 2, 3)
     ]
     work = tmp_path_factory.mktemp("controls")
     old = "2026-09-01T00:00:00Z"
     clean = run_control(
-        _control(work / "clean", "clean-account", "i1,a\ni2,b\n", f"o1,a,{old},\no2,b,{old},\n",
-                 "b1,a,1.00\nb2,b,2.50\n"),
-        runs, run_time=datetime(2026, 11, 7, 2, tzinfo=UTC),
+        _control(
+            work / "clean", "clean-account", "i1,a\ni2,b\n", f"o1,a,{old},\no2,b,{old},\n", "b1,a,1.00\nb2,b,2.50\n"
+        ),
+        runs,
+        run_time=datetime(2026, 11, 7, 2, tzinfo=UTC),
     ).run_id
     hostile = run_control(
-        _control(work / "hostile", "hostile-account", "i1,a\n",
-                 f"o1,a,{old},\no2,{_csv(HOSTILE_KEY)},{old},{_csv(HOSTILE_NAME)}\n", "b1,a,1.00\n"),
-        runs, run_time=datetime(2026, 11, 8, 2, tzinfo=UTC),
+        _control(
+            work / "hostile",
+            "hostile-account",
+            "i1,a\n",
+            f"o1,a,{old},\no2,{_csv(HOSTILE_KEY)},{old},{_csv(HOSTILE_NAME)}\n",
+            "b1,a,1.00\n",
+        ),
+        runs,
+        run_time=datetime(2026, 11, 8, 2, tzinfo=UTC),
     ).run_id
     observed = "".join(f"o{n},k{n:02d},{old},\n" for n in range(12))
     billed = "".join(f"b{n},k{n:02d},{n}.25\n" for n in range(6))
-    twelve = run_control(_control(work / "twelve", "twelve-account", "", observed, billed), runs,
-                         run_time=datetime(2026, 11, 9, 2, tzinfo=UTC)).run_id
+    twelve = run_control(
+        _control(work / "twelve", "twelve-account", "", observed, billed),
+        runs,
+        run_time=datetime(2026, 11, 9, 2, tzinfo=UTC),
+    ).run_id
     # Two nights of one control: the second night lays the first night's Poltergeist to rest.
     rest = _control(work / "rest", "rest-account", "i1,a\n", f"o1,a,{old},\no2,gone-soon,{old},\n", "b1,a,1.00\n")
     run_control(rest, runs, run_time=datetime(2026, 11, 10, 2, tzinfo=UTC))

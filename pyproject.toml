@@ -26,28 +26,90 @@ dev = [
     "types-PyYAML>=6",
     "httpx>=0.27",
     "playwright==1.62.0",
+    "pytest-randomly>=5.0.0",
+    "pytest-timeout>=2.4.0",
+    "pytest-cov>=7.1.0",
+    "codespell>=2.4.3",
 ]
 
 [tool.pytest.ini_options]
+testpaths = ["skeleton/tests", "apps"]
+# -ra lists every skip and expected failure with its reason; --strict-markers refuses a misspelt marker.
+# pytest-randomly shuffles the order on every run (replay a run with --randomly-seed=<seed>); pytest-timeout fails a
+# test that runs past `timeout` seconds (browser tests get 120, set in skeleton/tests/conftest.py).
+addopts = "-m 'not live' -ra --strict-markers"
+timeout = 30
+xfail_strict = true
+filterwarnings = ["ignore::DeprecationWarning"]
+# Unmarked tests are unit tests. Mark the others so the split can be counted (see .github/workflows/ci.yml).
 markers = [
     "property: property-based tests using hypothesis",
-    "e2e: browser tests in headless Chromium against a local server (skeleton/tests/e2e)",
+    "integration: the project's parts together through an entry point (HTTP route, CLI, connector through the runner)",
+    "e2e: the real UI in headless Chromium against a local server (skeleton/tests/e2e)",
+    "live: calls a real service with real credentials; deselected unless run with -m live",
+    "lean: the differential test against the Lean model of region assignment; needs the Lean toolchain",
 ]
-testpaths = ["skeleton/tests", "apps"]
-filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+source_pkgs = ["nightaudit"]
+branch = true
+
+[tool.coverage.report]
+# The decision core: the modules whose rules decide a region, a pending record, a finding's age, the evidence and what
+# an explanation may say. This figure is published as "decision core coverage", never as the total.
+include = [
+    "*/nightaudit/matcher.py",
+    "*/nightaudit/normalisers.py",
+    "*/nightaudit/grace.py",
+    "*/nightaudit/scope.py",
+    "*/nightaudit/state.py",
+    "*/nightaudit/evidence.py",
+    "*/nightaudit/explain.py",
+    "*/nightaudit/control.py",
+    "*/nightaudit/report.py",
+]
+fail_under = 90
+show_missing = true
 
 [tool.ruff]
 target-version = "py312"
 line-length = 120
+extend-exclude = ["casebook/heldout"]
+
+[tool.ruff.format]
+line-ending = "lf"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "B"]
-ignore = ["UP042"]
+# pycodestyle errors, pyflakes, bugbear, import order
+select = ["E4", "E7", "E9", "F", "B", "I"]
 
 [tool.mypy]
 strict = true
-mypy_path = ["skeleton/src", "apps/vampires/src", "apps/ghosts/src"]
+files = [
+    "skeleton/src",
+    "apps/vampires/src",
+    "apps/ghosts/src",
+    "skeleton/tests",
+    "apps/vampires/tests",
+    "apps/ghosts/tests",
+]
+mypy_path = [
+    "skeleton/src",
+    "apps/vampires/src",
+    "apps/ghosts/src",
+    "skeleton/tests",
+    "apps/ghosts/tests",
+]
+explicit_package_bases = true
+# Two test folders each have a conftest.py, and mypy cannot hold two top-level modules of one name. The Ghosts one
+# only registers a hypothesis profile; CI checks it on its own (`mypy apps/ghosts/tests/conftest.py`).
+exclude = ["^apps/ghosts/tests/conftest\\.py$"]
 
 [[tool.mypy.overrides]]
 module = ["pyarrow", "pyarrow.*", "boto3", "boto3.*", "botocore", "botocore.*", "playwright", "playwright.*"]
 ignore_missing_imports = true
+
+[tool.codespell]
+# British English is the project's spelling: these are correct here. Then names and titles in the synthetic staff data.
+ignore-words-list = "bale,ines,coo,caf,unparseable,normalise,normalised,normaliser,normalisers,normalising,organisation,licence,behaviour,colour,favour,honour,recognise,summarise,summariser,summarisers,artefact,catalogue,analyse,initialise,authorise,authorised,serialise,serialised,centre,minimise,prioritise,optimise,unrecognised,customise"
+skip = "*.png,*.jpg,*.gif,*.svg,*.woff2,*.zip,*.parquet,*.lock,package-lock.json,.git,.venv,node_modules,dist,build,runs,.hypothesis,.mypy_cache,.ruff_cache,.pytest_cache,*/casebook/heldout,casebook/heldout,*/public/demo,*.jsonl"

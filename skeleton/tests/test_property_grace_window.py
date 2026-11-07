@@ -14,9 +14,7 @@ from nightaudit.models import LedgerName, LedgerSnapshot, Record
 
 
 @st.composite
-def grace_case(
-    draw: st.DrawFn, young: bool
-) -> tuple[ControlConfig, list[LedgerSnapshot], str]:
+def grace_case(draw: st.DrawFn, young: bool) -> tuple[ControlConfig, list[LedgerSnapshot], str]:
     """Hostile ledgers plus one target key with no surviving billed record and 1-3 in-scope observed records.
 
     When *young*, the newest observed timestamp is inside the grace window (possibly in the future); otherwise every
@@ -43,9 +41,7 @@ def grace_case(
             return record
         return record.model_copy(update={"attrs": {**record.attrs, control.scope.attr: control.scope.equals}})
 
-    targets = [
-        in_scope(draw(records(LedgerName.observed, st.just(raw)))).model_copy(update={"timestamp": age(young)})
-    ]
+    targets = [in_scope(draw(records(LedgerName.observed, st.just(raw)))).model_copy(update={"timestamp": age(young)})]
     for _ in range(draw(st.integers(0, 2))):
         extra = in_scope(draw(records(LedgerName.observed, st.just(raw))))
         stamp = draw(st.one_of(st.none(), st.just(age(False)))) if not young else extra.timestamp
@@ -56,8 +52,12 @@ def grace_case(
         recs = list(s.records)
         if s.name == LedgerName.billed:
             # Only out-of-scope billed lines may carry the target key: those never count as "billed".
-            recs = [r for r in recs if key_of(r, control) != target or (
-                control.scope is not None and r.attrs.get(control.scope.attr) != control.scope.equals)]
+            recs = [
+                r
+                for r in recs
+                if key_of(r, control) != target
+                or (control.scope is not None and r.attrs.get(control.scope.attr) != control.scope.equals)
+            ]
         if s.name == LedgerName.observed:
             if young:
                 recs = recs + targets

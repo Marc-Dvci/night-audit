@@ -13,9 +13,17 @@ import pytest
 from hypothesis import settings
 
 settings.register_profile("nightaudit", max_examples=100, deadline=None, print_blob=True)
-settings.register_profile("nightaudit-ci", max_examples=100, deadline=None, print_blob=True, derandomize=True,
-                          database=None)
+settings.register_profile(
+    "nightaudit-ci", max_examples=100, deadline=None, print_blob=True, derandomize=True, database=None
+)
 settings.load_profile("nightaudit-ci" if os.environ.get("CI") else "nightaudit")
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """A browser test starts Chromium and a server, so it gets 120 seconds instead of the suite's 30."""
+    for item in items:
+        if item.get_closest_marker("e2e") and not item.get_closest_marker("timeout"):
+            item.add_marker(pytest.mark.timeout(120))
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:

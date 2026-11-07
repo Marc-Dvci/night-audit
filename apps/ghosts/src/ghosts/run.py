@@ -45,8 +45,10 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  complete: {result.complete}")
     for ledger, error in sorted(result.ledger_errors.items()):
         print(f"  {ledger}: {error}")
-    print(f"  findings: {len(findings)}  informational: {len(result.findings) - len(findings)}"
-          f"  pending: {len(result.pending_keys)}")
+    print(
+        f"  findings: {len(findings)}  informational: {len(result.findings) - len(findings)}"
+        f"  pending: {len(result.pending_keys)}"
+    )
     for finding in findings:
         print(f"    {finding.region_code:<3} {finding.name:<22} {finding.key}")
     print(f"  unkeyed billed rows: {sum(1 for u in result.unkeyed if u.ledger.value == 'billed')}")

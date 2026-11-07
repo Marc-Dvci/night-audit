@@ -1,0 +1,41 @@
+# A smoke test of the live demo every six hours: the page loads and the API answers. It reads the live site and writes
+# nothing. After END_DATE the job ends at once and passes, so taking the demo down later never turns the badge red.
+name: live
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  LIVE_URL: https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws
+  END_DATE: "2027-03-31"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Still within the demo period
+        id: period
+        shell: bash
+        run: |
+          if [ "$(date -u +%F)" \> "$END_DATE" ]; then
+            echo "Past $END_DATE: the demo is no longer checked."
+            echo "check=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "check=yes" >> "$GITHUB_OUTPUT"
+          fi
+      - name: The page loads
+        if: steps.period.outputs.check == 'yes'
+        shell: bash
+        run: curl -fsS --retry 3 --retry-delay 20 --max-time 60 "$LIVE_URL/" | grep -q '<title>'
+      - name: The API answers
+        if: steps.period.outputs.check == 'yes'
+        shell: bash
+        run: |
+          curl -fsS --retry 3 --retry-delay 20 --max-time 60 "$LIVE_URL/api/health" | grep -q '"status":"ok"'
+          curl -fsS --max-time 60 "$LIVE_URL/api/runs" | grep -q '^\['

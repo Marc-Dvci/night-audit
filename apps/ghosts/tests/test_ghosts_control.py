@@ -108,6 +108,7 @@ def test_the_github_variant_only_adds_one_observed_source() -> None:
     assert variant.regions == base.regions and variant.ui == base.ui
 
 
+@pytest.mark.integration
 def test_the_last_sign_in_column_shows_the_date_only_and_the_evidence_keeps_the_timestamp(tmp_path: Path) -> None:
     """Regression: the column showed the raw timestamp, which wrapped. The full value stays in the finding's context.
 

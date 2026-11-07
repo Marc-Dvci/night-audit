@@ -1,0 +1,33 @@
+# docker compose up demo   recorded demo of both apps, no keys             http://localhost:8000
+# docker compose up app    your own AWS account, read-only credentials     http://localhost:8001
+#
+# Both listen on this machine only. `app` shows your account's resources and bill to anyone who can reach it.
+services:
+  demo:
+    build:
+      context: .
+      target: demo
+    image: night-audit:demo
+    ports:
+      - "127.0.0.1:8000:8000"
+
+  app:
+    build:
+      context: .
+      target: app
+    image: night-audit:app
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      AWS_CONFIG_FILE: /home/audit/.aws/config
+      AWS_SHARED_CREDENTIALS_FILE: /home/audit/.aws/credentials
+    volumes:
+      - nights:/data
+      # Your AWS profiles, read-only. Name the read-only one in .env as NIGHT_AUDIT_PROFILE.
+      - ${HOME:-~}/.aws:/home/audit/.aws:ro
+    ports:
+      - "127.0.0.1:8001:8000"
+
+volumes:
+  nights:

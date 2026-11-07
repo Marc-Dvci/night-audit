@@ -33,8 +33,10 @@ VAMPIRES = UiConfig(
         "billed": LedgerUi(label="Billed", source="CUR."),
     },
     headlines={
-        "OB": HeadlineUi(one="{count} Vampire is running and on the bill with no approval: {amount} so far.",
-                         other="{count} Vampires are running and on the bill with no approval: {amount} so far."),
+        "OB": HeadlineUi(
+            one="{count} Vampire is running and on the bill with no approval: {amount} so far.",
+            other="{count} Vampires are running and on the bill with no approval: {amount} so far.",
+        ),
         "O": HeadlineUi(one="{count} Poltergeist costs nothing.", other="{count} Poltergeists cost nothing."),
         "I": HeadlineUi(one="{count} declared {noun} is gone.", other="{count} declared {noun} are gone."),
     },
@@ -42,14 +44,21 @@ VAMPIRES = UiConfig(
 
 
 def rec(ledger: LedgerName, row: str, key: str, amount: str | None = None) -> Record:
-    return Record(ledger=ledger, source=ledger.value, row_id=row, raw_key=key,
-                  amount=None if amount is None else Decimal(amount), timestamp=OLD if ledger == O else None)
+    return Record(
+        ledger=ledger,
+        source=ledger.value,
+        row_id=row,
+        raw_key=key,
+        amount=None if amount is None else Decimal(amount),
+        timestamp=OLD if ledger == O else None,
+    )
 
 
 def run_of(*records: Record, ui: UiConfig | None = None, missing: tuple[LedgerName, ...] = ()) -> RunResult:
     snapshots = [
-        LedgerSnapshot(name=name, source=name.value, records=[r for r in records if r.ledger == name],
-                       missing=name in missing)
+        LedgerSnapshot(
+            name=name, source=name.value, records=[r for r in records if r.ledger == name], missing=name in missing
+        )
         for name in (I, O, B)
     ]
     result = match(snapshots, CLOUD, RUN_TIME)
@@ -119,10 +128,14 @@ def test_two_findings_use_the_plural() -> None:
 def test_the_requirement_example_reads_as_written() -> None:
     result = run_of(
         *matched("a"),
-        rec(O, "o1", "v1"), rec(B, "b1", "v1", "0.20"),
-        rec(O, "o2", "v2"), rec(B, "b2", "v2", "0.19"),
-        rec(O, "o3", "v3"), rec(B, "b3", "v3", "0.20"),
-        rec(O, "o4", "p1"), rec(O, "o5", "p2"),
+        rec(O, "o1", "v1"),
+        rec(B, "b1", "v1", "0.20"),
+        rec(O, "o2", "v2"),
+        rec(B, "b2", "v2", "0.19"),
+        rec(O, "o3", "v3"),
+        rec(B, "b3", "v3", "0.20"),
+        rec(O, "o4", "p1"),
+        rec(O, "o5", "p2"),
         rec(I, "i9", "gone"),
         ui=VAMPIRES,
     )
@@ -133,8 +146,15 @@ def test_the_requirement_example_reads_as_written() -> None:
 
 
 def test_default_words_name_every_region_in_a_fixed_order() -> None:
-    result = run_of(rec(O, "o1", "pg"), rec(I, "i1", "sk"), rec(I, "i2", "wr"), rec(B, "b2", "wr", "2.00"),
-                    rec(B, "b3", "ph", "3.00"), rec(O, "o4", "vm"), rec(B, "b4", "vm", "4.00"))
+    result = run_of(
+        rec(O, "o1", "pg"),
+        rec(I, "i1", "sk"),
+        rec(I, "i2", "wr"),
+        rec(B, "b2", "wr", "2.00"),
+        rec(B, "b3", "ph", "3.00"),
+        rec(O, "o4", "vm"),
+        rec(B, "b4", "vm", "4.00"),
+    )
     text = headline(result)
     positions = [text.index(name) for name in ("Vampire", "Phantom", "Wraith", "Poltergeist", "Skeleton")]
     assert positions == sorted(positions)
@@ -279,8 +299,12 @@ def test_a_planted_script_appears_only_as_text() -> None:
 
 def test_every_number_in_the_report_headline_and_table_is_in_the_run() -> None:
     result = run_of(
-        *matched("a"), rec(O, "o1", "v1"), rec(B, "b1", "v1", "41.20"), rec(I, "i2", "gone"),
-        rec(B, "tax", "", "-1.5"), ui=VAMPIRES,
+        *matched("a"),
+        rec(O, "o1", "v1"),
+        rec(B, "b1", "v1", "41.20"),
+        rec(I, "i2", "gone"),
+        rec(B, "tax", "", "-1.5"),
+        ui=VAMPIRES,
     )
     collected = parse(report_html(result))
     numbers = run_numbers(result)

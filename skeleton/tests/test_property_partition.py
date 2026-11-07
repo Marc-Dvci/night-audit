@@ -57,8 +57,11 @@ def test_regression_a_naive_and_an_aware_timestamp_on_one_key_are_compared_as_ut
         Record(ledger=LedgerName.observed, source="inventory-us-east-1", row_id="1", raw_key="i-0aa1", timestamp=ts)
         for ts in (None, datetime(2026, 11, 6, 2, 0), datetime(2026, 11, 6, 2, 0, tzinfo=UTC))
     ]
-    result = match([snapshot(LedgerName.intended, []), snapshot(LedgerName.observed, observed),
-                    snapshot(LedgerName.billed, [])], CLOUD, RUN_TIME)
+    result = match(
+        [snapshot(LedgerName.intended, []), snapshot(LedgerName.observed, observed), snapshot(LedgerName.billed, [])],
+        CLOUD,
+        RUN_TIME,
+    )
     assert result.pending_keys == ["i-0aa1"]
     assert result.regions == {}
     assert result.findings == []

@@ -20,9 +20,7 @@ TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
 
 def scan(page: Page, label: str) -> list[dict[str, object]]:
     page.add_script_tag(path=str(AXE))
-    result = page.evaluate(
-        "async (tags) => await axe.run(document, {runOnly: {type: 'tag', values: tags}})", TAGS
-    )
+    result = page.evaluate("async (tags) => await axe.run(document, {runOnly: {type: 'tag', values: tags}})", TAGS)
     violations = result["violations"]
     print(f"{label:<28} violations={len(violations)} passes={len(result['passes'])}")
     for v in violations:

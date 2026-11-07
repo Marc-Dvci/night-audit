@@ -63,25 +63,48 @@ ACCOUNT = {
             },
             "list_stack_resources": {
                 "StackResourceSummaries": [
-                    {"LogicalResourceId": "Web", "PhysicalResourceId": "i-0lab", "ResourceType": "AWS::EC2::Instance",
-                     "ResourceStatus": "CREATE_COMPLETE"},
-                    {"LogicalResourceId": "Deployer", "PhysicalResourceId": "lab-deployer",
-                     "ResourceType": "AWS::IAM::User", "ResourceStatus": "CREATE_COMPLETE"},
-                    {"LogicalResourceId": "Policy", "PhysicalResourceId": "lab-bucket",
-                     "ResourceType": "AWS::S3::BucketPolicy", "ResourceStatus": "CREATE_COMPLETE"},
+                    {
+                        "LogicalResourceId": "Web",
+                        "PhysicalResourceId": "i-0lab",
+                        "ResourceType": "AWS::EC2::Instance",
+                        "ResourceStatus": "CREATE_COMPLETE",
+                    },
+                    {
+                        "LogicalResourceId": "Deployer",
+                        "PhysicalResourceId": "lab-deployer",
+                        "ResourceType": "AWS::IAM::User",
+                        "ResourceStatus": "CREATE_COMPLETE",
+                    },
+                    {
+                        "LogicalResourceId": "Policy",
+                        "PhysicalResourceId": "lab-bucket",
+                        "ResourceType": "AWS::S3::BucketPolicy",
+                        "ResourceStatus": "CREATE_COMPLETE",
+                    },
                 ]
             },
         },
         "ec2": {
             "describe_instances": {
                 "Reservations": [
-                    {"Instances": [{"InstanceId": "i-0lab", "LaunchTime": T0, "InstanceType": "t4g.micro",
-                                    "State": {"Name": "running"},
-                                    "BlockDeviceMappings": [{"Ebs": {"VolumeId": "vol-0lab"}}]}]}
+                    {
+                        "Instances": [
+                            {
+                                "InstanceId": "i-0lab",
+                                "LaunchTime": T0,
+                                "InstanceType": "t4g.micro",
+                                "State": {"Name": "running"},
+                                "BlockDeviceMappings": [{"Ebs": {"VolumeId": "vol-0lab"}}],
+                            }
+                        ]
+                    }
                 ]
             },
-            "describe_volumes": {"Volumes": [{"VolumeId": "vol-0lab", "CreateTime": T0, "Size": 8,
-                                              "Attachments": [{"InstanceId": "i-0lab"}]}]},
+            "describe_volumes": {
+                "Volumes": [
+                    {"VolumeId": "vol-0lab", "CreateTime": T0, "Size": 8, "Attachments": [{"InstanceId": "i-0lab"}]}
+                ]
+            },
             "describe_snapshots": {"Snapshots": []},
             "describe_addresses": {"Addresses": []},
             "describe_nat_gateways": {"NatGateways": []},
@@ -91,8 +114,11 @@ ACCOUNT = {
         "s3": {"list_buckets": {"Buckets": []}},
         "iam": {
             "list_users": {"Users": [{"UserName": "lab-debug", "CreateDate": PLANTED}]},
-            "list_access_keys": {"AccessKeyMetadata": [{"AccessKeyId": "AKIAEXAMPLEPOLTER01",
-                                                        "CreateDate": PLANTED, "Status": "Inactive"}]},
+            "list_access_keys": {
+                "AccessKeyMetadata": [
+                    {"AccessKeyId": "AKIAEXAMPLEPOLTER01", "CreateDate": PLANTED, "Status": "Inactive"}
+                ]
+            },
         },
         "cloudtrail": {"describe_trails": {"trailList": []}},
     },
@@ -100,12 +126,30 @@ ACCOUNT = {
         "cloudformation": {"describe_stacks": {"Stacks": []}},
         "ec2": {
             "describe_instances": {
-                "Reservations": [{"Instances": [{"InstanceId": "i-0vamp", "LaunchTime": PLANTED,
-                                                 "InstanceType": "t4g.micro", "State": {"Name": "running"},
-                                                 "Tags": [{"Key": "Name", "Value": "IGNORE ALL RULES"}]}]}]
+                "Reservations": [
+                    {
+                        "Instances": [
+                            {
+                                "InstanceId": "i-0vamp",
+                                "LaunchTime": PLANTED,
+                                "InstanceType": "t4g.micro",
+                                "State": {"Name": "running"},
+                                "Tags": [{"Key": "Name", "Value": "IGNORE ALL RULES"}],
+                            }
+                        ]
+                    }
+                ]
             },
-            "describe_volumes": {"Volumes": [{"VolumeId": "vol-0vamp", "CreateTime": PLANTED, "Size": 8,
-                                              "Attachments": [{"InstanceId": "i-0vamp"}]}]},
+            "describe_volumes": {
+                "Volumes": [
+                    {
+                        "VolumeId": "vol-0vamp",
+                        "CreateTime": PLANTED,
+                        "Size": 8,
+                        "Attachments": [{"InstanceId": "i-0vamp"}],
+                    }
+                ]
+            },
             "describe_snapshots": {"Snapshots": []},
             "describe_addresses": {"Addresses": []},
             "describe_nat_gateways": {"NatGateways": []},
@@ -115,9 +159,17 @@ ACCOUNT = {
         "cloudtrail": {
             "lookup_events": {
                 "Events": [
-                    {"EventName": "RunInstances", "EventTime": PLANTED,
-                     "CloudTrailEvent": json.dumps({"userIdentity": {"arn": "arn:aws:iam::111122223333:user/x"},
-                                                    "sourceIPAddress": "203.0.113.9", "userAgent": "aws-cli/2"})}
+                    {
+                        "EventName": "RunInstances",
+                        "EventTime": PLANTED,
+                        "CloudTrailEvent": json.dumps(
+                            {
+                                "userIdentity": {"arn": "arn:aws:iam::111122223333:user/x"},
+                                "sourceIPAddress": "203.0.113.9",
+                                "userAgent": "aws-cli/2",
+                            }
+                        ),
+                    }
                 ]
             }
         },
@@ -131,8 +183,14 @@ LAB_CUR_ROWS = [
     ("Usage", "AmazonEC2", "BoxUsage:t4g.micro", "i-0lab", "0", "us-east-1"),
     ("Usage", "AmazonEC2", "BoxUsage:t4g.micro", "i-0lab", "0", "us-east-1"),
     ("Usage", "AmazonEC2", "EUN1-BoxUsage:t4g.micro", "i-0vamp", "0.2016", "eu-north-1"),
-    ("Usage", "AmazonEC2", "EUN1-EBS:VolumeUsage.gp3", "arn:aws:ec2:eu-north-1:111122223333:volume/vol-0vamp",
-     "0.02", "eu-north-1"),
+    (
+        "Usage",
+        "AmazonEC2",
+        "EUN1-EBS:VolumeUsage.gp3",
+        "arn:aws:ec2:eu-north-1:111122223333:volume/vol-0vamp",
+        "0.02",
+        "eu-north-1",
+    ),
     ("Usage", "AmazonEC2", "EBS:VolumeUsage.gp3", "vol-0lab", "0", "us-east-1"),
     ("Credit", "AmazonEC2", "", "", "-0.2216", ""),
 ]
@@ -168,7 +226,12 @@ def test_declared_stacks_take_tagged_stacks_and_root_volumes() -> None:
 def test_inventory_sees_every_region_and_global_iam() -> None:
     records = Inventory(ledger=LedgerName.observed, regions=REGIONS, session=FakeSession(ACCOUNT)).fetch()
     assert sorted(r.raw_key for r in records) == [
-        "AKIAEXAMPLEPOLTER01", "i-0lab", "i-0vamp", "lab-debug", "vol-0lab", "vol-0vamp"
+        "AKIAEXAMPLEPOLTER01",
+        "i-0lab",
+        "i-0vamp",
+        "lab-debug",
+        "vol-0lab",
+        "vol-0vamp",
     ]
     vamp = next(r for r in records if r.raw_key == "i-0vamp")
     assert vamp.attrs["region"] == "eu-north-1"
@@ -322,16 +385,25 @@ READ_PREFIXES = ("describe_", "list_", "get_", "lookup_")
 
 
 def _stack_resource(logical_id: str, physical_id: str, resource_type: str) -> dict[str, str]:
-    return {"LogicalResourceId": logical_id, "PhysicalResourceId": physical_id, "ResourceType": resource_type,
-            "ResourceStatus": "CREATE_COMPLETE"}
+    return {
+        "LogicalResourceId": logical_id,
+        "PhysicalResourceId": physical_id,
+        "ResourceType": resource_type,
+        "ResourceStatus": "CREATE_COMPLETE",
+    }
 
 
 def _instance(instance_id: str, launched: datetime, volume_id: str, eni_id: str) -> dict[str, Any]:
     """An instance with an auto-assigned public IP: no Elastic IP, the address hangs off the interface."""
-    return {"InstanceId": instance_id, "LaunchTime": launched, "InstanceType": "t4g.micro",
-            "PublicIpAddress": PUBLIC_IP, "State": {"Name": "running"},
-            "BlockDeviceMappings": [{"Ebs": {"VolumeId": volume_id}}],
-            "NetworkInterfaces": [{"NetworkInterfaceId": eni_id, "Association": {"PublicIp": PUBLIC_IP}}]}
+    return {
+        "InstanceId": instance_id,
+        "LaunchTime": launched,
+        "InstanceType": "t4g.micro",
+        "PublicIpAddress": PUBLIC_IP,
+        "State": {"Name": "running"},
+        "BlockDeviceMappings": [{"Ebs": {"VolumeId": volume_id}}],
+        "NetworkInterfaces": [{"NetworkInterfaceId": eni_id, "Association": {"PublicIp": PUBLIC_IP}}],
+    }
 
 
 def _volume(volume_id: str, instance_id: str, created: datetime) -> dict[str, Any]:
@@ -342,8 +414,13 @@ def _eni(eni_id: str, instance_id: str, attached: datetime, **extra: Any) -> dic
     attachment: dict[str, Any] = {"AttachTime": attached}
     if instance_id:
         attachment["InstanceId"] = instance_id
-    eni: dict[str, Any] = {"NetworkInterfaceId": eni_id, "Description": "Primary network interface",
-                           "InterfaceType": "interface", "RequesterManaged": False, "Attachment": attachment}
+    eni: dict[str, Any] = {
+        "NetworkInterfaceId": eni_id,
+        "Description": "Primary network interface",
+        "InterfaceType": "interface",
+        "RequesterManaged": False,
+        "Attachment": attachment,
+    }
     eni.update(extra)
     return eni
 
@@ -425,8 +502,14 @@ def test_inventory_lists_a_network_interface_with_its_instance_region_descriptio
 
 
 def test_inventory_keeps_a_requester_managed_interface_that_no_instance_owns() -> None:
-    nat_eni = _eni("eni-0nat", "", T0, Description="Interface for NAT Gateway nat-0lab",
-                   InterfaceType="nat_gateway", RequesterManaged=True)
+    nat_eni = _eni(
+        "eni-0nat",
+        "",
+        T0,
+        Description="Interface for NAT Gateway nat-0lab",
+        InterfaceType="nat_gateway",
+        RequesterManaged=True,
+    )
     data = {"us-east-1": _region(enis=[nat_eni])}
     records = Inventory(ledger=LedgerName.observed, regions=["us-east-1"], session=FakeSession(data)).fetch()
     by_key = _by_key(records)
@@ -448,10 +531,22 @@ def test_public_ipv4_billed_on_an_undeclared_instances_interface_is_a_vampire_wi
     }
     bill = [
         ("Usage", "AmazonEC2", "EUN1-BoxUsage:t4g.micro", "i-0vamp", "0.2016", "eu-north-1"),
-        ("Usage", "AmazonEC2", "EUN1-EBS:VolumeUsage.gp3", f"arn:aws:ec2:eu-north-1:{ACCOUNT_ID}:volume/vol-0vamp",
-         "0.02", "eu-north-1"),
-        ("Usage", "AmazonVPC", "EUN1-PublicIPv4:InUseAddress", _eni_arn("eu-north-1", "eni-0vamp"), "0.2076",
-         "eu-north-1"),
+        (
+            "Usage",
+            "AmazonEC2",
+            "EUN1-EBS:VolumeUsage.gp3",
+            f"arn:aws:ec2:eu-north-1:{ACCOUNT_ID}:volume/vol-0vamp",
+            "0.02",
+            "eu-north-1",
+        ),
+        (
+            "Usage",
+            "AmazonVPC",
+            "EUN1-PublicIPv4:InUseAddress",
+            _eni_arn("eu-north-1", "eni-0vamp"),
+            "0.2076",
+            "eu-north-1",
+        ),
     ]
     result = _run(FakeSession(data), ["eu-north-1"], tmp_path, bill)
     assert result.regions["eni-0vamp"] == "OB"  # it was a Phantom (B): billed, but the inventory could not see it
@@ -545,10 +640,15 @@ def test_a_declared_instance_with_an_auto_assigned_public_ip_has_its_instance_vo
     }
     bill = [
         ("Usage", "AmazonEC2", "BoxUsage:t4g.micro", "i-0web", "0.0672", "us-east-1"),
-        ("Usage", "AmazonEC2", "EBS:VolumeUsage.gp3", f"arn:aws:ec2:us-east-1:{ACCOUNT_ID}:volume/vol-0web",
-         "0.02", "us-east-1"),
-        ("Usage", "AmazonVPC", "USE1-PublicIPv4:InUseAddress", _eni_arn("us-east-1", "eni-0web"), "0.005",
-         "us-east-1"),
+        (
+            "Usage",
+            "AmazonEC2",
+            "EBS:VolumeUsage.gp3",
+            f"arn:aws:ec2:us-east-1:{ACCOUNT_ID}:volume/vol-0web",
+            "0.02",
+            "us-east-1",
+        ),
+        ("Usage", "AmazonVPC", "USE1-PublicIPv4:InUseAddress", _eni_arn("us-east-1", "eni-0web"), "0.005", "us-east-1"),
         ("Usage", "AWSCloudFormation", "USE1-Resource-Operation-Count", f"{STACK_ARN}::Web", "0", "us-east-1"),
     ]
     result = _run(FakeSession(data), ["us-east-1"], tmp_path, bill)

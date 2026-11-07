@@ -77,6 +77,7 @@ def _run(script: str, tool: str, tool_input: dict[str, object]) -> int:
     ).returncode
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize(
     "path",
     [
@@ -90,6 +91,7 @@ def test_seal_blocks_every_spelling_of_the_heldout_folder(path: str) -> None:
     assert _run("seal_heldout.py", "fs_read", {"path": path}) == 2
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize(
     ("tool", "tool_input"),
     [
@@ -103,6 +105,7 @@ def test_seal_lets_ordinary_work_through(tool: str, tool_input: dict[str, object
     assert _run("seal_heldout.py", tool, tool_input) == 0
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize(
     "command",
     [
@@ -116,6 +119,7 @@ def test_read_only_guard_refuses_writes(command: str) -> None:
     assert _run("readonly_guard.py", "execute_pwsh", {"command": command}) == 2
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize(
     "command",
     [
@@ -129,19 +133,23 @@ def test_read_only_guard_allows_reads(command: str) -> None:
     assert _run("readonly_guard.py", "execute_pwsh", {"command": command}) == 0
 
 
+@pytest.mark.integration
 def test_read_only_guard_checks_mcp_aws_tools() -> None:
     assert _run("readonly_guard.py", "mcp_aws-api_call_aws", {"cli_command": "aws ec2 run-instances --count 1"}) == 2
     assert _run("readonly_guard.py", "mcp_aws-api_call_aws", {"cli_command": "aws ec2 describe-regions"}) == 0
 
 
+@pytest.mark.integration
 def test_no_harm_guard_refuses_a_delete_command() -> None:
     assert _run("no_harm_guard.py", "execute_pwsh", {"command": "Remove-Item -Recurse build"}) == 2
 
 
+@pytest.mark.integration
 def test_no_harm_guard_refuses_a_push() -> None:
     assert _run("no_harm_guard.py", "execute_pwsh", {"command": "git push origin main"}) == 2
 
 
+@pytest.mark.integration
 def test_no_harm_guard_allows_a_piped_build_command() -> None:
     command = "npm run build 2>&1 | Select-Object -Last 20"
     assert _run("no_harm_guard.py", "execute_pwsh", {"command": command}) == 0

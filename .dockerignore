@@ -1,8 +1,28 @@
-.git
-.venv
-build
-runs
+# An allowlist: nothing reaches a build unless it is named here, so keys, local settings, runs, caches and the sealed
+# held-out cases cannot slip into an image.
+*
+!pyproject.toml
+!uv.lock
+!skeleton/pyproject.toml
+!skeleton/src/
+!skeleton/web/index.html
+!skeleton/web/package.json
+!skeleton/web/package-lock.json
+!skeleton/web/tsconfig.json
+!skeleton/web/vite.config.ts
+!skeleton/web/public/
+!skeleton/web/src/
+!apps/vampires/pyproject.toml
+!apps/vampires/src/
+!apps/vampires/demo/
+!apps/vampires/controls/
+!apps/ghosts/pyproject.toml
+!apps/ghosts/src/
+
+**/__pycache__
 **/node_modules
 **/dist
 **/*.local.yaml
-**/__pycache__
+**/*.local.json
+**/.env
+**/.env.*

@@ -52,8 +52,11 @@ def test_regression_a_tiny_and_a_large_amount_on_one_key_are_added_without_round
         Record(ledger=LedgerName.billed, source="cur-2026-11", row_id="1", raw_key="i-0aa1", amount=amount)
         for amount in (None, Decimal("1E-23"), Decimal("1E+5"))
     ]
-    result = match([snapshot(LedgerName.intended, []), snapshot(LedgerName.observed, []),
-                    snapshot(LedgerName.billed, billed)], CLOUD, RUN_TIME)
+    result = match(
+        [snapshot(LedgerName.intended, []), snapshot(LedgerName.observed, []), snapshot(LedgerName.billed, billed)],
+        CLOUD,
+        RUN_TIME,
+    )
     exact = Decimal("100000.00000000000000000000001")
     assert result.billed_total == exact
     assert result.region_summaries["B"].billed_amount == exact

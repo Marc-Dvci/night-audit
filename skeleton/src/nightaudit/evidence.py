@@ -146,9 +146,7 @@ def write_evidence_pack(result: RunResult, pack_dir: Path) -> str:
     records = _ordered_records(result)
 
     # Build content dicts (ledger order, row_id order), then one row per finding, then the chain.
-    contents: list[dict[str, object]] = [
-        {"type": "record", **_content_from_record(r)} for r in records
-    ]
+    contents: list[dict[str, object]] = [{"type": "record", **_content_from_record(r)} for r in records]
     contents.extend(_finding_row(f) for f in result.findings)
     # Notes come last, so a run without notes writes the same rows as before Req 10.2.
     contents.extend(
@@ -207,9 +205,7 @@ def write_evidence_pack(result: RunResult, pack_dir: Path) -> str:
         "run_id": result.run_id,
         "run_time": _to_utc_iso(result.run_time),
     }
-    (pack_dir / "manifest.json").write_text(
-        json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8"
-    )
+    (pack_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
 
     return final_chain_hash
 
@@ -238,7 +234,9 @@ class VerifyResult:
 #: A decimal as the API sends it. The browser verifier uses the same pattern, so both accept the same strings.
 _DECIMAL_TEXT = re.compile(r"[+-]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?")
 _EXACT = decimal.Context(
-    prec=decimal.MAX_PREC, Emax=decimal.MAX_EMAX, Emin=decimal.MIN_EMIN,
+    prec=decimal.MAX_PREC,
+    Emax=decimal.MAX_EMAX,
+    Emin=decimal.MIN_EMIN,
     traps=[decimal.InvalidOperation, decimal.Inexact, decimal.Overflow],
 )
 #: Regions whose findings are informational: the page counts them apart from the headline.
@@ -355,9 +353,7 @@ def compare_displayed(
         entry = entry if isinstance(entry, dict) else {}
         shown_count = entry.get("key_count", 0)
         if _count(shown_count) != counts.get(code, 0):
-            problems.append(
-                f"region {code}: the page counts {q(shown_count)}, the evidence has {counts.get(code, 0)}"
-            )
+            problems.append(f"region {code}: the page counts {q(shown_count)}, the evidence has {counts.get(code, 0)}")
         shown_amount = _decimal(entry.get("billed_amount", "0"))
         chain_amount = amounts.get(code, Decimal(0))
         if shown_amount is None or shown_amount != chain_amount:
@@ -394,8 +390,11 @@ def compare_displayed(
         for label, field, expected_count in (
             ("headline finding count", "finding_count", len(headline_findings)),
             ("headline new count", "new_count", sum(1 for r in headline_findings if r.get("status") == "new")),
-            ("headline persisting count", "persisting_count",
-             sum(1 for r in headline_findings if r.get("status") == "persisting")),
+            (
+                "headline persisting count",
+                "persisting_count",
+                sum(1 for r in headline_findings if r.get("status") == "persisting"),
+            ),
         ):
             if _count(view.get(field)) != expected_count:
                 problems.append(f"{label}: the page shows {q(view.get(field))}, the evidence has {expected_count}")
@@ -429,8 +428,7 @@ def _header_failure(rows: list[dict[str, object]], manifest: dict[str, Any], fin
     if canonical_json(header.get("finding_count")) != canonical_json(finding_rows):
         return VerifyResult(
             False,
-            f"chain header says {canonical_json(header.get('finding_count'))} findings, "
-            f"the chain has {finding_rows}",
+            f"chain header says {canonical_json(header.get('finding_count'))} findings, the chain has {finding_rows}",
         )
     return None
 
@@ -482,15 +480,12 @@ def verify_evidence_pack(pack_dir: Path, displayed: dict[str, Any] | None = None
         if recomputed != stored_hash:
             return VerifyResult(
                 False,
-                f"row {i}: hash mismatch (stored {stored_hash[:12]}, "
-                f"computed {recomputed[:12]})",
+                f"row {i}: hash mismatch (stored {stored_hash[:12]}, computed {recomputed[:12]})",
                 failed_row=i,
             )
         expected_prev = chain_seed if i == 0 else prev_recomputed
         if stored_prev != expected_prev:
-            return VerifyResult(
-                False, f"row {i}: chain broken (prev_hash does not link to previous row)", failed_row=i
-            )
+            return VerifyResult(False, f"row {i}: chain broken (prev_hash does not link to previous row)", failed_row=i)
         prev_recomputed = recomputed
 
     if prev_recomputed != str(manifest_raw.get("final_chain_hash", "")):
@@ -515,9 +510,7 @@ def verify_evidence_pack(pack_dir: Path, displayed: dict[str, Any] | None = None
     for ledger_name, entry in ledgers_manifest_raw.items():
         if not isinstance(entry, dict):
             return VerifyResult(False, f"ledger '{ledger_name}' entry is not an object")
-        ledger_rows = sorted(
-            by_ledger.get(ledger_name, []), key=lambda r: str(r.get("row_id", ""))
-        )
+        ledger_rows = sorted(by_ledger.get(ledger_name, []), key=lambda r: str(r.get("row_id", "")))
         contents = [_content_from_row(r) for r in ledger_rows]
         recomputed_hash = _sha(_canonical_json(contents))
         expected_hash = str(entry.get("hash", ""))
@@ -527,8 +520,7 @@ def verify_evidence_pack(pack_dir: Path, displayed: dict[str, Any] | None = None
         if expected_count != len(ledger_rows):
             return VerifyResult(
                 False,
-                f"ledger '{ledger_name}': count mismatch "
-                f"({expected_count} vs {len(ledger_rows)})",
+                f"ledger '{ledger_name}': count mismatch ({expected_count} vs {len(ledger_rows)})",
             )
 
     finding_rows = sum(1 for row in rows if row.get("type") == "finding")

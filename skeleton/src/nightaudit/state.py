@@ -73,9 +73,7 @@ class StateStore:
         path = self._path(control_hash)
         path.parent.mkdir(parents=True, exist_ok=True)
         data = {k: v.model_dump(mode="json") for k, v in state.items()}
-        path.write_text(
-            json.dumps(data, indent=2, sort_keys=True), encoding="utf-8"
-        )
+        path.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
 
 
 def compare_findings(

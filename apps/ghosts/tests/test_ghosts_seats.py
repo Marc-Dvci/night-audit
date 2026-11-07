@@ -59,8 +59,9 @@ def write_vendor(folder: Path, assigned: int, invoiced: int, price: Decimal) -> 
         f"invoice_id,vendor,period,seat_quantity,unit_price,currency\nINV,Crypt Docs,2026-10,{invoiced},{price},USD\n",
         encoding="utf-8",
     )
-    return SeatAssignments(ledger=LedgerName.billed, base_dir=folder, vendor="Crypt Docs", assignments="a.csv",
-                           invoice="i.csv")
+    return SeatAssignments(
+        ledger=LedgerName.billed, base_dir=folder, vendor="Crypt Docs", assignments="a.csv", invoice="i.csv"
+    )
 
 
 @pytest.mark.property

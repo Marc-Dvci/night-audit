@@ -151,6 +151,8 @@ def run_control(
     control_config: ControlConfig = control_file.to_config()
     control_id = control_file.id or control_path.stem
     now = run_time if run_time is not None else datetime.now(UTC)
+    # One instant is one run: the run id hashes the time's text, so every spelling of an instant is made UTC first.
+    now = now.replace(tzinfo=UTC) if now.tzinfo is None else now.astimezone(UTC)
     cfg = model_config if model_config is not None else ModelConfig()
 
     # Fetch ledgers via connectors (Req 9.1-9.4).
@@ -195,9 +197,7 @@ def run_control(
     state_store = StateStore(runs_dir)
     if result.complete:
         previous = state_store.load(control_id)
-        updated, resolved, new_state = compare_findings(
-            result.findings, previous, now, control_config
-        )
+        updated, resolved, new_state = compare_findings(result.findings, previous, now, control_config)
         result.findings = updated
         result.resolved = resolved
         state_store.save(control_id, new_state)
@@ -243,9 +243,7 @@ def run_control(
 
 def load_run(runs_dir: Path, run_id: str) -> RunResult:
     """Load a persisted ``RunResult`` from ``runs/<run_id>/result.json``."""
-    return RunResult.model_validate_json(
-        (runs_dir / run_id / "result.json").read_text(encoding="utf-8")
-    )
+    return RunResult.model_validate_json((runs_dir / run_id / "result.json").read_text(encoding="utf-8"))
 
 
 def list_run_ids(runs_dir: Path) -> list[str]:

@@ -15,8 +15,12 @@ from nightaudit.report import CALM_HEADLINE, headline, report_html, run_numbers
 
 WORDED = UiConfig(
     noun=NounUi(singular="resource", plural="resources"),
-    headlines={code: HeadlineUi(one=f"ONE {code} {{count}} {{noun}} {{amount}}.",
-                                other=f"MANY {code} {{count}} {{noun}} {{amount}}.") for code in FINDING_REGIONS},
+    headlines={
+        code: HeadlineUi(
+            one=f"ONE {code} {{count}} {{noun}} {{amount}}.", other=f"MANY {code} {{count}} {{noun}} {{amount}}."
+        )
+        for code in FINDING_REGIONS
+    },
 )
 
 

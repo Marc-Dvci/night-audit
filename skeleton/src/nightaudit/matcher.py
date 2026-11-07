@@ -50,23 +50,13 @@ def _derive_run_id(run_time: datetime, control_hash: str) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
 
 
-def _resolve_region(
-    code: str, control: ControlConfig
-) -> tuple[str, str, str]:
+def _resolve_region(code: str, control: ControlConfig) -> tuple[str, str, str]:
     """Resolve (name, severity, meaning) from overrides or defaults (Req 1.4)."""
     override = control.regions.get(code)
     if override is not None:
         name = override.name if override.name is not None else DEFAULT_REGION_NAMES[code]
-        severity = (
-            override.severity
-            if override.severity is not None
-            else DEFAULT_REGION_SEVERITIES[code]
-        )
-        meaning = (
-            override.meaning
-            if override.meaning is not None
-            else DEFAULT_REGION_MEANINGS[code]
-        )
+        severity = override.severity if override.severity is not None else DEFAULT_REGION_SEVERITIES[code]
+        meaning = override.meaning if override.meaning is not None else DEFAULT_REGION_MEANINGS[code]
     else:
         name = DEFAULT_REGION_NAMES[code]
         severity = DEFAULT_REGION_SEVERITIES[code]
@@ -153,9 +143,7 @@ def _match(
             else:
                 new_record = record.model_copy(update={"key": normalised_key})
             new_records.append(new_record)
-        normalised_snapshots.append(
-            snapshot.model_copy(update={"records": new_records})
-        )
+        normalised_snapshots.append(snapshot.model_copy(update={"records": new_records}))
 
     # Step 2 — Scope filtering, then the owner's exclusion list.
     filtered_snapshots, dropped = apply_scope(normalised_snapshots, control.scope)
@@ -164,9 +152,7 @@ def _match(
         kept_snapshots: list[LedgerSnapshot] = []
         for snapshot in filtered_snapshots:
             kept = [
-                r
-                for r in snapshot.records
-                if r.key is None or (r.key not in exclude_keys and in_scope(r.key, include))
+                r for r in snapshot.records if r.key is None or (r.key not in exclude_keys and in_scope(r.key, include))
             ]
             excluded[snapshot.name.value] = len(snapshot.records) - len(kept)
             kept_snapshots.append(snapshot.model_copy(update={"records": kept}))
@@ -237,9 +223,7 @@ def _match(
         if code == "IOB":
             continue
 
-        key_records = sorted(
-            records_by_key[key], key=lambda r: (r.ledger.value, r.source, r.row_id)
-        )
+        key_records = sorted(records_by_key[key], key=lambda r: (r.ledger.value, r.source, r.row_id))
 
         # Billed amount for this key.
         billed_amount = Decimal("0")
@@ -287,8 +271,7 @@ def _match(
                 amount += record.amount
         amounts[code] = amount
     region_summaries: dict[str, RegionSummary] = {
-        code: RegionSummary(code=code, key_count=counts[code], billed_amount=amounts[code])
-        for code in sorted(counts)
+        code: RegionSummary(code=code, key_count=counts[code], billed_amount=amounts[code]) for code in sorted(counts)
     }
 
     # Step 8 — Amount conservation (Req 3.5).
@@ -307,9 +290,7 @@ def _match(
         region_sum += rs.billed_amount
 
     if region_sum + billed_unkeyed != billed_total:
-        raise ConservationError(
-            f"Amount conservation failed: {region_sum} + {billed_unkeyed} != {billed_total}"
-        )
+        raise ConservationError(f"Amount conservation failed: {region_sum} + {billed_unkeyed} != {billed_total}")
 
     # Step 9 — Assemble RunResult.
     control_hash = control.canonical_hash()

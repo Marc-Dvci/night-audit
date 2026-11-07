@@ -38,8 +38,18 @@ from .connectors import Clock, system_clock
 DECISIONS: tuple[str, ...] = ("keep", "revoke", "investigate")
 REGION_ORDER: tuple[str, ...] = ("OB", "B", "IB", "I", "O")
 COLUMNS: tuple[str, ...] = (
-    "person", "region", "region_code", "systems", "seats", "left_on", "last_sign_in", "manager",
-    "decision", "decision_date", "run_id", "evidence_chain_hash",
+    "person",
+    "region",
+    "region_code",
+    "systems",
+    "seats",
+    "left_on",
+    "last_sign_in",
+    "manager",
+    "decision",
+    "decision_date",
+    "run_id",
+    "evidence_chain_hash",
 )
 #: A cell starting with one of these is a formula to a spreadsheet; it is exported with a leading apostrophe.
 FORMULA_START: tuple[str, ...] = ("=", "+", "-", "@", "\t", "\r")
@@ -82,20 +92,22 @@ def review_rows(result: RunResult) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for f in sorted(reported(result).values(), key=_rank):
         c = f.context
-        rows.append({
-            "person": f.key,
-            "region": f.name,
-            "region_code": f.region_code,
-            "systems": c.get("systems", ""),
-            "seats": c.get("seats", ""),
-            "left_on": c.get("left_on") or c.get("leaving_on", ""),
-            "last_sign_in": c.get("last_sign_in", ""),
-            "manager": c.get("manager", ""),
-            "decision": "",
-            "decision_date": "",
-            "run_id": result.run_id,
-            "evidence_chain_hash": result.evidence_chain_hash or "",
-        })
+        rows.append(
+            {
+                "person": f.key,
+                "region": f.name,
+                "region_code": f.region_code,
+                "systems": c.get("systems", ""),
+                "seats": c.get("seats", ""),
+                "left_on": c.get("left_on") or c.get("leaving_on", ""),
+                "last_sign_in": c.get("last_sign_in", ""),
+                "manager": c.get("manager", ""),
+                "decision": "",
+                "decision_date": "",
+                "run_id": result.run_id,
+                "evidence_chain_hash": result.evidence_chain_hash or "",
+            }
+        )
     return rows
 
 
@@ -136,9 +148,15 @@ tbody tr:nth-child(odd) { background: #e8f5ec; }
 td.blank { min-width: 7rem; border-bottom: 1px solid #8a93a6; }
 """
 HTML_LABELS: tuple[tuple[str, str], ...] = (
-    ("person", "Person"), ("region", "Region"), ("systems", "Systems"), ("seats", "Seats"),
-    ("left_on", "Leaving date"), ("last_sign_in", "Last sign-in"), ("manager", "Manager"),
-    ("decision", "Decision"), ("decision_date", "Date"),
+    ("person", "Person"),
+    ("region", "Region"),
+    ("systems", "Systems"),
+    ("seats", "Seats"),
+    ("left_on", "Leaving date"),
+    ("last_sign_in", "Last sign-in"),
+    ("manager", "Manager"),
+    ("decision", "Decision"),
+    ("decision_date", "Date"),
 )
 
 
@@ -242,8 +260,10 @@ def parse_sheet(text: str, result: RunResult) -> list[dict[str, str]]:
             errors.append(f"line {line}: {shown} was not reported by run {result.run_id}; no decision can be recorded")
             continue
         if cell.get("region_code", "").strip() != finding.region_code:
-            errors.append(f"line {line}: {shown} is {finding.region_code} in run {result.run_id}, "
-                          f"not {cell.get('region_code', '')[:10]!r}")
+            errors.append(
+                f"line {line}: {shown} is {finding.region_code} in run {result.run_id}, "
+                f"not {cell.get('region_code', '')[:10]!r}"
+            )
         if cell.get("run_id", "").strip() != result.run_id or (
             cell.get("evidence_chain_hash", "").strip() != (result.evidence_chain_hash or "")
         ):
@@ -257,8 +277,7 @@ def parse_sheet(text: str, result: RunResult) -> list[dict[str, str]]:
         if person in seen:
             errors.append(f"line {line}: {shown} is decided twice in this sheet")
         seen.add(person)
-        decided.append({"key": person, "region_code": finding.region_code, "decision": decision,
-                        "decision_date": when})
+        decided.append({"key": person, "region_code": finding.region_code, "decision": decision, "decision_date": when})
     if errors:
         raise ReviewError("the sheet was not imported:\n  " + "\n  ".join(errors))
     if not decided:

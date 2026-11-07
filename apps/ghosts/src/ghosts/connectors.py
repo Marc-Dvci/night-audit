@@ -299,8 +299,9 @@ class SeatAssignments(_FileConnector):
             attrs = dict(common)
             attrs["assigned_on"] = row.get("assigned_on", "")
             records.append(
-                self._record(f"{prefix}:{row.get('seat_id') or index}", row.get("email", ""), attrs,
-                             amount=invoice.unit_price)
+                self._record(
+                    f"{prefix}:{row.get('seat_id') or index}", row.get("email", ""), attrs, amount=invoice.unit_price
+                )
             )
         for n in range(1, invoice.seats - len(assigned) + 1):
             records.append(self._record(f"{prefix}:unnamed-{n}", "", dict(common), amount=invoice.unit_price))

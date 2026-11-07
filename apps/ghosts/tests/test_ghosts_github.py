@@ -42,8 +42,9 @@ class ReplayClient:
 
 
 def connector(client: ReplayClient, org: str = "hollow-pines-demo", environ: Mapping[str, str] = ENV) -> GitHubMembers:
-    return GitHubMembers(ledger=LedgerName.observed, org=org, roster="hr_roster.csv", base_dir=FIXTURES,
-                         client=client, environ=environ)
+    return GitHubMembers(
+        ledger=LedgerName.observed, org=org, roster="hr_roster.csv", base_dir=FIXTURES, client=client, environ=environ
+    )
 
 
 def test_members_are_keyed_by_the_email_the_roster_gives_their_login() -> None:
@@ -122,16 +123,22 @@ def test_github_is_a_second_observed_source_in_one_run() -> None:
     """With the identity export and GitHub together, a leaver still in the organisation is found by both."""
     control = load_control_file(FIXTURES.parents[1] / "controls" / "staff-access-github.yaml").to_config()
     observed = [
-        *IdentityExport(ledger=LedgerName.observed, base_dir=FIXTURES, path="identity_export.csv",
-                        system="Hollow Pines directory").fetch(),
+        *IdentityExport(
+            ledger=LedgerName.observed, base_dir=FIXTURES, path="identity_export.csv", system="Hollow Pines directory"
+        ).fetch(),
         *connector(ReplayClient(RECORDING["pages"])).fetch(),
     ]
     vendors = (("Lantern Chat", "lantern-chat"), ("Crypt Docs", "crypt-docs"), ("Belfry CRM", "belfry-crm"))
     billed = [
         r
         for vendor, name in vendors
-        for r in SeatAssignments(ledger=LedgerName.billed, base_dir=FIXTURES, vendor=vendor,
-                                 assignments=f"licences/{name}.csv", invoice=f"invoices/{name}.csv").fetch()
+        for r in SeatAssignments(
+            ledger=LedgerName.billed,
+            base_dir=FIXTURES,
+            vendor=vendor,
+            assignments=f"licences/{name}.csv",
+            invoice=f"invoices/{name}.csv",
+        ).fetch()
     ]
     intended = on("2026-11-04", HrRoster(ledger=LedgerName.intended, base_dir=FIXTURES, path="hr_roster.csv")).fetch()
     result = match(

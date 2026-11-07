@@ -39,8 +39,11 @@ def main(argv: list[str] | None = None) -> int:
     billed_count = 0
     if args.cur_bucket:
         billed = CostAndUsage(
-            ledger=LedgerName.billed, profile=args.profile, bucket=args.cur_bucket,
-            prefix=args.cur_prefix, export=args.cur_export,
+            ledger=LedgerName.billed,
+            profile=args.profile,
+            bucket=args.cur_bucket,
+            prefix=args.cur_prefix,
+            export=args.cur_export,
         ).fetch()
         billed_count = len(billed)
         chain = ["arn_resource_id", "strip", "lower"]

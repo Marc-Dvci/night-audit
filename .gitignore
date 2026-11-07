@@ -12,4 +12,8 @@ runs/
 *.local.json
 .env
 .env.*
+!.env.example
 build/
+.coverage
+coverage.xml
+junit*.xml

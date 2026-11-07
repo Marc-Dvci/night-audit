@@ -27,8 +27,11 @@ def roster(today: str | None = "2026-11-04", **kwargs: Any) -> HrRoster:
 def seats(vendor: str) -> SeatAssignments:
     name = vendor.lower().replace(" ", "-")
     return SeatAssignments(
-        ledger=LedgerName.billed, base_dir=FIXTURES, vendor=vendor,
-        assignments=f"licences/{name}.csv", invoice=f"invoices/{name}.csv",
+        ledger=LedgerName.billed,
+        base_dir=FIXTURES,
+        vendor=vendor,
+        assignments=f"licences/{name}.csv",
+        invoice=f"invoices/{name}.csv",
     )
 
 
@@ -143,8 +146,9 @@ def test_property_intended_membership_follows_the_run_date(
 
 
 def test_the_identity_export_emits_active_accounts_with_system_status_and_last_sign_in() -> None:
-    connector = IdentityExport(ledger=LedgerName.observed, base_dir=FIXTURES, path="identity_export.csv",
-                               system="Hollow Pines directory")
+    connector = IdentityExport(
+        ledger=LedgerName.observed, base_dir=FIXTURES, path="identity_export.csv", system="Hollow Pines directory"
+    )
     records = connector.fetch()
     assert connector.read_only and connector.ledger == LedgerName.observed
     assert [r.raw_key for r in records] == [
@@ -208,7 +212,12 @@ def test_an_invoice_equal_to_its_assignments_has_no_unnamed_seat() -> None:
 
 
 def test_an_invoice_for_another_vendor_stops_the_ledger() -> None:
-    connector = SeatAssignments(ledger=LedgerName.billed, base_dir=FIXTURES, vendor="Crypt Docs",
-                                assignments="licences/crypt-docs.csv", invoice="invoices/belfry-crm.csv")
+    connector = SeatAssignments(
+        ledger=LedgerName.billed,
+        base_dir=FIXTURES,
+        vendor="Crypt Docs",
+        assignments="licences/crypt-docs.csv",
+        invoice="invoices/belfry-crm.csv",
+    )
     with pytest.raises(ValueError, match="not 'Crypt Docs'"):
         connector.fetch()

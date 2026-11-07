@@ -80,8 +80,15 @@ def test_selected_region_labels_are_drawn_in_bone() -> None:
 
 
 def test_the_palette_matches_the_steering_file() -> None:
-    expected = {"ink": "#0b1020", "ink-2": "#141b33", "phosphor": "#7cffb2", "bone": "#edeae0", "amber": "#ffb347",
-                "moon": "#c9d3ff", "blood": "#ff5a6e"}
+    expected = {
+        "ink": "#0b1020",
+        "ink-2": "#141b33",
+        "phosphor": "#7cffb2",
+        "bone": "#edeae0",
+        "amber": "#ffb347",
+        "moon": "#c9d3ff",
+        "blood": "#ff5a6e",
+    }
     assert {k: TOKENS[k].lower() for k in expected} == expected
 
 

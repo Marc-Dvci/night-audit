@@ -49,8 +49,18 @@ def package() -> Path:
     shutil.rmtree(BUILD, ignore_errors=True)
     PKG.mkdir(parents=True)
     run(
-        "uv", "pip", "install", "--quiet", "--python-platform", "aarch64-manylinux2014", "--python-version", "3.12",
-        "--only-binary=:all:", "--target", str(PKG), *DEPS,
+        "uv",
+        "pip",
+        "install",
+        "--quiet",
+        "--python-platform",
+        "aarch64-manylinux2014",
+        "--python-version",
+        "3.12",
+        "--only-binary=:all:",
+        "--target",
+        str(PKG),
+        *DEPS,
     )
     for pattern in TRIM:
         for path in PKG.glob(pattern):
@@ -95,19 +105,39 @@ def deploy(profile: str, account: str, cur_bucket: str, approver: str) -> None:
     base = ["--profile", profile, "--region", REGION]
     run("aws", "s3", "cp", str(ZIP), f"s3://{code_bucket}/{key}", *base)
     run(
-        "aws", "cloudformation", "deploy", "--stack-name", STACK,
-        "--template-file", str(ROOT / "deploy" / "stack.yaml"),
-        "--capabilities", "CAPABILITY_IAM",
-        "--parameter-overrides", f"CodeBucket={code_bucket}", f"CodeKey={key}", f"CurBucket={cur_bucket}",
+        "aws",
+        "cloudformation",
+        "deploy",
+        "--stack-name",
+        STACK,
+        "--template-file",
+        str(ROOT / "deploy" / "stack.yaml"),
+        "--capabilities",
+        "CAPABILITY_IAM",
+        "--parameter-overrides",
+        f"CodeBucket={code_bucket}",
+        f"CodeKey={key}",
+        f"CurBucket={cur_bucket}",
         f"Approver={approver}",
-        "--tags", "night-audit:intended=true", "project=night-audit", *base,
+        "--tags",
+        "night-audit:intended=true",
+        "project=night-audit",
+        *base,
     )
     runs_bucket = f"night-audit-runs-{account}"
     for local in (ROOT / "apps" / "vampires" / "controls").glob("*.local.yaml"):
         run("aws", "s3", "cp", str(local), f"s3://{runs_bucket}/config/{local.name}", *base)
     url = run(
-        "aws", "cloudformation", "describe-stacks", "--stack-name", STACK,
-        "--query", "Stacks[0].Outputs[?OutputKey=='Url'].OutputValue", "--output", "text", *base,
+        "aws",
+        "cloudformation",
+        "describe-stacks",
+        "--stack-name",
+        STACK,
+        "--query",
+        "Stacks[0].Outputs[?OutputKey=='Url'].OutputValue",
+        "--output",
+        "text",
+        *base,
     )
     print("live at", url)
 
@@ -116,8 +146,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--profile", default="default")
     parser.add_argument("--account", default=None, help="account id; default NIGHT_AUDIT_ACCOUNT_ID, else the profile")
-    parser.add_argument("--cur-bucket", default=None, help="CUR 2.0 bucket; default NIGHT_AUDIT_CUR_BUCKET, else "
-                        "night-audit-cur-<account>")
+    parser.add_argument(
+        "--cur-bucket",
+        default=None,
+        help="CUR 2.0 bucket; default NIGHT_AUDIT_CUR_BUCKET, else night-audit-cur-<account>",
+    )
     parser.add_argument("--approver", default=None, help="approver's name; default NIGHT_AUDIT_APPROVER")
     parser.add_argument("--package-only", action="store_true")
     args = parser.parse_args()

@@ -47,9 +47,7 @@ def test_the_ghosts_overview_speaks_about_people(page: Any, base_url: str) -> No
     assert_axe_clean(page)
 
 
-def test_the_app_switch_offers_vampires_live_vampires_demo_and_ghosts_demo(
-    page: Any, base_url: str
-) -> None:
+def test_the_app_switch_offers_vampires_live_vampires_demo_and_ghosts_demo(page: Any, base_url: str) -> None:
     open_page(page, base_url, "?app=ghosts-demo")
     options = page.locator("#app-select option").all_inner_texts()
     assert options == ["Vampires", "Vampires demo account", "Ghosts demo company"]
@@ -62,9 +60,7 @@ def test_the_old_demo_link_still_opens_the_vampires_demo(page: Any, base_url: st
     assert page.inner_text("#headline")
 
 
-def test_an_opened_ghost_states_its_condition_and_shows_its_evidence(
-    page: Any, base_url: str
-) -> None:
+def test_an_opened_ghost_states_its_condition_and_shows_its_evidence(page: Any, base_url: str) -> None:
     _, second = ghost_nights()
     open_page(page, base_url, f"?app=ghosts-demo&run={second}")
     key = "j.marsh@hollowpines.com"
@@ -99,9 +95,7 @@ def test_the_review_sheet_is_a_download(page: Any, base_url: str) -> None:
 def test_recorded_decisions_show_with_their_reviewer_and_date(page: Any, base_url: str) -> None:
     _, second = ghost_nights()
     open_page(page, base_url, f"?app=ghosts-demo&run={second}")
-    assert page.inner_text(".review-state").startswith(
-        "3 decisions recorded by Dana Okafor, IT manager on 2026-11-05."
-    )
+    assert page.inner_text(".review-state").startswith("3 decisions recorded by Dana Okafor, IT manager on 2026-11-05.")
     decided = {
         page.locator(".row", has=page.locator(f'.row-head[data-key="{key}"]')).locator(".row-decision").inner_text()
         for key in ("j.marsh@hollowpines.com", "p.lindqvist@hollowpines.com", "svc-reporting@hollowpines.com")

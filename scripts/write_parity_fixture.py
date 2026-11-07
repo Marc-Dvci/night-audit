@@ -64,11 +64,29 @@ def _wire(value: Decimal) -> str:
 
 
 def _money_cases() -> list[dict[str, str]]:
-    fixed = ["0", "-0", "0E-12", "1E+5", "0.5", "41.200", "0.000000001", "-3.10", "1234567.891", "-0.0000000001",
-             "1E-30", "-7.25", "999", "1000", "100000000000000000000000000001", "0.59", "12.3456789012345678901234"]
+    fixed = [
+        "0",
+        "-0",
+        "0E-12",
+        "1E+5",
+        "0.5",
+        "41.200",
+        "0.000000001",
+        "-3.10",
+        "1234567.891",
+        "-0.0000000001",
+        "1E-30",
+        "-7.25",
+        "999",
+        "1000",
+        "100000000000000000000000000001",
+        "0.59",
+        "12.3456789012345678901234",
+    ]
     rnd = Random(20261106)
-    generated = [f"{rnd.choice(['', '-'])}{rnd.randint(0, 10**rnd.randint(1, 30))}E{rnd.randint(-30, 6)}"
-                 for _ in range(60)]
+    generated = [
+        f"{rnd.choice(['', '-'])}{rnd.randint(0, 10 ** rnd.randint(1, 30))}E{rnd.randint(-30, 6)}" for _ in range(60)
+    ]
     cases = []
     for text in fixed + generated:
         value = Decimal(text)
@@ -79,22 +97,57 @@ def _money_cases() -> list[dict[str, str]]:
 
 def _hostile_snapshots() -> list[LedgerSnapshot]:
     old = datetime(2026, 9, 1, tzinfo=UTC)
-    intended = [Record(ledger=LedgerName.intended, source="stacks", row_id=f"i{n}", raw_key=f"k{n}",
-                       attrs={"Name": text, KEYS_BY_CODE_POINT[n % len(KEYS_BY_CODE_POINT)]: "x"})
-                for n, text in enumerate(HOSTILE[:6])]
-    observed = [Record(ledger=LedgerName.observed, source="inventory", row_id=row_id, raw_key=key, timestamp=old,
-                       attrs={"note": text})
-                for row_id, key, text in [
-                    ("\uffff-1", "k0", HOSTILE[2]), ("\U00010000-1", "k1", HOSTILE[3]), ("same", "k2", HOSTILE[5]),
-                    ("same", "ghost-\U0001f47b", HOSTILE[6]), ("o-\u202e", "k9", HOSTILE[1])]]
-    billed = [Record(ledger=LedgerName.billed, source="cur", row_id=f"b{n}", raw_key=key, amount=Decimal(amount),
-                     attrs={"usage": text})
-              for n, (key, amount, text) in enumerate([
-                  ("k0", "18.61", HOSTILE[7]), ("k1", "0.000000001", HOSTILE[8]), ("k9", "41.20", HOSTILE[4]),
-                  ("phantom-\u00e9", "6.40", HOSTILE[2]), ("", "-3.10", "credit")])]
-    return [LedgerSnapshot(name=LedgerName.intended, source="stacks", records=intended),
-            LedgerSnapshot(name=LedgerName.observed, source="inventory", records=observed),
-            LedgerSnapshot(name=LedgerName.billed, source="cur", records=billed)]
+    intended = [
+        Record(
+            ledger=LedgerName.intended,
+            source="stacks",
+            row_id=f"i{n}",
+            raw_key=f"k{n}",
+            attrs={"Name": text, KEYS_BY_CODE_POINT[n % len(KEYS_BY_CODE_POINT)]: "x"},
+        )
+        for n, text in enumerate(HOSTILE[:6])
+    ]
+    observed = [
+        Record(
+            ledger=LedgerName.observed,
+            source="inventory",
+            row_id=row_id,
+            raw_key=key,
+            timestamp=old,
+            attrs={"note": text},
+        )
+        for row_id, key, text in [
+            ("\uffff-1", "k0", HOSTILE[2]),
+            ("\U00010000-1", "k1", HOSTILE[3]),
+            ("same", "k2", HOSTILE[5]),
+            ("same", "ghost-\U0001f47b", HOSTILE[6]),
+            ("o-\u202e", "k9", HOSTILE[1]),
+        ]
+    ]
+    billed = [
+        Record(
+            ledger=LedgerName.billed,
+            source="cur",
+            row_id=f"b{n}",
+            raw_key=key,
+            amount=Decimal(amount),
+            attrs={"usage": text},
+        )
+        for n, (key, amount, text) in enumerate(
+            [
+                ("k0", "18.61", HOSTILE[7]),
+                ("k1", "0.000000001", HOSTILE[8]),
+                ("k9", "41.20", HOSTILE[4]),
+                ("phantom-\u00e9", "6.40", HOSTILE[2]),
+                ("", "-3.10", "credit"),
+            ]
+        )
+    ]
+    return [
+        LedgerSnapshot(name=LedgerName.intended, source="stacks", records=intended),
+        LedgerSnapshot(name=LedgerName.observed, source="inventory", records=observed),
+        LedgerSnapshot(name=LedgerName.billed, source="cur", records=billed),
+    ]
 
 
 def change_one_byte(jsonl: str) -> str:
@@ -104,7 +157,7 @@ def change_one_byte(jsonl: str) -> str:
     i = records[len(records) // 2]
     at = lines[i].index('"raw_key":"') + len('"raw_key":"')
     before = lines[i][at]
-    lines[i] = lines[i][:at] + ("y" if before == "x" else "x") + lines[i][at + 1:]
+    lines[i] = lines[i][:at] + ("y" if before == "x" else "x") + lines[i][at + 1 :]
     return "\n".join(lines)
 
 
@@ -119,7 +172,7 @@ def _rehash(line: str) -> str:
 def _flip_after(line: str, marker: str) -> str:
     """Change the one character after *marker* to a different hex digit."""
     at = line.index(marker) + len(marker)
-    return line[:at] + ("1" if line[at] == "0" else "0") + line[at + 1:]
+    return line[:at] + ("1" if line[at] == "0" else "0") + line[at + 1 :]
 
 
 def _variants(jsonl: str) -> list[tuple[str, str]]:
@@ -129,7 +182,7 @@ def _variants(jsonl: str) -> list[tuple[str, str]]:
         return "\n".join(new) + "\n"
 
     def at(i: int, line: str) -> str:
-        return join(lines[:i] + [line] + lines[i + 1:])
+        return join(lines[:i] + [line] + lines[i + 1 :])
 
     last = len(lines) - 1
     bidi = next(i for i, line in enumerate(lines) if "\\u202e" in line)
@@ -154,8 +207,14 @@ def _verdict(jsonl: str, manifest: str, displayed: dict[str, Any] | None = None)
         (pack / "evidence.jsonl").write_bytes(jsonl.encode("utf-8", "surrogatepass"))
         (pack / "manifest.json").write_text(manifest, encoding="utf-8")
         result = verify_evidence_pack(pack, displayed)
-    return {"ok": result.ok, "failed_row": result.failed_row, "rows": result.rows, "findings": result.findings,
-            "final_hash": result.final_hash, "detail": result.detail}
+    return {
+        "ok": result.ok,
+        "failed_row": result.failed_row,
+        "rows": result.rows,
+        "findings": result.findings,
+        "final_hash": result.final_hash,
+        "detail": result.detail,
+    }
 
 
 def _displayed_variants(shown: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
@@ -231,18 +290,25 @@ def _pack_case() -> dict[str, Any]:
         jsonl = (pack / "evidence.jsonl").read_text(encoding="utf-8")
         manifest = (pack / "manifest.json").read_text(encoding="utf-8")
     # The page never holds a lone surrogate (pydantic cannot write one), and the comparison does not read the records.
-    page = result.model_copy(update={"snapshots": [],
-                                     "findings": [f.model_copy(update={"records": []}) for f in result.findings]})
+    page = result.model_copy(
+        update={"snapshots": [], "findings": [f.model_copy(update={"records": []}) for f in result.findings]}
+    )
     shown = json.loads(json.dumps(run_document(page)))
     legacy_jsonl, legacy_manifest = _legacy_pack(jsonl, json.loads(manifest))
     return {
         "manifest": json.loads(manifest),
-        "legacy": {"jsonl": legacy_jsonl, "manifest": legacy_manifest,
-                   "verdict": _verdict(legacy_jsonl, json.dumps(legacy_manifest))},
-        "variants": [{"name": name, "jsonl": text, "verdict": _verdict(text, manifest)}
-                     for name, text in _variants(jsonl)],
-        "displayed": [{"name": name, "document": document, "verdict": _verdict(jsonl, manifest, document)}
-                      for name, document in _displayed_variants(shown)],
+        "legacy": {
+            "jsonl": legacy_jsonl,
+            "manifest": legacy_manifest,
+            "verdict": _verdict(legacy_jsonl, json.dumps(legacy_manifest)),
+        },
+        "variants": [
+            {"name": name, "jsonl": text, "verdict": _verdict(text, manifest)} for name, text in _variants(jsonl)
+        ],
+        "displayed": [
+            {"name": name, "document": document, "verdict": _verdict(jsonl, manifest, document)}
+            for name, document in _displayed_variants(shown)
+        ],
     }
 
 

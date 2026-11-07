@@ -32,7 +32,7 @@ def _download_prefix(prefix: str, dest: Path) -> int:
     paginator = _s3.get_paginator("list_objects_v2")
     for page in paginator.paginate(Bucket=BUCKET, Prefix=prefix):
         for obj in page.get("Contents", []):
-            target = dest / obj["Key"][len(prefix):]
+            target = dest / obj["Key"][len(prefix) :]
             if target.exists() and target.stat().st_size == obj["Size"]:
                 continue
             target.parent.mkdir(parents=True, exist_ok=True)

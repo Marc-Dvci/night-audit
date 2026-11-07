@@ -69,8 +69,10 @@ def build(target: Path = TARGET, runs: Path = RUNS) -> list[str]:
     for when in NIGHTS:
         result = run(CONTROL, runs, when)
         findings = [f for f in result.findings if not f.informational]
-        print(f"ghosts {when.date()}: run {result.run_id}, {len(findings)} findings, "
-              f"{len(result.findings) - len(findings)} informational, pending {result.pending_keys}")
+        print(
+            f"ghosts {when.date()}: run {result.run_id}, {len(findings)} findings, "
+            f"{len(result.findings) - len(findings)} informational, pending {result.pending_keys}"
+        )
         run_ids.append(result.run_id)
     second = runs / run_ids[-1]
     sheet = runs / "decided-review.csv"

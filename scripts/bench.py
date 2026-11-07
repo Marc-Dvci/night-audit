@@ -1,6 +1,6 @@
 """Matcher throughput on a synthetic account: n keys in each ledger, 1% of them made into each kind of finding.
 
-    uv run python scripts/bench.py 100000
+uv run python scripts/bench.py 100000
 """
 
 from __future__ import annotations
@@ -20,13 +20,23 @@ def main() -> int:
     old = datetime(2026, 9, 1, tzinfo=UTC)
     keys = [f"i-{k:010x}" for k in range(n)]
     cut = n // 100
-    intended = [Record(ledger=LedgerName.intended, source="i", row_id=f"i{k}", raw_key=key)
-                for k, key in enumerate(keys[cut:])]                      # first 1% never declared
-    observed = [Record(ledger=LedgerName.observed, source="o", row_id=f"o{k}", raw_key=key.upper(), timestamp=old)
-                for k, key in enumerate(keys[: n - cut])]                 # last 1% gone
-    billed = [Record(ledger=LedgerName.billed, source="b", row_id=f"b{k}",
-                     raw_key=f"arn:aws:ec2:us-east-1:111122223333:instance/{key}", amount=Decimal("0.0104"))
-              for k, key in enumerate(keys)]
+    intended = [
+        Record(ledger=LedgerName.intended, source="i", row_id=f"i{k}", raw_key=key) for k, key in enumerate(keys[cut:])
+    ]  # first 1% never declared
+    observed = [
+        Record(ledger=LedgerName.observed, source="o", row_id=f"o{k}", raw_key=key.upper(), timestamp=old)
+        for k, key in enumerate(keys[: n - cut])
+    ]  # last 1% gone
+    billed = [
+        Record(
+            ledger=LedgerName.billed,
+            source="b",
+            row_id=f"b{k}",
+            raw_key=f"arn:aws:ec2:us-east-1:111122223333:instance/{key}",
+            amount=Decimal("0.0104"),
+        )
+        for k, key in enumerate(keys)
+    ]
     chain = ["arn_resource_id", "strip", "lower"]
     control = ControlConfig(normalisers={"intended": chain, "observed": chain, "billed": chain}, grace_hours=36)
     snapshots = [

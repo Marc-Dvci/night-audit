@@ -75,17 +75,13 @@ def _canonical_domain(domain: str, alias_domains: dict[str, str]) -> str:
     cycle resolves to its smallest member, so the result is a fixed point (Req 2.3). A target containing ``@`` is not
     a domain and is ignored.
     """
-    aliases = {
-        k.strip().lower(): t
-        for k, v in alias_domains.items()
-        if "@" not in (t := v.strip().lower())
-    }
+    aliases = {k.strip().lower(): t for k, v in alias_domains.items() if "@" not in (t := v.strip().lower())}
     seen: list[str] = []
     while domain in aliases and domain not in seen:
         seen.append(domain)
         domain = aliases[domain]
     if domain in seen:
-        return min(seen[seen.index(domain):])
+        return min(seen[seen.index(domain) :])
     return domain
 
 

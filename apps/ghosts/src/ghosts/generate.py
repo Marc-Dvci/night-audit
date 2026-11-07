@@ -53,22 +53,160 @@ LANTERN, CRYPT, BELFRY, OSSUARY = (v.name for v in VENDORS)
 UNNAMED_LANTERN_SEATS = 3
 
 GIVEN_NAMES: tuple[str, ...] = (
-    "Aaron", "Abby", "Adele", "Alma", "Amir", "Anika", "Ben", "Bianca", "Caleb", "Carmen", "Chloe", "Colin",
-    "Dalia", "Daniel", "Dara", "Eamon", "Edith", "Elias", "Ellen", "Farah", "Felix", "Fiona", "Gareth", "Greta",
-    "Hamid", "Hannah", "Hugo", "Ines", "Ivan", "Jada", "Jasper", "Joanna", "Kai", "Karin", "Kofi", "Lara",
-    "Leon", "Lina", "Lucas", "Maeve", "Malik", "Marta", "Mateo", "Mila", "Nadine", "Nikhil", "Nora", "Oliver",
-    "Omar", "Orla", "Pablo", "Priya", "Quentin", "Rafael", "Rhea", "Rosa", "Samir", "Sanna", "Simon", "Sofia",
-    "Tariq", "Tessa", "Theo", "Uma", "Victor", "Wanda", "Wes", "Yara", "Yusuf", "Zoe",
+    "Aaron",
+    "Abby",
+    "Adele",
+    "Alma",
+    "Amir",
+    "Anika",
+    "Ben",
+    "Bianca",
+    "Caleb",
+    "Carmen",
+    "Chloe",
+    "Colin",
+    "Dalia",
+    "Daniel",
+    "Dara",
+    "Eamon",
+    "Edith",
+    "Elias",
+    "Ellen",
+    "Farah",
+    "Felix",
+    "Fiona",
+    "Gareth",
+    "Greta",
+    "Hamid",
+    "Hannah",
+    "Hugo",
+    "Ines",
+    "Ivan",
+    "Jada",
+    "Jasper",
+    "Joanna",
+    "Kai",
+    "Karin",
+    "Kofi",
+    "Lara",
+    "Leon",
+    "Lina",
+    "Lucas",
+    "Maeve",
+    "Malik",
+    "Marta",
+    "Mateo",
+    "Mila",
+    "Nadine",
+    "Nikhil",
+    "Nora",
+    "Oliver",
+    "Omar",
+    "Orla",
+    "Pablo",
+    "Priya",
+    "Quentin",
+    "Rafael",
+    "Rhea",
+    "Rosa",
+    "Samir",
+    "Sanna",
+    "Simon",
+    "Sofia",
+    "Tariq",
+    "Tessa",
+    "Theo",
+    "Uma",
+    "Victor",
+    "Wanda",
+    "Wes",
+    "Yara",
+    "Yusuf",
+    "Zoe",
 )
 FAMILY_NAMES: tuple[str, ...] = (
-    "Abbott", "Adeyemi", "Alder", "Arden", "Ashdown", "Bale", "Barrow", "Beck", "Birch", "Blackwood", "Bramley",
-    "Brook", "Calder", "Carrow", "Chandra", "Colby", "Crane", "Dale", "Darrow", "Delacroix", "Dunmore", "Ellery",
-    "Fairley", "Farrant", "Fenn", "Finch", "Garland", "Glenn", "Greaves", "Hale", "Harlow", "Hartley", "Heath",
-    "Holloway", "Hurst", "Ingram", "Jarvis", "Keane", "Kestrel", "Kimura", "Lang", "Larkin", "Lomax", "Lund",
-    "Maddox", "Mercer", "Moreau", "Nakamura", "Nash", "Nolan", "Oakley", "Okafor", "Orme", "Pace", "Pell",
-    "Pryor", "Quarry", "Radley", "Reyes", "Rook", "Rowe", "Sable", "Santos", "Sedge", "Shaw", "Sorensen",
-    "Stroud", "Tamsin", "Teague", "Thorne", "Tilly", "Upton", "Vance", "Varga", "Wade", "Warrick", "Weller",
-    "Whitlock", "Wilde", "Yates", "Yoon", "Zeller",
+    "Abbott",
+    "Adeyemi",
+    "Alder",
+    "Arden",
+    "Ashdown",
+    "Bale",
+    "Barrow",
+    "Beck",
+    "Birch",
+    "Blackwood",
+    "Bramley",
+    "Brook",
+    "Calder",
+    "Carrow",
+    "Chandra",
+    "Colby",
+    "Crane",
+    "Dale",
+    "Darrow",
+    "Delacroix",
+    "Dunmore",
+    "Ellery",
+    "Fairley",
+    "Farrant",
+    "Fenn",
+    "Finch",
+    "Garland",
+    "Glenn",
+    "Greaves",
+    "Hale",
+    "Harlow",
+    "Hartley",
+    "Heath",
+    "Holloway",
+    "Hurst",
+    "Ingram",
+    "Jarvis",
+    "Keane",
+    "Kestrel",
+    "Kimura",
+    "Lang",
+    "Larkin",
+    "Lomax",
+    "Lund",
+    "Maddox",
+    "Mercer",
+    "Moreau",
+    "Nakamura",
+    "Nash",
+    "Nolan",
+    "Oakley",
+    "Okafor",
+    "Orme",
+    "Pace",
+    "Pell",
+    "Pryor",
+    "Quarry",
+    "Radley",
+    "Reyes",
+    "Rook",
+    "Rowe",
+    "Sable",
+    "Santos",
+    "Sedge",
+    "Shaw",
+    "Sorensen",
+    "Stroud",
+    "Tamsin",
+    "Teague",
+    "Thorne",
+    "Tilly",
+    "Upton",
+    "Vance",
+    "Varga",
+    "Wade",
+    "Warrick",
+    "Weller",
+    "Whitlock",
+    "Wilde",
+    "Yates",
+    "Yoon",
+    "Zeller",
 )
 BRANCHES: tuple[str, ...] = ("Mossbank Branch", "Fernhollow Branch", "Old Quarry Branch", "Larkspur Branch")
 HEAD_OFFICE = "Head Office"
@@ -86,22 +224,45 @@ class Department:
 
 #: 180 people on the run date across eleven departments. ``chief`` is the executive the head reports to.
 DEPARTMENTS: tuple[Department, ...] = (
-    Department("Member Services", 40, ("Member Advisor", "Senior Member Advisor", "Contact Centre Agent"), "COO",
-               True, (LANTERN, BELFRY)),
+    Department(
+        "Member Services",
+        40,
+        ("Member Advisor", "Senior Member Advisor", "Contact Centre Agent"),
+        "COO",
+        True,
+        (LANTERN, BELFRY),
+    ),
     Department("Branch Operations", 35, ("Teller", "Senior Teller"), "COO", True, (LANTERN,)),
-    Department("Lending", 30, ("Loan Officer", "Mortgage Advisor", "Underwriter", "Lending Assistant"), "COO", True,
-               (LANTERN, CRYPT, BELFRY)),
-    Department("Card Services", 8, ("Card Operations Analyst", "Disputes Specialist"), "COO", False,
-               (LANTERN, BELFRY)),
+    Department(
+        "Lending",
+        30,
+        ("Loan Officer", "Mortgage Advisor", "Underwriter", "Lending Assistant"),
+        "COO",
+        True,
+        (LANTERN, CRYPT, BELFRY),
+    ),
+    Department("Card Services", 8, ("Card Operations Analyst", "Disputes Specialist"), "COO", False, (LANTERN, BELFRY)),
     Department("Collections", 10, ("Collections Specialist",), "COO", False, (LANTERN, BELFRY)),
-    Department("Finance", 12, ("Accountant", "Financial Analyst", "Payroll Officer"), "CFO", False,
-               (LANTERN, CRYPT)),
-    Department("Risk and Compliance", 12, ("Compliance Analyst", "Risk Analyst", "Internal Auditor"), "CRO", False,
-               (LANTERN, CRYPT)),
-    Department("IT", 14, ("Systems Engineer", "Service Desk Analyst", "Network Engineer", "Security Analyst",
-                          "Developer"), "CIO", False, (LANTERN, CRYPT)),
-    Department("Marketing", 8, ("Marketing Specialist", "Designer", "Content Writer"), "COO", False,
-               (LANTERN, CRYPT, OSSUARY)),
+    Department("Finance", 12, ("Accountant", "Financial Analyst", "Payroll Officer"), "CFO", False, (LANTERN, CRYPT)),
+    Department(
+        "Risk and Compliance",
+        12,
+        ("Compliance Analyst", "Risk Analyst", "Internal Auditor"),
+        "CRO",
+        False,
+        (LANTERN, CRYPT),
+    ),
+    Department(
+        "IT",
+        14,
+        ("Systems Engineer", "Service Desk Analyst", "Network Engineer", "Security Analyst", "Developer"),
+        "CIO",
+        False,
+        (LANTERN, CRYPT),
+    ),
+    Department(
+        "Marketing", 8, ("Marketing Specialist", "Designer", "Content Writer"), "COO", False, (LANTERN, CRYPT, OSSUARY)
+    ),
     Department("People", 6, ("HR Advisor", "Recruiter"), "COO", False, (LANTERN, CRYPT)),
 )
 EXECUTIVES: tuple[tuple[str, str], ...] = (
@@ -215,15 +376,38 @@ class _Builder:
         self.next_id += 1
         return value
 
-    def person(self, department: str, title: str, manager: str, location: str, start: date,
-               given: str | None = None, family: str | None = None, email: str | None = None,
-               employment_type: str = "employee", leaving: date | None = None, seats: tuple[str, ...] = ()) -> Person:
+    def person(
+        self,
+        department: str,
+        title: str,
+        manager: str,
+        location: str,
+        start: date,
+        given: str | None = None,
+        family: str | None = None,
+        email: str | None = None,
+        employment_type: str = "employee",
+        leaving: date | None = None,
+        seats: tuple[str, ...] = (),
+    ) -> Person:
         if given is None or family is None or email is None:
             given, family, email = self.random_name()
         else:
             self.reserve(email)
-        p = Person(self.employee_id(), given, family, email, department, title, manager, employment_type, location,
-                   start, leaving, seats=list(seats))
+        p = Person(
+            self.employee_id(),
+            given,
+            family,
+            email,
+            department,
+            title,
+            manager,
+            employment_type,
+            location,
+            start,
+            leaving,
+            seats=list(seats),
+        )
         if department == "IT":
             p.github_login = email.split("@")[0].replace(".", "-") + "-hp"
         self.company.people.append(p)
@@ -239,8 +423,14 @@ class _Builder:
         chiefs: dict[str, Person] = {}
         for code, title in EXECUTIVES:
             manager = chiefs["CEO"].email if chiefs else ""
-            chiefs[code] = self.person("Executive", title, manager, HEAD_OFFICE,
-                                       _day(self.rng, date(2010, 1, 4), date(2020, 12, 14)), seats=EXECUTIVE_SEATS)
+            chiefs[code] = self.person(
+                "Executive",
+                title,
+                manager,
+                HEAD_OFFICE,
+                _day(self.rng, date(2010, 1, 4), date(2020, 12, 14)),
+                seats=EXECUTIVE_SEATS,
+            )
 
         # People who must exist on the run date: planted.yaml names two of them; Nadia Haddad holds n.haddad, which is
         # why the planted joiner's address is noor.haddad.
@@ -249,20 +439,50 @@ class _Builder:
         }
         if self.plant:
             # planted.yaml: the Unprovisioned joiner (I) and the Wraith (IB). Neither has an account.
-            forced["Member Services"] = [Preset("Noor", "Haddad", f"noor.haddad@{DOMAIN}", "Member Advisor",
-                                                date(2026, 11, 2), seats=(), has_account=False)]
-            forced["Finance"] = [Preset("Elena", "Castell", f"e.castell@{DOMAIN}", "Accountant", date(2022, 10, 3),
-                                        seats=(CRYPT,), has_account=False)]
+            forced["Member Services"] = [
+                Preset(
+                    "Noor",
+                    "Haddad",
+                    f"noor.haddad@{DOMAIN}",
+                    "Member Advisor",
+                    date(2026, 11, 2),
+                    seats=(),
+                    has_account=False,
+                )
+            ]
+            forced["Finance"] = [
+                Preset(
+                    "Elena",
+                    "Castell",
+                    f"e.castell@{DOMAIN}",
+                    "Accountant",
+                    date(2022, 10, 3),
+                    seats=(CRYPT,),
+                    has_account=False,
+                )
+            ]
 
         self.heads: dict[str, Person] = {}
         for dept in DEPARTMENTS:
-            head = self.person(dept.name, f"Head of {dept.name}", chiefs[dept.chief].email, HEAD_OFFICE,
-                               _day(self.rng, date(2011, 1, 3), date(2022, 6, 6)), seats=dept.seats)
+            head = self.person(
+                dept.name,
+                f"Head of {dept.name}",
+                chiefs[dept.chief].email,
+                HEAD_OFFICE,
+                _day(self.rng, date(2011, 1, 3), date(2022, 6, 6)),
+                seats=dept.seats,
+            )
             self.heads[dept.name] = head
             lead_count = (dept.size - 1) // 12
             leads = [
-                self.person(dept.name, "Team Lead", head.email, self.location(dept),
-                            _day(self.rng, date(2012, 1, 9), date(2024, 3, 4)), seats=dept.seats)
+                self.person(
+                    dept.name,
+                    "Team Lead",
+                    head.email,
+                    self.location(dept),
+                    _day(self.rng, date(2012, 1, 9), date(2024, 3, 4)),
+                    seats=dept.seats,
+                )
                 for _ in range(lead_count)
             ]
             managers = leads or [head]
@@ -272,16 +492,31 @@ class _Builder:
                 manager = managers[index % len(managers)].email
                 if index < len(presets):
                     pre = presets[index]
-                    p = self.person(dept.name, pre.title, manager, self.location(dept), pre.start, given=pre.given,
-                                    family=pre.family, email=pre.email,
-                                    seats=dept.seats if pre.seats is None else pre.seats)
+                    p = self.person(
+                        dept.name,
+                        pre.title,
+                        manager,
+                        self.location(dept),
+                        pre.start,
+                        given=pre.given,
+                        family=pre.family,
+                        email=pre.email,
+                        seats=dept.seats if pre.seats is None else pre.seats,
+                    )
                     if not pre.has_account:
                         self.no_account.add(p.email)
                     continue
                 title = self.rng.choice(dept.titles)
                 employment = "contractor" if dept.name == "IT" and index % 5 == 4 else "employee"
-                p = self.person(dept.name, title, manager, self.location(dept), self.staff_start(),
-                                employment_type=employment, seats=dept.seats)
+                p = self.person(
+                    dept.name,
+                    title,
+                    manager,
+                    self.location(dept),
+                    self.staff_start(),
+                    employment_type=employment,
+                    seats=dept.seats,
+                )
                 if dept.name == "Branch Operations" and index >= staff_count - PART_TIME_TELLERS:
                     p.title = "Part-time Teller"
                     if self.plant:
@@ -289,34 +524,76 @@ class _Builder:
 
     def build_boundaries(self) -> None:
         """People whose dates sit on the edges of the run date and who must produce no finding."""
-        current = [p for p in self.company.people
-                   if p.title not in ("Head of " + p.department, "Team Lead") and p.department != "Executive"
-                   and p.leaving is None and p.email not in self.no_account and p.seats]
+        current = [
+            p
+            for p in self.company.people
+            if p.title not in ("Head of " + p.department, "Team Lead")
+            and p.department != "Executive"
+            and p.leaving is None
+            and p.email not in self.no_account
+            and p.seats
+        ]
         for p, leaving in zip(self.rng.sample(current, 2), (date(2026, 11, 20), date(2026, 12, 31)), strict=True):
             p.leaving = leaving  # still here on the run date: Living
-        for leaving in [date(2026, 11, 4)] + sorted(_day(self.rng, date(2026, 1, 9), date(2026, 10, 23))
-                                                    for _ in range(6)):
+        for leaving in [date(2026, 11, 4)] + sorted(
+            _day(self.rng, date(2026, 1, 9), date(2026, 10, 23)) for _ in range(6)
+        ):
             dept = self.rng.choice(DEPARTMENTS)
-            p = self.person(dept.name, self.rng.choice(dept.titles), self.heads[dept.name].email, self.location(dept),
-                            _day(self.rng, date(2014, 1, 6), date(2025, 6, 2)), leaving=leaving)
+            p = self.person(
+                dept.name,
+                self.rng.choice(dept.titles),
+                self.heads[dept.name].email,
+                self.location(dept),
+                _day(self.rng, date(2014, 1, 6), date(2025, 6, 2)),
+                leaving=leaving,
+            )
             self.leavers.append(p)  # account disabled, no seats: correctly off-boarded
         dept = DEPARTMENTS[0]
-        joiner = self.person(dept.name, "Member Advisor", self.heads[dept.name].email, self.location(dept),
-                             date(2026, 11, 16))
+        joiner = self.person(
+            dept.name, "Member Advisor", self.heads[dept.name].email, self.location(dept), date(2026, 11, 16)
+        )
         self.no_account.add(joiner.email)  # starts after the run date; not provisioned yet
 
     def build_planted_leavers(self) -> None:
         """planted.yaml: the three Ghosts (OB)."""
         heads = self.heads
-        marsh = self.person("Lending", "Loan Officer", heads["Lending"].email, BRANCHES[0], date(2021, 4, 12),
-                            given="Jonah", family="Marsh", email=f"j.marsh@{DOMAIN}", leaving=date(2026, 9, 12),
-                            seats=(CRYPT, BELFRY))
-        lindqvist = self.person("IT", "Systems Engineer", heads["IT"].email, HEAD_OFFICE, date(2025, 9, 1),
-                                given="Petra", family="Lindqvist", email=f"p.lindqvist@{DOMAIN}",
-                                employment_type="contractor", leaving=date(2026, 6, 30), seats=(LANTERN,))
-        voss = self.person("Marketing", "Designer", heads["Marketing"].email, HEAD_OFFICE, date(2023, 2, 6),
-                           given="Rowan", family="Voss", email=f"r.voss@{DOMAIN}", leaving=date(2026, 8, 1),
-                           seats=(OSSUARY,))
+        marsh = self.person(
+            "Lending",
+            "Loan Officer",
+            heads["Lending"].email,
+            BRANCHES[0],
+            date(2021, 4, 12),
+            given="Jonah",
+            family="Marsh",
+            email=f"j.marsh@{DOMAIN}",
+            leaving=date(2026, 9, 12),
+            seats=(CRYPT, BELFRY),
+        )
+        lindqvist = self.person(
+            "IT",
+            "Systems Engineer",
+            heads["IT"].email,
+            HEAD_OFFICE,
+            date(2025, 9, 1),
+            given="Petra",
+            family="Lindqvist",
+            email=f"p.lindqvist@{DOMAIN}",
+            employment_type="contractor",
+            leaving=date(2026, 6, 30),
+            seats=(LANTERN,),
+        )
+        voss = self.person(
+            "Marketing",
+            "Designer",
+            heads["Marketing"].email,
+            HEAD_OFFICE,
+            date(2023, 2, 6),
+            given="Rowan",
+            family="Voss",
+            email=f"r.voss@{DOMAIN}",
+            leaving=date(2026, 8, 1),
+            seats=(OSSUARY,),
+        )
         voss.identity_email = f"R.Voss+old@{ALIAS_DOMAIN}"
         self.planted_last_sign_in = {
             marsh.email: datetime(2026, 10, 30, 19, 42, tzinfo=UTC),
@@ -326,8 +603,11 @@ class _Builder:
 
     def build_variants(self) -> None:
         """Living people whose address is written differently in one export; the normaliser must join them."""
-        candidates = [p for p in self.company.people if p.leaving is None and p.email not in self.no_account
-                      and LANTERN in p.seats and not p.identity_email]
+        candidates = [
+            p
+            for p in self.company.people
+            if p.leaving is None and p.email not in self.no_account and LANTERN in p.seats and not p.identity_email
+        ]
         a, b, c, d, e = self.rng.sample(candidates, 5)
 
         def local(p: Person) -> str:
@@ -347,8 +627,9 @@ class _Builder:
         for p in self.company.people:
             if p.email in self.no_account:
                 continue
-            created = datetime.combine(p.start - timedelta(days=self.rng.randint(1, 10)), datetime.min.time(),
-                                       tzinfo=UTC) + timedelta(hours=9)
+            created = datetime.combine(
+                p.start - timedelta(days=self.rng.randint(1, 10)), datetime.min.time(), tzinfo=UTC
+            ) + timedelta(hours=9)
             name = f"{p.given} {p.family}"
             if p.leaving is None or p.leaving > RUN_DATE:
                 first = max(recent_first, created + timedelta(days=1))
@@ -358,16 +639,29 @@ class _Builder:
             else:
                 status = "disabled"
                 signed_in = datetime.combine(p.leaving, datetime.min.time(), tzinfo=UTC) - timedelta(
-                    minutes=self.rng.randint(60, 600))
+                    minutes=self.rng.randint(60, 600)
+                )
             self.company.accounts.append(Account(p.identity_email or p.email, name, status, created, signed_in))
         if self.plant:
             # planted.yaml: the two Poltergeists (O). Never on the roster, no seat.
-            self.company.accounts.append(Account(f"svc-reporting@{DOMAIN}", "Reporting service", "active",
-                                                 datetime(2024, 3, 18, 10, 20, tzinfo=UTC),
-                                                 datetime(2026, 11, 3, 23, 15, tzinfo=UTC)))
-            self.company.accounts.append(Account(f"test.admin@{DOMAIN}", "Test Administrator", "active",
-                                                 datetime(2025, 5, 20, 14, 5, tzinfo=UTC),
-                                                 datetime(2025, 6, 2, 11, 30, tzinfo=UTC)))
+            self.company.accounts.append(
+                Account(
+                    f"svc-reporting@{DOMAIN}",
+                    "Reporting service",
+                    "active",
+                    datetime(2024, 3, 18, 10, 20, tzinfo=UTC),
+                    datetime(2026, 11, 3, 23, 15, tzinfo=UTC),
+                )
+            )
+            self.company.accounts.append(
+                Account(
+                    f"test.admin@{DOMAIN}",
+                    "Test Administrator",
+                    "active",
+                    datetime(2025, 5, 20, 14, 5, tzinfo=UTC),
+                    datetime(2025, 6, 2, 11, 30, tzinfo=UTC),
+                )
+            )
             # planted.yaml: the Phantom seat (B), and the Lantern Chat seats paid for nobody named.
             self.company.loose_seats.append((BELFRY, f"temp.contractor@{DOMAIN}", date(2026, 7, 14)))
             self.company.extra_invoice_seats[LANTERN] = UNNAMED_LANTERN_SEATS
@@ -397,22 +691,56 @@ def company_files(company: Company) -> dict[str, bytes]:
     """The company as export files, by path relative to the data folder."""
     files: dict[str, bytes] = {}
     files["hr_roster.csv"] = _csv(
-        ["employee_id", "email", "given_name", "family_name", "department", "title", "manager_email",
-         "employment_type", "location", "start_date", "leaving_date", "github_login"],
-        [[p.employee_id, p.email, p.given, p.family, p.department, p.title, p.manager_email, p.employment_type,
-          p.location, p.start.isoformat(), p.leaving.isoformat() if p.leaving else "", p.github_login]
-         for p in company.people],
+        [
+            "employee_id",
+            "email",
+            "given_name",
+            "family_name",
+            "department",
+            "title",
+            "manager_email",
+            "employment_type",
+            "location",
+            "start_date",
+            "leaving_date",
+            "github_login",
+        ],
+        [
+            [
+                p.employee_id,
+                p.email,
+                p.given,
+                p.family,
+                p.department,
+                p.title,
+                p.manager_email,
+                p.employment_type,
+                p.location,
+                p.start.isoformat(),
+                p.leaving.isoformat() if p.leaving else "",
+                p.github_login,
+            ]
+            for p in company.people
+        ],
     )
     accounts = sorted(company.accounts, key=lambda a: (a.email.lower(), a.email))
     files["identity_export.csv"] = _csv(
         ["account_id", "email", "display_name", "status", "created", "last_sign_in"],
-        [[f"u-{10000 + i}", a.email, a.display_name, a.status, _iso(a.created),
-          _iso(a.last_sign_in) if a.last_sign_in else ""] for i, a in enumerate(accounts, start=1)],
+        [
+            [
+                f"u-{10000 + i}",
+                a.email,
+                a.display_name,
+                a.status,
+                _iso(a.created),
+                _iso(a.last_sign_in) if a.last_sign_in else "",
+            ]
+            for i, a in enumerate(accounts, start=1)
+        ],
     )
     for vendor in VENDORS:
         holders: list[tuple[str, date]] = [
-            (p.seat_email or p.email, max(p.start, date(2019, 1, 7)))
-            for p in company.people if vendor.name in p.seats
+            (p.seat_email or p.email, max(p.start, date(2019, 1, 7))) for p in company.people if vendor.name in p.seats
         ]
         holders += [(email, on) for name, email, on in company.loose_seats if name == vendor.name]
         files[f"licences/{vendor.slug}.csv"] = _csv(
@@ -423,9 +751,17 @@ def company_files(company: Company) -> dict[str, bytes]:
         september = october - sum(1 for _, on in holders if on >= date(2026, 10, 1))
         files[f"invoices/{vendor.slug}.csv"] = _csv(
             ["invoice_id", "vendor", "period", "seat_quantity", "unit_price", "currency"],
-            [[f"{vendor.prefix}-INV-{PREVIOUS_PERIOD}", vendor.name, PREVIOUS_PERIOD, str(september),
-              vendor.unit_price, "USD"],
-             [f"{vendor.prefix}-INV-{PERIOD}", vendor.name, PERIOD, str(october), vendor.unit_price, "USD"]],
+            [
+                [
+                    f"{vendor.prefix}-INV-{PREVIOUS_PERIOD}",
+                    vendor.name,
+                    PREVIOUS_PERIOD,
+                    str(september),
+                    vendor.unit_price,
+                    "USD",
+                ],
+                [f"{vendor.prefix}-INV-{PERIOD}", vendor.name, PERIOD, str(october), vendor.unit_price, "USD"],
+            ],
         )
     return files
 

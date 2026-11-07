@@ -24,6 +24,7 @@ def _writer() -> ModuleType:
     return module
 
 
+@pytest.mark.integration
 def test_the_committed_parity_fixture_is_current(request: pytest.FixtureRequest) -> None:
     writer = _writer()
     expected: str = writer.build()

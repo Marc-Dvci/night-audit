@@ -66,8 +66,7 @@ def test_property_same_keys_in_all_three_ledgers_produce_zero_findings(
     control, snapshots = case
     ctx = {"alias_domains": control.alias_domains}
     key_sets = [
-        {k for r in s.records if (k := normalise(r.raw_key, control.normalisers[s.name.value], ctx))}
-        for s in snapshots
+        {k for r in s.records if (k := normalise(r.raw_key, control.normalisers[s.name.value], ctx))} for s in snapshots
     ]
     # Precondition of P3: the spellings normalise to the same key set in every ledger.
     assume(key_sets[0] == key_sets[1] == key_sets[2] != set())

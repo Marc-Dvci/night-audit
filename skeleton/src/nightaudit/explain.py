@@ -231,9 +231,7 @@ def resolve_template(finding: Finding, control: ControlConfig) -> str:
         slots["billed_amount"] = _money(finding.billed_amount)
         slots["meaning"] = finding.meaning
         slots["severity"] = finding.severity
-        slots["nights_persisted"] = (
-            str(finding.nights_persisted) if finding.nights_persisted is not None else "0"
-        )
+        slots["nights_persisted"] = str(finding.nights_persisted) if finding.nights_persisted is not None else "0"
         try:
             text = _fill_value_slots(override.template, finding).format_map(slots)
         except (KeyError, IndexError, ValueError, AttributeError):
@@ -358,9 +356,7 @@ def explain_finding(
 
     prompt = build_prompt(finding)
     try:
-        response = (
-            model_call(prompt) if model_call is not None else _call_bedrock(prompt, model_config)
-        )
+        response = model_call(prompt) if model_call is not None else _call_bedrock(prompt, model_config)
     except (ModelUnavailable, OSError, ImportError):
         return Explanation(text=template, source="template")
 

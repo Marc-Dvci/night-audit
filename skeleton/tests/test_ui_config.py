@@ -27,8 +27,10 @@ FULL_UI: dict[str, Any] = {
     "ledgers": {"billed": {"label": "Billed", "source": "Cost and Usage Report 2.0 line items."}},
     "columns": [{"label": "Resource", "from": "key"}, {"label": "Kind", "from": "attr:kind"}],
     "headlines": {
-        "OB": {"one": "{count} Vampire is on the bill: {amount}.",
-               "other": "{count} Vampires are on the bill: {amount}."},
+        "OB": {
+            "one": "{count} Vampire is on the bill: {amount}.",
+            "other": "{count} Vampires are on the bill: {amount}.",
+        },
         "O": "{count} Poltergeist {noun} cost nothing.",
     },
 }
@@ -105,6 +107,7 @@ def test_a_control_without_ui_keeps_its_previous_hash() -> None:
     assert control.canonical_hash() == before_ui_kit
 
 
+@pytest.mark.integration
 def test_the_run_carries_the_resolved_ui(tmp_path: Path) -> None:
     for name in ("intended", "observed", "billed"):
         (tmp_path / f"{name}.csv").write_text("row_id,id,amount\nr1,a,1.00\n", encoding="utf-8")

@@ -1,9 +1,19 @@
+# On every push and pull request: lint, format, types, spelling, links, the tests with decision core coverage in a
+# random order, the casebook; the web build and its unit tests; the browser tests; and the Docker image, started and
+# asked for its health and its page. Read-only: nothing here writes to the repository.
 name: ci
 
 on:
   push:
     branches: [main]
   pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CI: "1"
+  UV_FROZEN: "1"
 
 jobs:
   python:
@@ -13,15 +23,43 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.12"
+          enable-cache: true
       - run: uv sync
       - name: Lint
         run: uv run ruff check .
-      - name: Types
-        run: uv run mypy skeleton apps/vampires/src
-      - name: Tests
-        run: uv run pytest -q
+      - name: Format
+        run: uv run ruff format --check .
+      - name: Types (sources and tests, strict)
+        run: uv run mypy && uv run mypy apps/ghosts/tests/conftest.py
+      - name: Spelling (British English)
+        run: uv run codespell
+      - name: Links in the Markdown files
+        run: uv run python scripts/check_links.py
+      # The page-shell tests read the built front end, so it is built here too and nothing is skipped for want of it.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: skeleton/web/package-lock.json
+      - name: Build the front end
+        working-directory: skeleton/web
+        run: npm ci && npm run build
+      - name: Tests in random order, with line and branch coverage of the decision core
+        shell: bash
+        run: >
+          uv run pytest -q -m "not e2e and not live"
+          --randomly-seed="${{ github.run_number }}"
+          --cov --cov-report=term --cov-report=json:coverage.json
+          --junitxml=pytest.xml
       - name: Casebook (development set)
-        run: uv run python scripts/score_casebook.py --set dev
+        shell: bash
+        run: uv run python scripts/score_casebook.py --set dev | tee casebook.log
+      - name: Summary on the run page
+        if: always()
+        shell: bash
+        run: >
+          uv run python scripts/ci_summary.py --junit pytest.xml --coverage coverage.json --casebook casebook.log
+          --seed "${{ github.run_number }}" >> "$GITHUB_STEP_SUMMARY"
 
   web:
     runs-on: ubuntu-latest
@@ -33,5 +71,50 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
+          cache-dependency-path: skeleton/web/package-lock.json
       - run: npm ci
-      - run: npm run build
+      - run: npx tsc --noEmit
+      - run: npx vitest run --sequence.shuffle
+      - run: npx vite build
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: skeleton/web/package-lock.json
+      - run: uv sync
+      - name: Build the front end (axe-core comes with it)
+        working-directory: skeleton/web
+        run: npm ci && npm run build
+      - name: Headless Chromium
+        run: uv run playwright install --with-deps chromium
+      - name: Browser tests with axe-core
+        run: uv run pytest -q -m e2e skeleton/tests/e2e --randomly-seed="${{ github.run_number }}"
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the demo image
+        run: docker build --target demo -t night-audit:demo .
+      - name: Start it
+        run: docker run -d --name demo -p 127.0.0.1:8000:8000 night-audit:demo
+      - name: The API and the page answer
+        shell: bash
+        run: |
+          for i in $(seq 1 30); do curl -fs http://127.0.0.1:8000/api/health > /dev/null && break; sleep 2; done
+          curl -fsS http://127.0.0.1:8000/api/health | grep -q '"status":"ok"'
+          curl -fsS http://127.0.0.1:8000/ | grep -q '<title>'
+      - name: The app image builds too
+        run: docker build --target app -t night-audit:app .
+      - if: failure()
+        run: docker logs demo

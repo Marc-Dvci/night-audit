@@ -75,3 +75,21 @@ class Undated(DatedRows):
 
     def fetch(self) -> list[Record]:
         return [Record(ledger=self._ledger, source=self.source, row_id="1", raw_key="row-fixed")]
+
+
+class BreaksMidway(DatedRows):
+    """A connector that reads two rows and then loses its source, as a network read does halfway through."""
+
+    def fetch(self) -> list[Record]:
+        rows = [Record(ledger=self._ledger, source=self.source, row_id=str(n), raw_key=f"row-{n}") for n in (1, 2)]
+        if rows:
+            raise ConnectionResetError("connection reset after 2 rows")
+        return rows
+
+
+class Writes(DatedRows):
+    """A connector that does not declare itself read-only."""
+
+    @property
+    def read_only(self) -> bool:
+        return False

@@ -106,22 +106,74 @@ def test_the_nightly_role_writes_to_s3_only_under_nights() -> None:
 def test_a_widened_policy_is_seen_as_a_write() -> None:
     """The checker itself: each of these grants must show up as a write."""
     for action in ("s3:*", "*:*", "s3:PutObject*", "ec2:TerminateInstances", "iam:PassRole", "s3:DeleteObject"):
-        properties = {"Policies": [{"PolicyName": "p", "PolicyDocument": {"Statement": [
-            {"Effect": "Allow", "Action": [action], "Resource": "*"}]}}]}
+        properties = {
+            "Policies": [
+                {
+                    "PolicyName": "p",
+                    "PolicyDocument": {"Statement": [{"Effect": "Allow", "Action": [action], "Resource": "*"}]},
+                }
+            ]
+        }
         assert writes_of(properties)[0] == {(action, "*")}, action
-    reads = {"Policies": [{"PolicyName": "p", "PolicyDocument": {"Statement": [
-        {"Effect": "Allow", "Action": ["s3:GetObject", "ec2:Describe*", "cloudtrail:LookupEvents", "ce:Get*"],
-         "Resource": "*"}]}}]}
+    reads = {
+        "Policies": [
+            {
+                "PolicyName": "p",
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": ["s3:GetObject", "ec2:Describe*", "cloudtrail:LookupEvents", "ce:Get*"],
+                            "Resource": "*",
+                        }
+                    ]
+                },
+            }
+        ]
+    }
     assert writes_of(reads)[0] == set()
 
 
 # --- Connectors make no write call -----------------------------------------------------------------------------------
 
 READ_PREFIXES = ("describe_", "list_", "get_", "lookup_")
-WRITE_PREFIXES = ("put_", "delete_", "create_", "update_", "terminate_", "modify_", "start_", "stop_", "run_",
-                  "attach_", "detach_", "tag_", "untag_", "invoke", "upload_", "copy_", "send_", "publish_",
-                  "set_", "add_", "remove_", "register_", "deregister_", "reboot_", "release_", "allocate_",
-                  "associate_", "disassociate_", "enable_", "disable_", "authorize_", "revoke_", "restore_")
+WRITE_PREFIXES = (
+    "put_",
+    "delete_",
+    "create_",
+    "update_",
+    "terminate_",
+    "modify_",
+    "start_",
+    "stop_",
+    "run_",
+    "attach_",
+    "detach_",
+    "tag_",
+    "untag_",
+    "invoke",
+    "upload_",
+    "copy_",
+    "send_",
+    "publish_",
+    "set_",
+    "add_",
+    "remove_",
+    "register_",
+    "deregister_",
+    "reboot_",
+    "release_",
+    "allocate_",
+    "associate_",
+    "disassociate_",
+    "enable_",
+    "disable_",
+    "authorize_",
+    "revoke_",
+    "restore_",
+)
+
+
 def _talks_to_aws(path: Path) -> bool:
     text = path.read_text(encoding="utf-8")
     return "boto3" in text or ".client(" in text or "get_paginator" in text
@@ -164,8 +216,11 @@ def aws_operations(source: str) -> list[tuple[int, str]]:
 
 
 def not_reads(source: str) -> list[tuple[int, str]]:
-    return [(line, op) for line, op in aws_operations(source) if not op.startswith(READ_PREFIXES)
-            and op not in {"client", "paginate"}]
+    return [
+        (line, op)
+        for line, op in aws_operations(source)
+        if not op.startswith(READ_PREFIXES) and op not in {"client", "paginate"}
+    ]
 
 
 @pytest.mark.parametrize("path", CONNECTOR_SOURCES, ids=lambda p: p.name)
@@ -177,17 +232,25 @@ def test_the_vampires_connectors_are_among_the_modules_scanned() -> None:
     names = {p.name for p in CONNECTOR_SOURCES}
     assert "aws.py" in names
     assert {op for _, op in aws_operations((ROOT / "apps/vampires/src/vampires/aws.py").read_text("utf-8"))} >= {
-        "describe_instances", "list_buckets", "lookup_events", "get_object", "list_objects_v2"}
+        "describe_instances",
+        "list_buckets",
+        "lookup_events",
+        "get_object",
+        "list_objects_v2",
+    }
 
 
-@pytest.mark.parametrize("call", [
-    's3.put_object(Bucket="b", Key="k", Body=b"")',
-    'ec2.terminate_instances(InstanceIds=["i-1"])',
-    'boto3.client("s3").delete_object(Bucket="b", Key="k")',
-    '_paginate(ec2, "modify_volume", "Volumes")',
-    'client.get_paginator("create_snapshot")',
-    's3.upload_file("a", "b", "c")',
-])
+@pytest.mark.parametrize(
+    "call",
+    [
+        's3.put_object(Bucket="b", Key="k", Body=b"")',
+        'ec2.terminate_instances(InstanceIds=["i-1"])',
+        'boto3.client("s3").delete_object(Bucket="b", Key="k")',
+        '_paginate(ec2, "modify_volume", "Volumes")',
+        'client.get_paginator("create_snapshot")',
+        's3.upload_file("a", "b", "c")',
+    ],
+)
 def test_the_scan_catches_a_write_call(call: str) -> None:
     source = f'import boto3\ns3 = boto3.client("s3")\nec2 = boto3.client("ec2")\n{call}\n'
     assert not_reads(source) != []

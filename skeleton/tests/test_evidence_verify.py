@@ -23,10 +23,13 @@ OLD = datetime(2026, 9, 1, tzinfo=UTC)
 def _pack(tmp: Path) -> tuple[Path, str]:
     records = {
         LedgerName.intended: [Record(ledger=LedgerName.intended, source="i", row_id="i1", raw_key="a")],
-        LedgerName.observed: [Record(ledger=LedgerName.observed, source="o", row_id=f"o{n}", raw_key=k, timestamp=OLD)
-                              for n, k in enumerate(["a", "b", "c"])],
-        LedgerName.billed: [Record(ledger=LedgerName.billed, source="b", row_id="b1", raw_key="a",
-                                   amount=Decimal("3.10"))],
+        LedgerName.observed: [
+            Record(ledger=LedgerName.observed, source="o", row_id=f"o{n}", raw_key=k, timestamp=OLD)
+            for n, k in enumerate(["a", "b", "c"])
+        ],
+        LedgerName.billed: [
+            Record(ledger=LedgerName.billed, source="b", row_id="b1", raw_key="a", amount=Decimal("3.10"))
+        ],
     }
     result = match([LedgerSnapshot(name=n, source=n.value, records=r) for n, r in records.items()], CLOUD, RUN_TIME)
     final = write_evidence_pack(result, tmp)
@@ -101,8 +104,9 @@ def _legacy(pack: Path) -> None:
     for index, row in enumerate(rows):
         row.pop("row_hash")
         row.update(index=index, prev_hash=prev)
-        row["row_hash"] = hashlib.sha256((prev + canonical_json({k: v for k, v in row.items() if k != "row_hash"}))
-                                         .encode()).hexdigest()
+        row["row_hash"] = hashlib.sha256(
+            (prev + canonical_json({k: v for k, v in row.items() if k != "row_hash"})).encode()
+        ).hexdigest()
         prev = row["row_hash"]
         out.append(canonical_json(row).encode())
     _write(pack, out)
@@ -189,11 +193,14 @@ def test_a_pack_from_before_the_header_row_still_verifies_and_says_it_has_none(t
 def _run(tmp: Path) -> tuple[Path, RunResult]:
     records = {
         LedgerName.intended: [Record(ledger=LedgerName.intended, source="i", row_id="i1", raw_key="a")],
-        LedgerName.observed: [Record(ledger=LedgerName.observed, source="o", row_id=f"o{n}", raw_key=k, timestamp=OLD)
-                              for n, k in enumerate(["a", "b", "c"])],
-        LedgerName.billed: [Record(ledger=LedgerName.billed, source="b", row_id=f"b{n}", raw_key=k,
-                                   amount=Decimal(amount))
-                            for n, (k, amount) in enumerate([("a", "3.10"), ("b", "41.20"), ("", "-1.05")])],
+        LedgerName.observed: [
+            Record(ledger=LedgerName.observed, source="o", row_id=f"o{n}", raw_key=k, timestamp=OLD)
+            for n, k in enumerate(["a", "b", "c"])
+        ],
+        LedgerName.billed: [
+            Record(ledger=LedgerName.billed, source="b", row_id=f"b{n}", raw_key=k, amount=Decimal(amount))
+            for n, (k, amount) in enumerate([("a", "3.10"), ("b", "41.20"), ("", "-1.05")])
+        ],
     }
     result = match([LedgerSnapshot(name=n, source=n.value, records=r) for n, r in records.items()], CLOUD, RUN_TIME)
     write_evidence_pack(result, tmp / "evidence")
@@ -258,9 +265,22 @@ def _edit(shown: dict[str, Any], change: str) -> None:
         raise AssertionError(change)
 
 
-CHANGES = ["region", "status", "billed amount", "hidden finding", "doubled finding", "region count", "region amount",
-           "billed total", "unkeyed amount", "headline total", "headline count", "run id", "control hash",
-           "chain hash"]
+CHANGES = [
+    "region",
+    "status",
+    "billed amount",
+    "hidden finding",
+    "doubled finding",
+    "region count",
+    "region amount",
+    "billed total",
+    "unkeyed amount",
+    "headline total",
+    "headline count",
+    "run id",
+    "control hash",
+    "chain hash",
+]
 
 
 @pytest.mark.parametrize("change", CHANGES)
@@ -280,6 +300,7 @@ def test_the_chain_still_verifies_without_a_page_to_compare(tmp_path: Path) -> N
     assert verify_evidence_pack(pack).ok
 
 
+@pytest.mark.integration
 def test_the_verify_command_compares_a_result_json_beside_the_pack(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -295,6 +316,7 @@ def test_the_verify_command_compares_a_result_json_beside_the_pack(
     assert 'finding "i-0fake" is shown but is not in the evidence' in out
 
 
+@pytest.mark.integration
 def test_the_verify_command_says_when_there_is_no_page_to_compare(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

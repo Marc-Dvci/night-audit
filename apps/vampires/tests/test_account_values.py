@@ -38,6 +38,7 @@ def _tracked_files() -> list[str]:
     return [line for line in done.stdout.splitlines() if line]
 
 
+@pytest.mark.integration
 def test_no_tracked_file_outside_lab_and_docs_holds_the_real_account_number_or_approver() -> None:
     """Regression: the committed control, approvals and deployment held the real account and a person's name."""
     offenders: list[str] = []
@@ -53,6 +54,7 @@ def test_no_tracked_file_outside_lab_and_docs_holds_the_real_account_number_or_a
     assert offenders == []
 
 
+@pytest.mark.integration
 def test_the_local_settings_file_is_git_ignored_and_the_example_is_not() -> None:
     names = _tracked_files()
     assert "apps/vampires/controls/settings.example.yaml" in names
@@ -73,9 +75,12 @@ def test_the_settings_come_from_a_local_file_and_the_environment_wins(
         "account_id: '111122223333'\napprover: Pat Example\n", encoding="utf-8"
     )
     settings = account_settings(tmp_path)
-    assert settings == {"account_id": "111122223333", "approver": "Pat Example",
-                        "cur_bucket": "night-audit-cur-111122223333",
-                        "artifacts_bucket": "night-audit-artifacts-111122223333"}
+    assert settings == {
+        "account_id": "111122223333",
+        "approver": "Pat Example",
+        "cur_bucket": "night-audit-cur-111122223333",
+        "artifacts_bucket": "night-audit-artifacts-111122223333",
+    }
     monkeypatch.setenv("NIGHT_AUDIT_APPROVER", "Sam Example")
     monkeypatch.setenv("NIGHT_AUDIT_CUR_BUCKET", "another-bucket")
     settings = account_settings(tmp_path)
@@ -86,17 +91,22 @@ def test_the_committed_approvals_take_their_account_values_from_the_settings(tmp
     (tmp_path / "settings.local.yaml").write_text(
         "account_id: '111122223333'\napprover: Pat Example\n", encoding="utf-8"
     )
-    connector = ApprovedChanges(ledger=LedgerName.intended, path=str(CONTROLS / "approved-changes.yaml"),
-                                base_dir=tmp_path, today="2026-11-06")
+    connector = ApprovedChanges(
+        ledger=LedgerName.intended, path=str(CONTROLS / "approved-changes.yaml"), base_dir=tmp_path, today="2026-11-06"
+    )
     records = connector.fetch()
     assert sorted(r.raw_key for r in records) == [
-        "night-audit-artifacts-111122223333", "night-audit-cur-111122223333", "night-audit-reader"]
+        "night-audit-artifacts-111122223333",
+        "night-audit-cur-111122223333",
+        "night-audit-reader",
+    ]
     assert {r.attrs["approver"] for r in records} == {"Pat Example"}
 
 
 def test_the_committed_approvals_say_what_is_missing_instead_of_inventing_it(tmp_path: Path) -> None:
-    connector = ApprovedChanges(ledger=LedgerName.intended, path=str(CONTROLS / "approved-changes.yaml"),
-                                base_dir=tmp_path, today="2026-11-06")
+    connector = ApprovedChanges(
+        ledger=LedgerName.intended, path=str(CONTROLS / "approved-changes.yaml"), base_dir=tmp_path, today="2026-11-06"
+    )
     with pytest.raises(ValueError, match="cur_bucket") as raised:
         connector.fetch()
     assert "NIGHT_AUDIT_CUR_BUCKET" in str(raised.value)
@@ -106,10 +116,14 @@ def test_an_approver_cannot_change_the_structure_of_the_approvals(tmp_path: Path
     (tmp_path / "settings.local.yaml").write_text(
         "account_id: '111122223333'\napprover: \"x\\n    expires: '2000-01-01'\\n  - id: forged\"\n", encoding="utf-8"
     )
-    connector = ApprovedChanges(ledger=LedgerName.intended, path=str(CONTROLS / "approved-changes.yaml"),
-                                base_dir=tmp_path, today="2026-11-06")
+    connector = ApprovedChanges(
+        ledger=LedgerName.intended, path=str(CONTROLS / "approved-changes.yaml"), base_dir=tmp_path, today="2026-11-06"
+    )
     assert sorted(r.raw_key for r in connector.fetch()) == [
-        "night-audit-artifacts-111122223333", "night-audit-cur-111122223333", "night-audit-reader"]
+        "night-audit-artifacts-111122223333",
+        "night-audit-cur-111122223333",
+        "night-audit-reader",
+    ]
 
 
 def test_the_cur_bucket_comes_from_the_settings_when_the_control_names_none(

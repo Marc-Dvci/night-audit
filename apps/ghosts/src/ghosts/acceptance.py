@@ -51,12 +51,14 @@ def compare(planted: dict[str, Any], result: RunResult, intended_count: int) -> 
     found = {f.key: f.region_code for f in result.findings if not f.informational}
     for key in sorted(set(expected) | set(found), key=lambda k: (k not in expected, k)):
         want, got = expected.get(key), found.get(key)
-        verdict.rows.append((
-            key,
-            f"{want} {names.get(want, '')}" if want else "(not planted)",
-            f"{got} {names.get(got, '')}" if got else "(not found)",
-            "match" if want == got else "MISMATCH",
-        ))
+        verdict.rows.append(
+            (
+                key,
+                f"{want} {names.get(want, '')}" if want else "(not planted)",
+                f"{got} {names.get(got, '')}" if got else "(not found)",
+                "match" if want == got else "MISMATCH",
+            )
+        )
     for p in planted["planted"]:
         if str(p["key"]) in found:
             name = names.get(str(p["region"]), "")
@@ -66,32 +68,69 @@ def compare(planted: dict[str, Any], result: RunResult, intended_count: int) -> 
     for code in found.values():
         counts[code] = counts.get(code, 0) + 1
     want_counts = {str(k): int(v) for k, v in planted["expected_counts"].items()}
-    verdict.checks.append(("finding counts by region", json.dumps(want_counts, sort_keys=True),
-                           json.dumps(counts, sort_keys=True), counts == want_counts))
+    verdict.checks.append(
+        (
+            "finding counts by region",
+            json.dumps(want_counts, sort_keys=True),
+            json.dumps(counts, sort_keys=True),
+            counts == want_counts,
+        )
+    )
 
     summary = {v.vendor: v.unnamed_seats for v in seat_summary(result).vendors if v.unnamed_seats}
     want_unnamed = {str(u["vendor"]): int(u["quantity"]) for u in planted.get("unnamed_phantom_seats", [])}
-    verdict.checks.append(("seats paid for nobody named", json.dumps(want_unnamed, sort_keys=True),
-                           json.dumps(summary, sort_keys=True), summary == want_unnamed))
+    verdict.checks.append(
+        (
+            "seats paid for nobody named",
+            json.dumps(want_unnamed, sort_keys=True),
+            json.dumps(summary, sort_keys=True),
+            summary == want_unnamed,
+        )
+    )
     stated = sorted(n.text for n in result.notes if " more seat" in n.text and " than it assigns" in n.text)
-    want_stated = sorted(f"{vendor} invoices {n} more seat{'s' if n != 1 else ''} than it assigns"
-                         for vendor, n in want_unnamed.items())
-    verdict.checks.append(("run notes state each unnamed-seat gap", "; ".join(want_stated),
-                           "; ".join(t.split(" (")[0] for t in stated),
-                           [t.split(" (")[0] for t in stated] == want_stated))
+    want_stated = sorted(
+        f"{vendor} invoices {n} more seat{'s' if n != 1 else ''} than it assigns" for vendor, n in want_unnamed.items()
+    )
+    verdict.checks.append(
+        (
+            "run notes state each unnamed-seat gap",
+            "; ".join(want_stated),
+            "; ".join(t.split(" (")[0] for t in stated),
+            [t.split(" (")[0] for t in stated] == want_stated,
+        )
+    )
     unkeyed = [u for u in result.unkeyed if u.ledger == LedgerName.billed]
-    verdict.checks.append(("unkeyed billed rows", str(sum(want_unnamed.values())), str(len(unkeyed)),
-                           len(unkeyed) == sum(want_unnamed.values())))
+    verdict.checks.append(
+        (
+            "unkeyed billed rows",
+            str(sum(want_unnamed.values())),
+            str(len(unkeyed)),
+            len(unkeyed) == sum(want_unnamed.values()),
+        )
+    )
 
     informational = sum(1 for f in result.findings if f.informational)
     minimum = int(planted.get("informational", {}).get("min_count", 0))
-    verdict.checks.append(("Unlicensed users (IO), informational", f">= {minimum}", str(informational),
-                           informational >= minimum))
-    verdict.checks.append(("people on the HR roster on the run date", str(planted["staff_total"]),
-                           str(intended_count), intended_count == int(planted["staff_total"])))
+    verdict.checks.append(
+        ("Unlicensed users (IO), informational", f">= {minimum}", str(informational), informational >= minimum)
+    )
+    verdict.checks.append(
+        (
+            "people on the HR roster on the run date",
+            str(planted["staff_total"]),
+            str(intended_count),
+            intended_count == int(planted["staff_total"]),
+        )
+    )
     verdict.checks.append(("pending keys", "0", str(len(result.pending_keys)), not result.pending_keys))
-    verdict.checks.append(("run complete, no ledger errors", "True", str(result.complete and not result.ledger_errors),
-                           result.complete and not result.ledger_errors))
+    verdict.checks.append(
+        (
+            "run complete, no ledger errors",
+            "True",
+            str(result.complete and not result.ledger_errors),
+            result.complete and not result.ledger_errors,
+        )
+    )
     return verdict
 
 

@@ -150,80 +150,53 @@ def compare_result(result: RunResult, expect: dict[str, Any]) -> list[str]:
     if "informational" in expect:
         actual = sum(1 for f in result.findings if f.informational)
         if actual != expect["informational"]:
-            failures.append(
-                f"informational: expected {expect['informational']}, got {actual}"
-            )
+            failures.append(f"informational: expected {expect['informational']}, got {actual}")
 
     if "billed_total" in expect:
         expected_total = Decimal(expect["billed_total"])
         if result.billed_total != expected_total:
-            failures.append(
-                f"billed_total: expected {expected_total}, got {result.billed_total}"
-            )
+            failures.append(f"billed_total: expected {expected_total}, got {result.billed_total}")
 
     if "billed_by_region" in expect:
-        expected_by_region = {
-            k: Decimal(v) for k, v in expect["billed_by_region"].items()
-        }
-        actual_by_region = {
-            k: v.billed_amount for k, v in result.region_summaries.items()
-        }
+        expected_by_region = {k: Decimal(v) for k, v in expect["billed_by_region"].items()}
+        actual_by_region = {k: v.billed_amount for k, v in result.region_summaries.items()}
         if actual_by_region != expected_by_region:
-            failures.append(
-                f"billed_by_region: expected {expected_by_region}, "
-                f"got {actual_by_region}"
-            )
+            failures.append(f"billed_by_region: expected {expected_by_region}, got {actual_by_region}")
 
     if "billed_unkeyed" in expect:
         expected_unkeyed = Decimal(expect["billed_unkeyed"])
         if result.billed_unkeyed != expected_unkeyed:
-            failures.append(
-                f"billed_unkeyed: expected {expected_unkeyed}, "
-                f"got {result.billed_unkeyed}"
-            )
+            failures.append(f"billed_unkeyed: expected {expected_unkeyed}, got {result.billed_unkeyed}")
 
     if "pending" in expect:
         expected_pending = sorted(expect["pending"])
         actual_pending = sorted(result.pending_keys)
         if actual_pending != expected_pending:
-            failures.append(
-                f"pending: expected {expected_pending}, got {actual_pending}"
-            )
+            failures.append(f"pending: expected {expected_pending}, got {actual_pending}")
 
     if "unkeyed" in expect:
         expected_unkeyed = sorted(expect["unkeyed"])
         actual_unkeyed = sorted(u.row_id for u in result.unkeyed)
         if actual_unkeyed != expected_unkeyed:
-            failures.append(
-                f"unkeyed: expected {expected_unkeyed}, got {actual_unkeyed}"
-            )
+            failures.append(f"unkeyed: expected {expected_unkeyed}, got {actual_unkeyed}")
 
     if "duplicates" in expect:
         if result.duplicates != expect["duplicates"]:
-            failures.append(
-                f"duplicates: expected {expect['duplicates']}, got {result.duplicates}"
-            )
+            failures.append(f"duplicates: expected {expect['duplicates']}, got {result.duplicates}")
 
     if "dropped" in expect:
         if result.dropped != expect["dropped"]:
-            failures.append(
-                f"dropped: expected {expect['dropped']}, got {result.dropped}"
-            )
+            failures.append(f"dropped: expected {expect['dropped']}, got {result.dropped}")
 
     if "complete" in expect:
         if result.complete != expect["complete"]:
-            failures.append(
-                f"complete: expected {expect['complete']}, got {result.complete}"
-            )
+            failures.append(f"complete: expected {expect['complete']}, got {result.complete}")
 
     if "missing_ledgers" in expect:
         expected_missing = sorted(expect["missing_ledgers"])
         actual_missing = sorted(result.missing_ledgers)
         if actual_missing != expected_missing:
-            failures.append(
-                f"missing_ledgers: expected {expected_missing}, "
-                f"got {actual_missing}"
-            )
+            failures.append(f"missing_ledgers: expected {expected_missing}, got {actual_missing}")
 
     return failures
 
