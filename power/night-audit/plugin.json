@@ -1,0 +1,31 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "night-audit",
+  "version": "0.1.0",
+  "description": "Three-way match for the things an organisation pays for. Reconcile what was approved, what exists and what is billed; add a control to your own project, then read what a night's run found, in plain words and with evidence.",
+  "author": {
+    "name": "Marc-Dvci",
+    "url": "https://github.com/Marc-Dvci"
+  },
+  "homepage": "https://github.com/Marc-Dvci/night-audit",
+  "repository": "https://github.com/Marc-Dvci/night-audit",
+  "license": "Apache-2.0",
+  "keywords": [
+    "reconcile",
+    "reconciliation",
+    "three-way match",
+    "audit",
+    "internal audit",
+    "orphaned accounts",
+    "ghost accounts",
+    "access review",
+    "unused licences",
+    "unused licenses",
+    "unused seats",
+    "who approved this",
+    "unapproved resources",
+    "billing surprise",
+    "unexpected bill",
+    "cloud cost"
+  ]
+}

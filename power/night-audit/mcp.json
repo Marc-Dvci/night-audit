@@ -1,0 +1,16 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "aws-api": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["awslabs.aws-api-mcp-server@1.6.0"],
+      "env": {
+        "AWS_API_MCP_PROFILE_NAME": "${AWS_PROFILE}",
+        "READ_OPERATIONS_ONLY": "true",
+        "AWS_API_MCP_TELEMETRY": "false",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+# Example Night Audit control: chat seats at a small company. Every address and name is synthetic.
+# Intended = the HR roster. Observed = active chat accounts. Billed = paid seats on the vendor's invoice.
+# Paths are relative to this file. The skill writes the same shape to controls/<id>.yaml in your project.
+id: seat-audit
+title: Chat seats
+grace_hours: 48                       # billing lags, so an account younger than this and unbilled is pending
+alias_domains: {example-corp.org: example-corp.com}   # the same person written with an old domain
+
+ledgers:
+  intended:
+    key_field: email                  # the column or field that names the same thing in all three ledgers
+    normalisers: [email_canonical]    # strip, lowercase, drop +tag, map the alias domain
+    connector: {type: csv, path: example-fixtures/roster.csv}
+  observed:
+    key_field: email
+    normalisers: [email_canonical]
+    connector: {type: jsonl, path: example-fixtures/accounts.jsonl}
+  billed:
+    key_field: email
+    normalisers: [email_canonical]
+    connector: {type: csv, path: example-fixtures/seats.csv}   # an `amount` column is read as money
+
+# The user's words for the regions. Codes and meanings are fixed; names and sentences are for the reader.
+regions:
+  OB: {name: Ghost, meaning: "Has an active account and a paid seat, but is not on the HR roster."}
+  O: {name: Poltergeist, meaning: "Has an active account, but is not on the HR roster and holds no paid seat."}
+  B: {name: Phantom seat, meaning: "A paid seat is assigned to an address with no account and no HR record."}
+  I: {name: Unprovisioned joiner, meaning: "On the HR roster, but has no account and no paid seat."}
+  IB: {name: Wraith, meaning: "On the HR roster with a paid seat, but has no active account."}
+  IO: {name: Unlicensed user, meaning: "On the HR roster with an active account and no paid seat. Informational."}

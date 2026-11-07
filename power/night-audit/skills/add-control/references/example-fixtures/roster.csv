@@ -1,0 +1,5 @@
+row_id,email,name,team
+r1,ana@example-corp.com,Ana Test,Support
+r2,ben@example-corp.com,Ben Test,Sales
+r3,dev@example-corp.com,Dev Test,Sales
+r4,eli@example-corp.com,Eli Test,Support
