@@ -152,7 +152,9 @@ def test_casebook_plants_a_healthy_case_that_expects_nothing(path: Path) -> None
         assert set(regions.values()) == {"IOB"}, f"{label}: every key of a healthy case is `IOB`"
 
 
-CASE_PARAMS = [pytest.param(path, case, id=f"{path.stem}/{case.get('id', '?')}") for path in CASEBOOKS for case in _cases(path)]
+CASE_PARAMS = [
+    pytest.param(path, case, id=f"{path.stem}/{case.get('id', '?')}") for path in CASEBOOKS for case in _cases(path)
+]
 
 
 @pytest.mark.parametrize(("path", "case"), CASE_PARAMS)

@@ -2,15 +2,60 @@
   "name": "night-investigator",
   "description": "Investigates a finding with read-only AWS tools and writes a short note. It cannot write to the account or to the repository. It is the agent the Crew night shift runs.",
   "prompt": "file://prompts/night-investigator.md",
-  "tools": ["read", "@aws-api", "@aws-cloudtrail", "@aws-billing"],
+  "tools": [
+    "read",
+    "@aws-api",
+    "@aws-cloudtrail",
+    "@aws-billing"
+  ],
   "includeMcpJson": true,
   "permissions": {
     "rules": [
-      { "capability": "fs_read", "match": ["**"], "exclude": ["casebook/heldout/**", "**/.aws/**", "**/.env"], "effect": "allow" },
-      { "capability": "fs_read", "match": ["casebook/heldout/**", "**/.aws/**", "**/.env"], "effect": "deny" },
-      { "capability": "fs_write", "match": ["**"], "effect": "deny" },
-      { "capability": "shell", "match": ["*"], "effect": "deny" },
-      { "capability": "mcp", "match": ["aws-api/*", "aws-cloudtrail/*", "aws-billing/*"], "effect": "allow" }
+      {
+        "capability": "fs_read",
+        "match": [
+          "**"
+        ],
+        "exclude": [
+          "casebook/heldout/**",
+          "**/.aws/**",
+          "**/.env"
+        ],
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_read",
+        "match": [
+          "casebook/heldout/**",
+          "**/.aws/**",
+          "**/.env"
+        ],
+        "effect": "deny"
+      },
+      {
+        "capability": "fs_write",
+        "match": [
+          "**"
+        ],
+        "effect": "deny"
+      },
+      {
+        "capability": "shell",
+        "match": [
+          "*"
+        ],
+        "effect": "deny"
+      },
+      {
+        "capability": "mcp",
+        "match": [
+          "aws-api/*",
+          "aws-cloudtrail/*",
+          "aws-billing/*"
+        ],
+        "effect": "allow"
+      }
     ]
-  }
+  },
+  "includePowers": false
 }

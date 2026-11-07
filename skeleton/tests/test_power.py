@@ -24,7 +24,18 @@ ADD_CONTROL = POWER / "skills" / "add-control"
 READ_A_NIGHT = POWER / "skills" / "read-a-night"
 
 #: Keys the Agent Plugins 1.0.0 manifest schema allows (``additionalProperties`` is false).
-PLUGIN_KEYS = {"$schema", "name", "version", "description", "author", "homepage", "repository", "license", "keywords", "extensions"}
+PLUGIN_KEYS = {
+    "$schema",
+    "name",
+    "version",
+    "description",
+    "author",
+    "homepage",
+    "repository",
+    "license",
+    "keywords",
+    "extensions",
+}
 PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
 MCP_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
 NAME_PATTERN = re.compile(r"^(?!.*(?:--|\.\.))[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$")
@@ -128,7 +139,9 @@ def test_the_power_has_the_two_skills_the_requirement_names() -> None:
 
 
 @pytest.mark.parametrize("skill", SKILLS, ids=lambda p: p.name)
-def test_a_skill_has_frontmatter_whose_name_is_its_folder_and_whose_description_says_when_to_use_it(skill: Path) -> None:
+def test_a_skill_has_frontmatter_whose_name_is_its_folder_and_whose_description_says_when_to_use_it(
+    skill: Path,
+) -> None:
     meta = _frontmatter(skill / "SKILL.md")
     assert meta["name"] == skill.name
     assert NAME_PATTERN.fullmatch(meta["name"]) and len(meta["name"]) <= 64
@@ -181,7 +194,11 @@ def test_the_audit_rules_reference_is_the_steering_file() -> None:
 def test_add_control_writes_the_casebook_before_the_first_matcher_run() -> None:
     text = (ADD_CONTROL / "SKILL.md").read_text(encoding="utf-8")
     assert text.index("## 4. The casebook, before any matcher run") < text.index("## 5. First run")
-    for needle in ("NIGHTAUDIT_SOURCE", "git+https://github.com/Marc-Dvci/night-audit#subdirectory=skeleton", "healthy"):
+    for needle in (
+        "NIGHTAUDIT_SOURCE",
+        "git+https://github.com/Marc-Dvci/night-audit#subdirectory=skeleton",
+        "healthy",
+    ):
         assert needle in text
 
 
@@ -229,7 +246,19 @@ def _project(tmp_path: Path) -> Path:
 
 def _pytest(project: Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-p", "no:randomly", "--rootdir", str(project), *args],
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "-p",
+            "no:randomly",
+            "--rootdir",
+            str(project),
+            *args,
+        ],
         cwd=project,
         capture_output=True,
         text=True,
@@ -259,7 +288,10 @@ def test_the_casebook_runner_refuses_a_casebook_with_no_healthy_case(tmp_path: P
 def test_the_casebook_runner_fails_a_case_whose_expectation_the_matcher_does_not_meet(tmp_path: Path) -> None:
     project = _project(tmp_path)
     book = project / "casebook" / "seat-audit.yaml"
-    book.write_text(book.read_text(encoding="utf-8").replace("gus@example-corp.com: OB}", "gus@example-corp.com: O}", 1), encoding="utf-8")
+    book.write_text(
+        book.read_text(encoding="utf-8").replace("gus@example-corp.com: OB}", "gus@example-corp.com: O}", 1),
+        encoding="utf-8",
+    )
     done = _pytest(project, "tests/test_casebook.py")
     assert done.returncode != 0 and "ghost-account-with-seat-not-on-roster" in done.stdout
 
@@ -282,7 +314,9 @@ def test_the_connector_template_is_a_read_only_connector_that_reads_its_recorded
         json.dumps([{"row_id": "a1", "email": "ana@example.test", "timestamp": "2026-03-02T09:00:00Z", "team": "x"}]),
         encoding="utf-8",
     )
-    connector = module.ExampleApiLedger(ledger=LedgerName.observed, key_field="email", base_dir=tmp_path, fixture="observed.json")
+    connector = module.ExampleApiLedger(
+        ledger=LedgerName.observed, key_field="email", base_dir=tmp_path, fixture="observed.json"
+    )
     assert connector.read_only is True
     [record] = connector.fetch()
     assert (record.row_id, record.raw_key, record.attrs) == ("a1", "ana@example.test", {"team": "x"})
