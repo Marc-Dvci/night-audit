@@ -32,7 +32,7 @@ Say "no row matches" instead of "was not approved by anyone"; say "records show"
 
 ## Worked example
 
-Input finding (shortened): `key` gus@example-corp.com, `region_code` OB, `name` Ghost, `status` new,
+Input finding (shortened): `key` gus@example-corp.com, `region_code` OB, `status` new,
 `billed_amount` 8.00; records: observed `row_id` a4 `timestamp` 2026-10-01T08:30:00Z; billed `row_id` s4 `amount` 8.00.
 
 Reading:

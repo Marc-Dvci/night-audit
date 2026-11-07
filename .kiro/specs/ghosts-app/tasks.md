@@ -1,4 +1,4 @@
-# Tasks: Ghosts, the access review that reconciles people
+# Tasks: the staff access app, the access review that reconciles people
 
 Ordered implementation checklist. Each task is small (one module or one test file). Requirement references are in
 brackets; property ids refer to design ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§11. A task is ticked only when its tests pass. Nothing under `skeleton/`
@@ -8,7 +8,7 @@ changes [Req 7.1].
 
 - [x] **1. Test setup.** `apps/ghosts/tests/conftest.py` registers the hypothesis profile (100 examples, no deadline,
       `derandomize` and no database under `CI`). Test files are named `test_ghosts_*.py` so their module names do not
-      collide with the skeleton's or Vampires'. No new dependencies. [tech]
+      collide with the skeleton's or the cloud account app's. No new dependencies. [tech]
 
 ## The control
 
@@ -75,7 +75,7 @@ changes [Req 7.1].
 
 - [x] **14. Recorded demo.** `apps/ghosts/demo/build.py` writes the static files of one recorded night and the
       `apps.json` entry. Test: a build into a temporary folder has every file, the evidence verifies, the page reads
-      the Ghosts words, and the committed output equals the fresh build. [Req 7.2]
+      the staff access words, and the committed output equals the fresh build. [Req 7.2]
 
 ## Verification
 

@@ -11,7 +11,7 @@ commit `2035d42` plus the working changes that follow it.
 | Skipped | 3, all `-m lean` differential tests, which need the Lean toolchain (`lake`); the `lean` CI job runs them with `NIGHTAUDIT_REQUIRE_LEAN=1` | `uv run pytest -q -ra` |
 | Property-based, integration, browser | 41, 263 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
 | TypeScript | 261 tests in 4 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
-| Decision core coverage | 96.85 % of lines and branches over `matcher`, `normalisers`, `grace`, `scope`, `state`, `evidence`, `explain`, `control`, `report` (floor 90 %) | `uv run pytest -q -m "not e2e and not live" --cov` |
+| Decision core coverage | 96.86 % of lines and branches over `matcher`, `normalisers`, `grace`, `scope`, `state`, `evidence`, `explain`, `control`, `report` (floor 90 %) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Lint, format, types | ruff, ruff format and `mypy --strict` clean | `uv run ruff check . && uv run ruff format --check . && uv run mypy` |
 
 Tests run in random order (`pytest-randomly`), with a 30 s timeout each, no network and no real clock.

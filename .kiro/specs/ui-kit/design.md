@@ -85,7 +85,7 @@ apps/vampires/demo/build.py   + evidence files, report.html, view-augmented run 
 
 ```yaml
 ui:
-  title: Vampires
+  title: Cloud account
   tagline: Every night, the account is checked against what was approved and what is on the bill.
   noun: {singular: resource, plural: resources}
   ledgers:
@@ -100,9 +100,9 @@ ui:
     - {label: Since, from: status}
     - {label: On the bill, from: amount}
   headlines:
-    OB: {one: "{count} Vampire is running and on the bill with no approval: {amount} so far.",
-         other: "{count} Vampires are running and on the bill with no approval: {amount} so far."}
-    O:  "{count} Poltergeist {noun} cost nothing."   # a plain string is used for both forms
+    OB: {one: "{count} {noun} is running and on the bill with no approval: {amount} so far.",
+         other: "{count} {noun} are running and on the bill with no approval: {amount} so far."}
+    O:  "{count} {noun} with no approval cost nothing."   # a plain string is used for both forms
 ```
 
 | Model | Fields |
@@ -114,7 +114,7 @@ ui:
 | `UiConfig` | `title`, `tagline`, `noun`, `ledgers: dict[str, LedgerUi]`, `columns: list[ColumnUi]`, `headlines: dict[str, HeadlineUi]` |
 
 **Plural forms.** Req 1.1 names a template per region with `{count}`, `{amount}` and `{noun}` slots. English needs a
-singular and a plural sentence ("1 Vampire is", "3 Vampires are"), so a template is a `{one, other}` pair; a plain string
+singular and a plural sentence ("1 resource is", "3 resources are"), so a template is a `{one, other}` pair; a plain string
 is accepted as shorthand. `{noun}` resolves to `noun.singular` when the count is 1 and `noun.plural` otherwise. This is an
 interpretation of Req 1.1 and is flagged in the task list.
 
@@ -134,8 +134,8 @@ template is control text (trusted, version-controlled), never ledger text.
 | `columns` | `key`, `status`, `amount` |
 | `headlines` | per finding region, built from the region's resolved name, for example `{count} {name} {noun}` + the region's fixed sentence (table below) |
 
-Default headline sentences (the region name comes from `resolve_region`, so a control that renames OB to Ghost gets
-"Ghost" without writing a headline):
+Default headline sentences (the region name comes from `resolve_region`, so a control that gives `OB` its own name gets
+that name without writing a headline):
 
 | Code | one | other |
 |---|---|---|
@@ -341,7 +341,7 @@ is expanded and scrolled into view (instant when reduced motion is set).
 
 ### Apps (Req 8.1, 8.3)
 
-`apps.json`: `[{"name": "vampires", "title": "Vampires", "mode": "demo", "base": "./"}]`, written by the demo build and
+`apps.json`: `[{"name": "vampires", "title": "Cloud account", "mode": "demo", "base": "./"}]`, written by the demo build and
 by any deployment build. The masthead shows a `<select>` when there are two or more apps and a plain label otherwise.
 A `demo` app prints "Recorded run. Not live data." next to its title, always in words.
 

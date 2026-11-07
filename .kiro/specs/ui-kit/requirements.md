@@ -25,14 +25,15 @@ review that an auditor will test.
 2. WHEN a control has no `ui` section THE SYSTEM SHALL use neutral defaults, and the page SHALL still render.
 3. THE SYSTEM SHALL copy the resolved `ui` values into the run result, and include them in the control hash, so that a run
    renders the same way forever, even after the control file changes.
-4. THE SYSTEM SHALL ship the `ui` section for `apps/vampires/controls/aws-account.yaml` and for the Vampires demo controls.
+4. THE SYSTEM SHALL ship the `ui` section for `apps/vampires/controls/aws-account.yaml` and for the cloud account demo controls.
 
 ## Requirement 2: the first ten seconds
 
 1. WHEN a run is shown THE SYSTEM SHALL show, above the Venn diagram, the control's tagline and the headline.
 2. THE SYSTEM SHALL compute the headline in Python in `skeleton/src/nightaudit/report.py` from the region summaries of the
-   run. Regions with no findings are omitted. Every number in it comes from the run. Example: "3 Vampires are running and
-   on the bill with no approval: $0.59 so far. 2 Poltergeists cost nothing. 1 declared resource is gone."
+   run. Regions with no findings are omitted. Every number in it comes from the run. Example: "3 resources are running and
+   on the bill with no approval: $0.59 so far. 2 resources exist with no approval and cost nothing. 1 approved resource is
+   gone."
 3. WHEN a complete run has zero findings THE SYSTEM SHALL state "All three ledgers agree. Nothing to report tonight." as
    the headline, and the page SHALL read as a calm, finished state, with no empty-looking regions.
 4. THE SYSTEM SHALL show each ledger's label, its `source` sentence and its count of distinct keys beside the Venn

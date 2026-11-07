@@ -1,4 +1,4 @@
-# Requirements: Vampires, the night audit of an AWS account
+# Requirements: the cloud account app, the night audit of an AWS account
 
 ## Introduction
 
@@ -20,8 +20,17 @@ Billing data arrives late, so the control runs at 02:00 UTC on yesterday's bill 
 ## Requirement 1: the control file
 
 1. THE SYSTEM SHALL ship `apps/vampires/controls/aws-account.yaml` declaring the three ledgers below, the normaliser
-   chains `[arn_resource_id, strip, lower]` for every ledger, a 36-hour grace window, and the region names Vampire
-   (`OB`), Poltergeist (`O`), Phantom (`B`), Skeleton (`I`), Wraith (`IB`), Familiar (`IO`), Living (`IOB`).
+   chains `[arn_resource_id, strip, lower]` for every ledger, a 36-hour grace window, and the region names in the table below (the `name` value of each region).
+
+   | Meaning | Code | Region name (`name`) |
+   |---|---|---|
+   | Running and on the bill, but in no declared stack and no approved change | `OB` | Vampire |
+   | Exists but was never declared, and costs nothing | `O` | Poltergeist |
+   | On the bill, but the inventory cannot see it and nobody declared it | `B` | Phantom |
+   | Declared in a stack or an approved change, but gone and no longer billed | `I` | Skeleton |
+   | Declared and billed, but the inventory cannot see it | `IB` | Wraith |
+   | Declared and present, with no charge on the bill yet | `IO` | Familiar |
+   | Declared, running and billed (matched) | `IOB` | Living |
 2. WHEN the control file is saved THE SYSTEM SHALL be loadable by the skeleton without code changes in `skeleton/`.
 
 ## Requirement 2: intended ledger
@@ -68,7 +77,7 @@ Billing data arrives late, so the control runs at 02:00 UTC on yesterday's bill 
 
 ## Requirement 6: who created it
 
-1. WHEN a run produces a Vampire or a Poltergeist THE SYSTEM SHALL look up the creating CloudTrail event for that
+1. WHEN a run produces an `OB` finding (running and billed, never approved) or an `O` finding (exists, never approved, free) THE SYSTEM SHALL look up the creating CloudTrail event for that
    resource (for example `RunInstances`, `CreateAccessKey`, `CreateUser`) within the last 90 days and add the event
    time, event name, principal ARN, source IP and user agent to the finding's evidence.
 2. IF no creating event is found THEN THE SYSTEM SHALL record "creating event not in CloudTrail event history" as
@@ -97,7 +106,7 @@ Billing data arrives late, so the control runs at 02:00 UTC on yesterday's bill 
    The web role reads `nights/*` and writes nothing else. Every other action of every role is a `Get*`, `List*`,
    `Describe*` or `LookupEvents` call, and the one managed policy attached to the nightly role is AWS's `ReadOnlyAccess`.
    The Scheduler role may invoke the nightly function and nothing else.
-5. THE SYSTEM SHALL keep connectors free of write calls: no Vampires module calls an AWS operation that is not
+5. THE SYSTEM SHALL keep connectors free of write calls: no module of the cloud account app (`apps/vampires`) calls an AWS operation that is not
    `Describe*`, `List*`, `Get*` or `LookupEvents`. A test parses `deploy/stack.yaml` and the connector modules and fails
    on any write beyond the claim above.
 6. THE SYSTEM SHALL keep account-specific values out of the committed control, approvals and deployment template. The
@@ -110,7 +119,7 @@ Billing data arrives late, so the control runs at 02:00 UTC on yesterday's bill 
 ## Requirement 9: the morning report
 
 1. WHEN a run completes THE SYSTEM SHALL produce a one-page report: counts per region, tonight's new findings first, the
-   billed amount of each Vampire and Phantom, and nights persisted.
+   billed amount of each `OB` finding (running and billed, never approved) and `B` finding (billed, nothing to see), and nights persisted.
 2. THE SYSTEM SHALL show the same report in the UI and as a downloadable HTML page.
 
 ## Requirement 10: What the first real bill taught
@@ -138,8 +147,8 @@ The first real CUR 2.0 of the lab account, read by the read-only investigator, s
    allocation id through `describe_addresses` and key the intended record by the allocation id, because the observed
    ledger and the bill key an Elastic IP by its allocation id.
 6. IF no address with that public IP is found THEN THE SYSTEM SHALL keep the physical id as the key, so that the
-   declared Elastic IP shows as a Skeleton instead of being dropped silently.
+   declared Elastic IP shows as an `I` finding (approved, but gone) instead of being dropped silently.
 7. THE SYSTEM SHALL make only read calls for these conditions (`describe_network_interfaces`, `describe_instances`,
    `describe_addresses`).
 8. WHEN a declared instance has an auto-assigned public IP THE SYSTEM SHALL place the instance, its root volume and its
-   network interface in Living and produce no finding for them.
+   network interface in `IOB` (matched) and produce no finding for them.

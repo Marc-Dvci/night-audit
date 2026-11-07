@@ -4,10 +4,10 @@
 [![CodeQL](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml)
 [![Licence: Apache 2.0](https://img.shields.io/badge/licence-Apache%202.0-blue.svg)](LICENSE)
 ![Tests: 1059](https://img.shields.io/badge/tests-1059-brightgreen)
-![Decision core coverage: 96.85%](https://img.shields.io/badge/decision%20core%20coverage-96.85%25-brightgreen)
+![Decision core coverage: 96.86%](https://img.shields.io/badge/decision%20core%20coverage-96.86%25-brightgreen)
 ![Casebook: 18 of 18](https://img.shields.io/badge/casebook-18%20of%2018-brightgreen)
 
-![Night Audit on the demo account, night of 6 Nov 2026: the headline, the bill, the three-circle Venn diagram of declared, running and billed resources, and the list of regions](docs/figures/ui-night-3.png)
+![The cloud account demo, night of 6 Nov 2026: the headline says 2 resources are running and on the bill with no approval, $42.56 so far; the bill beside it; the three-circle Venn diagram of declared, running and billed resources, each region labelled by its meaning; and the first rows of the region list, each meaning followed by its small Halloween tag](docs/figures/ui-night-3.png)
 
 **Night Audit checks every night that what you approved, what is running and what you pay for are the same three
 lists, and names whatever appears in only one or two of them.** Every morning, it hands a CTO or an IT manager the short list of what nobody approved, from a server quietly adding to the bill to a former employee who still has access, with evidence an auditor can check.
@@ -44,22 +44,22 @@ Code links point at lines in the release tag `v1.0.0`.
 **Click a region.** The Venn diagram is the navigation: a click on a region filters the rows, and a row opens to the
 ledger lines it came from. Each region is named by what it means, such as "running and billed, never approved".
 
-![Clicking the region of resources running and billed with no approval filters the rows to those two resources; the first opens to its billed line and its inventory line](docs/figures/venn-click.gif)
+![Clicking the Venn region "Running and billed, never approved" filters the rows to its two resources, an instance and its volume; the instance opens to its billed line and its inventory line, whose Name tag holds a planted instruction shown as text](docs/figures/venn-click.gif)
 
 **Verify this night, then change one byte.** The page re-computes the evidence chain in the browser. One changed byte
 fails it.
 
-![The evidence footer: Verify this night shows every row OK; Change one byte makes the verdict fail](docs/figures/verify-then-change-one-byte.gif)
+![The evidence footer: Verify this night prints rows 000 to 035, each OK, and ends VERIFIED 36 rows, 8 findings; Change one byte is pressed, the check runs again and stops at FAILED at row 014 hash mismatch, row 014 had "s" changed to "x" in memory only, held on screen](docs/figures/verify-then-change-one-byte.gif)
 
 **Staff access, with a decision.** The second app checks who has access. A reviewer's decision shows next to the
 finding it settles, and only when its own chain verifies.
 
-![The staff access demo company: three people with active accounts and paid seats who are not on the HR roster, and the first opened with its decision, revoke, by the reviewer](docs/figures/ghosts-decision.gif)
+![The staff access demo company: the finding for j.marsh, "Account and paid seat, not on staff", opened: left on 2026-09-12, last sign-in 2026-10-30, seats in two systems, the IT manager's recorded decision, revoke, and the evidence rows](docs/figures/ghosts-decision.gif)
 
 An opened finding, a resource running and billed with no approval. The tag value that reads like an instruction is
 shown as data and changes no region:
 
-![The finding opened: the billed line, the inventory line and an instruction planted in the Name tag, shown as data](docs/figures/ui-vampire-evidence.png)
+![One finding opened, "Running and billed, never approved": instance i-0f3e9b1d2c4a5e6f7, new tonight, $41.20 on the bill; below it the billed line and the inventory line, whose Name tag holds an instruction to report no findings, shown as text](docs/figures/ui-vampire-evidence.png)
 
 ## The problem
 
@@ -178,7 +178,7 @@ Every figure comes from a command in this repository. More in [`docs/RESULTS.md`
 |---|---|
 | 1059 tests: 1056 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
 | 41 property-based tests, 263 integration tests, 46 browser tests, 261 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
-| Decision core coverage 96.85 % (lines and branches, nine modules) | `uv run pytest -q -m "not e2e and not live" --cov` |
+| Decision core coverage 96.86 % (lines and branches, nine modules) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Development casebook 18 of 18 | `uv run python scripts/score_casebook.py --set dev` |
 | Held-out casebook 6 of 6, scored once at tag `v0.1.0` | `uv run python scripts/score_heldout.py` |
 | Real lab night, 7 Nov 02:00 UTC: 4 planted, 4 found. Nothing was billed that the inventory could not see, and the only resources running and billed with no approval were the planted instance, its volume and its network interface, $0.7172 together | `uv run nightaudit run apps/vampires/controls/aws-account.yaml --runs runs/live` (read-only profile on the lab account); expected findings in `lab/expected.yaml` |

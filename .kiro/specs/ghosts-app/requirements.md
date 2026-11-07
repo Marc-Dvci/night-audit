@@ -1,4 +1,4 @@
-# Requirements: Ghosts, the access review that reconciles people
+# Requirements: the staff access app, the access review that reconciles people
 
 ## Introduction
 
@@ -22,8 +22,17 @@ real person or product.
 
 1. THE SYSTEM SHALL ship `apps/ghosts/controls/staff-access.yaml` declaring the ledgers below, the normaliser chain
    `[email_canonical]` with the alias domain `hollowpines.org` mapped to `hollowpines.com`, a grace window of 72 hours,
-   and the region names Ghost (`OB`), Poltergeist (`O`), Phantom seat (`B`), Unprovisioned joiner (`I`), Wraith
-   (`IB`), Unlicensed user (`IO`), Living (`IOB`).
+   and the region names in the table below (the `name` value of each region).
+
+   | Meaning | Code | Region name (`name`) |
+   |---|---|---|
+   | Has an active account and a paid seat, but is not on the HR roster | `OB` | Ghost |
+   | Has an active account, but is not on the HR roster and holds no paid seat | `O` | Poltergeist |
+   | A paid seat assigned to an address with no active account and no HR record | `B` | Phantom seat |
+   | On the HR roster, but has no active account and no paid seat | `I` | Unprovisioned joiner |
+   | On the HR roster with a paid seat, but has no active account | `IB` | Wraith |
+   | On the HR roster with an active account and no paid seat | `IO` | Unlicensed user |
+   | On the HR roster, with an active account and a paid seat (matched) | `IOB` | Living |
 
 ## Requirement 2: intended ledger
 

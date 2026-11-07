@@ -165,25 +165,25 @@ its name starts with `test_property_`.
 ## What the second app taught (Req 10, design §18)
 
 - [x] **30. Run time for connectors.** `Connector.bind_run_time` and `run_time`; the runner binds before `fetch()`.
-      Ghosts' `HrRoster` and Vampires' `ApprovedChanges` read it; the Hollow Pines control drops `today`. [Req 10.1]
-- [x] **31. Control context.** `ControlContext`; passed to enrichers and summarisers that take `control`. Ghosts'
-      enricher reads the folder and alias table from it; the control stops repeating them. [Req 10.3]
-- [x] **32. Run notes.** `summarisers`, `RunNote`, notes in the evidence chain, the guard, page and report. Ghosts'
-      seat summary becomes notes and `seats.json` goes. Property P11. [Req 10.2]
-- [x] **33. Unkeyed words.** `ui.unkeyed` with today's words as default; Ghosts says "seats paid for nobody named".
+      The staff access app's `HrRoster` and the cloud account app's `ApprovedChanges` read it; the Hollow Pines control drops `today`. [Req 10.1]
+- [x] **31. Control context.** `ControlContext`; passed to enrichers and summarisers that take `control`. The staff
+      access app's enricher reads the folder and alias table from it; the control stops repeating them. [Req 10.3]
+- [x] **32. Run notes.** `summarisers`, `RunNote`, notes in the evidence chain, the guard, page and report. The staff
+      access app's seat summary becomes notes and `seats.json` goes. Property P11. [Req 10.2]
+- [x] **33. Unkeyed words.** `ui.unkeyed` with today's words as default; the staff access app says "seats paid for nobody named".
       [Req 10.4]
-- [x] **34. Template slots.** `{context:*}` and `{attr:*}`, guarded. Ghosts' templates state each condition in words.
+- [x] **34. Template slots.** `{context:*}` and `{attr:*}`, guarded. The staff access app's templates state each condition in words.
       Property P12. [Req 10.5]
 - [x] **35. Downloads.** `ui.downloads`, the allow-list, the API route, the static copy, the page link. The review
-      sheet is a Ghosts download. Property P13. [Req 10.6]
+      sheet is a staff access download. Property P13. [Req 10.6]
 - [x] **36. Decisions on the page.** The decision chain check moves to `nightaudit.decisions`; `ghosts.review` uses it;
       the page shows verified decisions. [Req 10.7]
-- [x] **37. Demos per app.** `scripts/build_demos.py`; Vampires under `demo/vampires/`, Ghosts under `demo/ghosts/`
+- [x] **37. Demos per app.** `scripts/build_demos.py`; the cloud account app under `demo/vampires/`, the staff access app under `demo/ghosts/`
       with one night without decisions and one with three; `apps.json` lists three entries; `?demo=1` still opens the
-      Vampires demo. [Req 10.8]
-- [x] **38. People words.** Every string on the Ghosts page checked for cloud words; the counts use the control's
-      noun. Browser tests and axe for the Ghosts page. [Req 8.4, 10.4]
+      cloud account demo. [Req 10.8]
+- [x] **38. People words.** Every string on the staff access page checked for cloud words; the counts use the control's
+      noun. Browser tests and axe for the staff access page. [Req 8.4, 10.4]
 - [x] **39. Hook files load.** `skeleton/tests/test_hooks.py` checks every `.kiro/hooks/*.json` parses, has a known
       trigger, and a regex matcher compiles. [tech]
 - [x] **40. Planted file as written.** Remove the in-memory story quoting and the byte-pinning test; acceptance prints
-      ACCEPTED, 8 of 8. [Ghosts Req 1]
+      ACCEPTED, 8 of 8. [staff access app Req 1]

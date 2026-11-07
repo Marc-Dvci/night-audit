@@ -15,21 +15,23 @@ The control is a three-way match over three independent ledgers of the same real
 | observed | What actually exists? |
 | billed | What are we paying for? |
 
-A key present in all three ledgers is matched (Living, `IOB`). Every other combination is a finding
+A key present in all three ledgers is matched (`IOB`). Every other combination is a finding
 with a fixed meaning drawn from the product taxonomy. The code decides regions, amounts, counts, dates
 and owners; a language model may only explain a finding the code already produced (audit rule 1).
 
-The seven non-empty subsets of {I, O, B} map to region codes, always written in I-O-B order:
+The seven non-empty subsets of {I, O, B} map to region codes, always written in I-O-B order. This is the
+spec's one region table; everywhere else a region is called by its meaning or its code. The Halloween name is
+the default tag shown beside the meaning.
 
-| Code | Default name | Finding? |
-|---|---|---|
-| `IOB` | Living | No |
-| `IO` | Familiar | Informational |
-| `IB` | Wraith | Yes |
-| `OB` | Vampire / Ghost | Yes |
-| `I` | Skeleton | Yes |
-| `O` | Poltergeist | Yes |
-| `B` | Phantom | Yes |
+| Meaning | Code | Finding? | Halloween name (default tag) |
+|---|---|---|---|
+| Matched | `IOB` | No | Living |
+| Approved and present, not billed | `IO` | Informational | Familiar |
+| Approved and paid for, but not observed | `IB` | Yes | Wraith |
+| Exists and is paid for, but nobody approved it | `OB` | Yes | Vampire (cloud) / Ghost (people) |
+| Approved, but absent and unbilled | `I` | Yes | Skeleton |
+| Exists, unapproved, not billed | `O` | Yes | Poltergeist |
+| Billed for something nobody approved and nobody can see | `B` | Yes | Phantom |
 
 ## 2. Module map
 
@@ -87,14 +89,14 @@ immutable (`model_config = ConfigDict(frozen=True)`).
 **`REGION_CODES`** — `("IOB", "IO", "IB", "OB", "I", "O", "B")`, the seven non-empty subsets of {I, O, B}
 in I-O-B order.
 
-**`DEFAULT_REGION_NAMES`** — maps each code to its monster name from the product glossary:
-`IOB`→Living, `IO`→Familiar, `IB`→Wraith, `OB`→Vampire, `I`→Skeleton, `O`→Poltergeist, `B`→Phantom.
+**`DEFAULT_REGION_NAMES`** — maps each code to its default Halloween tag, the last column of the region table
+in §1 (the cloud tag for `OB`).
 
 **`DEFAULT_REGION_MEANINGS`** — maps each code to its one-sentence meaning from the product glossary.
 
 **`FINDING_REGIONS`** — `frozenset({"OB", "O", "B", "I", "IB"})`. Keys in these regions are findings.
 
-**`INFORMATIONAL_REGIONS`** — `frozenset({"IO"})`. Keys in this region are informational (Familiar):
+**`INFORMATIONAL_REGIONS`** — `frozenset({"IO"})`. Keys in this region are informational (approved and present, not billed):
 shown in the UI and counted separately, but not actionable findings.
 
 ### LedgerName
@@ -149,10 +151,10 @@ One key that does not match (non-IOB), with all its evidence.
 |---|---|---|
 | `key` | `str` | normalised key |
 | `region_code` | `str` | one of the 7 codes |
-| `name` | `str` | monster name from control override or default (Req 1.4) |
+| `name` | `str` | Halloween tag from control override or default (Req 1.4) |
 | `severity` | `str` | from control override or default |
 | `meaning` | `str` | from control override or default |
-| `informational` | `bool` | `True` for `IO` (Familiar); `False` for finding regions |
+| `informational` | `bool` | `True` for `IO` (approved and present, not billed); `False` for finding regions |
 | `records` | `list[Record]` | every record for this key across all three ledgers |
 | `billed_amount` | `Decimal` | sum of amounts in billed records for this key (zero if none) |
 | `duplicate_counts` | `dict[str, int]` | ledger name → count when > 1 (Req 3.4) |
@@ -468,8 +470,8 @@ not produce findings. Their observed records are not included in any finding's e
 
 When the observed record ages past the grace window, the key gets its normal region:
 
-- In intended + observed, not billed → `IO` (Familiar, informational).
-- In observed only, not billed → `O` (Poltergeist, finding).
+- In intended + observed, not billed → `IO` (approved and present, not billed; informational).
+- In observed only, not billed → `O` (exists, unapproved, not billed; a finding).
 
 The grace window does not apply to:
 
@@ -917,7 +919,7 @@ chain hash.
 
 ## 18. What the second app taught (Req 10)
 
-Ghosts was built without write access to `skeleton/`. Its design (§10 there) lists what it had to work around. Each
+The staff access app (`apps/ghosts/`) was built without write access to `skeleton/`. Its design (§10 there) lists what it had to work around. Each
 item below is the skeleton's answer. A control that uses none of them hashes, runs and verifies exactly as before:
 new control fields that are empty are left out of the canonical hash, and a run with no notes writes the same
 evidence rows as before.
@@ -974,7 +976,7 @@ downloads that exist; the static demo copies them beside `run.json`.
 
 ### 18.7 Review decisions on the page (Req 10.7)
 
-`nightaudit.decisions.verify_decision_chain(run_dir, result, allowed)` is the decision chain check Ghosts wrote (§7.3
+`nightaudit.decisions.verify_decision_chain(run_dir, result, allowed)` is the decision chain check the staff access app wrote (§7.3
 of its design), moved into the skeleton: the evidence pack verifies, the first `prev_hash` is the run's final chain
 hash, each row hash, index and link holds, and each key and region code is a finding of the run. `run_document`
 includes `decisions: {ok, detail, rows}` when the file exists, with rows only when the chain verifies. The page shows a

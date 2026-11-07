@@ -10,8 +10,8 @@ reconciliation control to their own project, and a machine-checked proof of the 
 
 1. THE SYSTEM SHALL ship `crew/` with the files and the setup command that register a Kiro Crew recurring job named
    `night-audit` at 02:00 UTC that runs `nightaudit run` for each control in `apps/*/controls/`.
-2. WHEN the run produces new findings THE SYSTEM SHALL have an investigator crewmate open each new Vampire, Ghost and
-   Poltergeist, gather read-only context (CloudTrail creating event, resource tags, the HR record), and append a short
+2. WHEN the run produces new findings THE SYSTEM SHALL have an investigator crewmate open each new `OB` finding (exists and is
+   paid for, nobody approved it) and `O` finding (exists, unapproved, not billed), gather read-only context (CloudTrail creating event, resource tags, the HR record), and append a short
    note to the finding. The note SHALL pass the explanation guard.
 3. THE SYSTEM SHALL restrict the investigator to read-only tools through Crew permissions, and the project's
    `read-only-aws` hook SHALL refuse any write call.

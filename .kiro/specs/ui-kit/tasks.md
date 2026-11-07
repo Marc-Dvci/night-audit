@@ -153,7 +153,7 @@ failing test first, in Python and in the browser verifier through the shared cas
       `test_regression_an_old_pack_cannot_hide_an_unkeyed_bill_behind_a_page_that_says_incomplete`,
       `test_a_pack_that_records_no_completeness_is_taken_as_complete_so_an_incomplete_page_fails`; parity section
       `completeness` (9 cases). [Req 6.6]
-- [x] **32. Every number in the headline is checked.** `One Vampire costs 0.7173 dollars.` verified, because only
+- [x] **32. Every number in the headline is checked.** `One resource costs 0.7173 dollars.` verified, because only
       `$`-prefixed amounts were read. Every numeric literal is now read with the explanation guard's scanner
       (`explain.number_literals`). `test_regression_every_number_in_the_headline_must_be_its_own_count_or_amount`,
       `test_a_headline_with_a_digit_that_is_not_ascii_fails_verification`; `verify.test.ts` "refuses a headline amount

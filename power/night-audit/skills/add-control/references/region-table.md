@@ -12,15 +12,15 @@ A key present in all three ledgers is matched. Every other combination is a find
 fixed meaning. The code assigns the region from which ledgers hold the key, never from any text in a record.
 The region code always lists the initials in I-O-B order.
 
-| Present in | Region code | Default name | Meaning |
+| Meaning | Present in | Region code | Halloween name (default tag) |
 |---|---|---|---|
-| I, O, B | `IOB` | Living | Matched. No finding |
-| O, B | `OB` | Vampire (cloud) / Ghost (people) | Exists and is paid for, but nobody approved it |
-| O | `O` | Poltergeist | Exists, unapproved, not billed (free resources, keys, test accounts) |
-| B | `B` | Phantom | Billed for something nobody approved and nobody can see |
-| I | `I` | Skeleton | Approved, but absent and unbilled (a missing control or an unprovisioned joiner) |
-| I, B | `IB` | Wraith | Approved and paid for, but not observed |
-| I, O | `IO` | Familiar | Approved and present, not billed. Informational |
+| Matched. No finding | I, O, B | `IOB` | Living |
+| Exists and is paid for, but nobody approved it | O, B | `OB` | Vampire (cloud) / Ghost (people) |
+| Exists, unapproved, not billed (free resources, keys, test accounts) | O | `O` | Poltergeist |
+| Billed for something nobody approved and nobody can see | B | `B` | Phantom |
+| Approved, but absent and unbilled (a missing control or an unprovisioned joiner) | I | `I` | Skeleton |
+| Approved and paid for, but not observed | I, B | `IB` | Wraith |
+| Approved and present, not billed. Informational | I, O | `IO` | Familiar |
 
 Two more outcomes are not regions:
 
@@ -29,5 +29,6 @@ Two more outcomes are not regions:
 - **Unkeyed.** A record whose key is empty after normalisation (a tax line, a blank cell). It is listed apart, never
   matched, and still counted in the billed total.
 
-The names are a default. A control may rename any region (`regions:` in the control file) so that a reader sees
-the words of their own domain; the code and the meaning stay the same.
+A reader is told the meaning first. The Halloween name is only a default tag beside it, and a control may rename
+any region (`regions:` in the control file) so that the tag uses the words of its own domain; the code and the
+meaning stay the same.

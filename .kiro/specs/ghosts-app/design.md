@@ -1,4 +1,4 @@
-# Design: Ghosts, the access review that reconciles people
+# Design: the staff access app, the access review that reconciles people
 
 ## 1. Overview
 
@@ -64,9 +64,8 @@ Every skeleton feature used is public: `Connector`, `Record`, `LedgerName`, `run
 - `alias_domains: {hollowpines.org: hollowpines.com}`.
 - Every ledger has `normalisers: [email_canonical]`. The skeleton's `email_canonical` strips, lower-cases, removes the
   `+tag` and maps the alias domain, so `R.Voss+old@hollowpines.org` and `r.voss@hollowpines.com` are one key.
-- `regions` names every code: `OB` Ghost, `O` Poltergeist, `B` Phantom seat, `I` Unprovisioned joiner, `IB` Wraith,
-  `IO` Unlicensed user, `IOB` Living. Each meaning is a condition, never an accusation (audit rule 8).
-- `ui`: title Ghosts; noun person / people; ledger labels HR roster, Accounts, Paid seats; columns Person (`key`),
+- `regions` names every code with the names in the table of Req 1.1, the spec's one region table. Each meaning is a condition, never an accusation (audit rule 8).
+- `ui`: title Staff access; noun person / people; ledger labels HR roster, Accounts, Paid seats; columns Person (`key`),
   Region (`name`), Systems (`context:systems`), Seats (`context:seats`), Left on (`context:left_on`), Last sign-in
   (`context:last_sign_in`), Manager (`context:manager`); a headline per finding region.
 - One enricher, `ghosts.context:people_context`, for regions `OB, O, B, I, IB, IO`.
@@ -143,7 +142,7 @@ Lists `GET https://api.github.com/orgs/{org}/members?per_page=100`, following `L
   raises, so the token never leaves `api.github.com`.
 - Each login maps to an email through the roster's `github_login` column (case-insensitive). An unmapped login is keyed
   `github:<login>`, which `email_canonical` leaves as is, so an organisation member nobody on the roster maps to
-  becomes a visible Poltergeist instead of an unkeyed row.
+  becomes a visible `O` finding (an account with no HR record and no paid seat) instead of an unkeyed row.
 - Attributes: `system` ("GitHub <org>"), `status` ("member"), `login`. GitHub does not report a membership date, so the
   record has no timestamp.
 
@@ -243,10 +242,10 @@ It prints `OK` or `FAIL` with the first failing row and exits non-zero on failur
   `<initial>.<surname>@hollowpines.com`, falling back to `<given>.<surname>` on a collision.
 - Seats follow department: Lantern Chat for nearly everyone, Crypt Docs for office departments, Belfry CRM for member
   facing departments, Ossuary Design for Marketing. A few part-time tellers hold no seat (Unlicensed user, `IO`).
-- Some Living people appear with case, alias-domain or `+tag` variants in an export, to exercise the normaliser.
+- Some matched people (`IOB`) appear with case, alias-domain or `+tag` variants in an export, to exercise the normaliser.
 - Accounts are created at least seven days before the run, so nothing is pending.
 - Boundary people with no finding: a person who left on 2026-11-04 with a disabled account, earlier leavers with
-  disabled accounts, two future leavers who are Living, and a joiner starting 2026-11-16 with no account.
+  disabled accounts, two future leavers who are matched (`IOB`), and a joiner starting 2026-11-16 with no account.
 - The planted people of `planted.yaml` are written explicitly with their stories' dates, systems and seats. The
   Lantern Chat invoice is three seats above its assignments; every other invoice equals its assignments.
 - `plant=False` (`--healthy`) writes the same company without the planted cases, with a seat for everyone and every
@@ -263,8 +262,8 @@ each night into `skeleton/web/public/demo/ghosts/<run id>/`; `scripts/build_demo
 
 ## 10. What the skeleton did not provide, and what it provides now
 
-Ghosts was first built without write access to `skeleton/`. These were the gaps; skeleton Requirement 10 (design §18
-of the three-way match) closed each one, and Ghosts no longer has any of the workarounds.
+The staff access app was first built without write access to `skeleton/`. These were the gaps; skeleton Requirement 10 (design §18
+of the three-way match) closed each one, and the app no longer has any of the workarounds.
 
 | Gap | Workaround at `ec92469` | Now |
 |---|---|---|
@@ -288,7 +287,7 @@ on or before the run date and the leaving date is empty or after it.
 ### G2 — One person, one key (validates Req 1.1, 3.1)
 
 For any local part, any change of case, any `+tag` and either the primary or the alias domain, the identity export
-row and the HR row produce the same key, and a person with a seat lands in Living.
+row and the HR row produce the same key, and a person with a seat lands in `IOB` (matched).
 
 ### G3 — Seats are conserved (validates Req 4.1, 4.2, 4.3)
 

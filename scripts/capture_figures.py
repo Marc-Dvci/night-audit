@@ -140,27 +140,54 @@ def record_venn(browser: Browser, base: str) -> tuple[Path, float, float, str | 
     return rec.finish(), rec.start, rec.end, None
 
 
+# Every animation frame, scroll so the bottom of the verdict line (#verdict) sits just above the bottom of the viewport.
+# While the verdict is still empty (display: none) the anchor is the printout (#printer), and before that the footer, so
+# the newest printed rows and then the verdict stay in frame however long the printout grows. ``window.__follow`` pauses
+# the loop while the recording shows a button.
+FOLLOW_VERDICT = """() => {
+  window.__follow = true;
+  const shown = (el) => el !== null && el.getClientRects().length > 0;
+  const keep = () => {
+    if (window.__follow) {
+      const verdict = document.getElementById("verdict");
+      const printer = document.getElementById("printer");
+      const anchor = shown(verdict) ? verdict : shown(printer) ? printer : document.querySelector(".foot");
+      if (anchor) {
+        const target = window.scrollY + anchor.getBoundingClientRect().bottom - window.innerHeight + 24;
+        if (Math.abs(target - window.scrollY) > 1) window.scrollTo(0, Math.max(0, target));
+      }
+    }
+    requestAnimationFrame(keep);
+  };
+  requestAnimationFrame(keep);
+}"""
+
+
 def record_verify(browser: Browser, base: str) -> tuple[Path, float, float, str | None]:
+    """Verify this night (rows print OK), change one byte, and hold on the verdict naming the row that fails."""
     rec = Recording(browser, "verify-then-change-one-byte")
     page = rec.page
     open_app(page, base, "?app=vampires-demo")
-    page.locator(".foot").scroll_into_view_if_needed()
-    page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+    page.evaluate(FOLLOW_VERDICT)
     hold(page, 1.0)
     rec.action_begins()
     hold(page, 1.0)
     page.click('[data-action="verify"]')
     page.wait_for_selector(".verdict.ok")
     hold(page, 3.0)
+    # Show the "Change one byte" button before pressing it; the printout above may have pushed it out of frame.
+    page.evaluate("window.__follow = false")
+    page.evaluate("""() => document.querySelector('[data-action="tamper"]').scrollIntoView({block: "center"})""")
+    hold(page, 1.2)
+    page.evaluate("window.__follow = true")
     page.click('[data-action="tamper"]')
     page.wait_for_selector(".verdict.failed")
-    hold(page, 4.0)
+    hold(page, 2.5)
     rec.action_ends()
-    box = page.locator(".foot").bounding_box()
-    assert box is not None
-    top = max(0, int(box["y"]) - 40)
-    crop = f"{VIEWPORT['width']}:{VIEWPORT['height'] - top}:0:{top}"
-    return rec.finish(), rec.start, rec.end, crop
+    # The follow loop keeps the verdict at the bottom of the viewport, so the bottom 560 px hold the button, the newest
+    # printed rows and the verdict; the page above them is cut to keep the file under 5 MB.
+    top = VIEWPORT["height"] - 560
+    return rec.finish(), rec.start, rec.end, f"{VIEWPORT['width']}:560:0:{top}"
 
 
 def record_ghosts(browser: Browser, base: str) -> tuple[Path, float, float, str | None]:
@@ -188,7 +215,12 @@ RECORDERS: dict[str, tuple[Callable[[Browser, str], tuple[Path, float, float, st
 }
 
 
-def make_gif(video: Path, out: Path, start: float, end: float, crop: str | None) -> int:
+# The verify recording scrolls with the printout, so nearly every frame differs from the last; it is cropped (see
+# record_verify) to stay under 5 MB.
+GIF_SETTINGS: dict[str, tuple[int, int]] = {"venn": (12, 96), "verify": (12, 96), "ghosts": (12, 96)}
+
+
+def make_gif(video: Path, out: Path, start: float, end: float, crop: str | None, fps: int, colors: int) -> int:
     command = [
         sys.executable,
         str(ROOT / "scripts" / "make_gif.py"),
@@ -201,9 +233,9 @@ def make_gif(video: Path, out: Path, start: float, end: float, crop: str | None)
         "--width",
         str(GIF_WIDTH),
         "--fps",
-        "12",
+        str(fps),
         "--colors",
-        "96",
+        str(colors),
         "--dither",
         "none",
     ]
@@ -234,7 +266,8 @@ def main() -> int:
             for name, (record, gif) in RECORDERS.items():
                 if name in wanted:
                     video, start, end, crop = record(browser, base)
-                    failed += make_gif(video, FIGURES / gif, start, end, crop)
+                    fps, colors = GIF_SETTINGS[name]
+                    failed += make_gif(video, FIGURES / gif, start, end, crop, fps, colors)
             browser.close()
     finally:
         server.shutdown()

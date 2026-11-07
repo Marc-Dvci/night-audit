@@ -22,8 +22,9 @@ Ask in one message, and do not write a file until the user has answered:
 2. **What counts as the same thing in all three** (the key): an email, an instance id, a licence seat. Ask how each
    source spells it (case, an old domain, a `+tag`, a full ARN). Normalisers: `strip`, `lower`, `collapse_whitespace`,
    `email_canonical`, `arn_resource_id`.
-3. The **names** for the regions in their domain (defaults: Vampire or Ghost, Poltergeist, Phantom, Skeleton, Wraith,
-   Familiar) and which of them they want to act on.
+3. The **meaning** of each region in their domain words (for example `OB`: "has an account and a paid seat, but is
+   not on the roster"), the short tag shown beside it (defaults in `references/region-table.md`), and which regions
+   they want to act on.
 4. The grace window in hours (how late billing arrives) and any scope (one project, one vendor).
 
 If the user says "use defaults", propose them in a table and wait for a yes. If the three sources share no key, stop and

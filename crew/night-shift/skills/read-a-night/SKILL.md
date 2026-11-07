@@ -9,15 +9,17 @@ The findings were decided by code. You explain them; you do not change a region,
 
 ## Seven regions
 
-| Present in | Region | Meaning |
-|---|---|---|
-| Intended, Observed, Billed | `IOB` | Matched. No finding |
-| Observed, Billed | `OB` | Exists and is paid for, but nobody approved it (Vampire in a cloud account, Ghost for people) |
-| Observed | `O` | Exists, unapproved, not billed (Poltergeist) |
-| Billed | `B` | Billed for something nobody approved and nobody can see (Phantom) |
-| Intended | `I` | Approved, but absent and unbilled (Skeleton) |
-| Intended, Billed | `IB` | Approved and paid for, but not observed (Wraith) |
-| Intended, Observed | `IO` | Approved and present, not billed. Informational (Familiar) |
+| Meaning | Present in | Region | Halloween name (tag only) |
+|---|---|---|---|
+| Matched. No finding | Intended, Observed, Billed | `IOB` | Living |
+| Exists and is paid for, but nobody approved it | Observed, Billed | `OB` | Vampire (cloud) / Ghost (people) |
+| Exists, unapproved, not billed | Observed | `O` | Poltergeist |
+| Billed for something nobody approved and nobody can see | Billed | `B` | Phantom |
+| Approved, but absent and unbilled | Intended | `I` | Skeleton |
+| Approved and paid for, but not observed | Intended, Billed | `IB` | Wraith |
+| Approved and present, not billed. Informational | Intended, Observed | `IO` | Familiar |
+
+Call a region by its meaning. The Halloween name may follow as a tag, never alone.
 
 ## Steps
 

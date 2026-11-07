@@ -131,7 +131,7 @@ new controls.
 **User story:** As the author of a second application, I want the skeleton to give me what I had to work around, so
 that the next application needs no workaround at all.
 
-Source: `.kiro/specs/ghosts-app/design.md` §10, the gaps Ghosts met while it could not change the skeleton.
+Source: `.kiro/specs/ghosts-app/design.md` §10, the gaps the staff access app met while it could not change the skeleton.
 
 1. WHEN a run fetches a ledger THE SYSTEM SHALL give every connector the run's time through the `Connector` base class
    before `fetch()` is called, and a connector that does not read the run time SHALL need no change.
