@@ -35,8 +35,8 @@ NIGHTS = [
 ]
 #: This app's entries in ``apps.json``: the live API and this recorded demo. The live entry comes first.
 APP_ENTRIES = [
-    {"name": "vampires", "title": "Vampires", "mode": "live", "base": "api/"},
-    {"name": "vampires-demo", "title": "Vampires demo account", "mode": "demo", "base": f"demo/{APP}/"},
+    {"name": "vampires", "title": "Cloud account", "mode": "live", "base": "api/"},
+    {"name": "vampires-demo", "title": "Cloud account demo", "mode": "demo", "base": f"demo/{APP}/"},
 ]
 #: A fixed zip timestamp, so a rebuild with the same inputs writes the same bytes.
 ZIP_TIME = (2026, 11, 6, 2, 0, 0)

@@ -141,6 +141,8 @@ export interface RunResult {
   snapshots: Snapshot[];
   regions: Record<string, string>;
   region_names: Record<string, string>;
+  /** Each region's short plain label. Absent in runs saved before labels existed. */
+  region_labels?: Record<string, string>;
   region_meanings: Record<string, string>;
   region_summaries: Record<string, RegionSummary>;
   pending_keys: string[];

@@ -4,14 +4,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+import string
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import pytest
 import yaml
-from nightaudit.control import ControlFile, resolve_ui
-from nightaudit.models import RunResult
+from nightaudit.control import ControlFile, region_labels, resolve_ui
+from nightaudit.models import DEFAULT_REGION_LABELS, DEFAULT_REGION_NAMES, RunResult
 from nightaudit.runner import run_control
 from pydantic import ValidationError
 
@@ -65,15 +66,45 @@ def test_a_control_without_ui_gets_neutral_defaults() -> None:
     assert set(ui.headlines) == {"OB", "B", "IB", "I", "O"}
 
 
-def test_default_headlines_use_the_controls_region_names() -> None:
+def test_default_headlines_speak_in_plain_words_not_region_names() -> None:
+    """A reader never needs a region's Halloween name to read the headline (product rules)."""
     ui = resolve_ui(_control(regions={"OB": {"name": "Ghost"}}))
-    assert ui.headlines["OB"].one.startswith("{count} Ghost exists")
-    assert ui.headlines["OB"].other.startswith("{count} Ghosts exist")
+    for code, headline in ui.headlines.items():
+        for text in (headline.one, headline.other):
+            assert "Ghost" not in text and DEFAULT_REGION_NAMES[code] not in text, text
+            assert "{noun}" in text
+    assert ui.headlines["OB"].one.startswith("{count} {noun} exists")
+    assert ui.headlines["OB"].other.startswith("{count} {noun} exist ")
 
 
 def test_a_region_name_with_braces_cannot_add_a_slot() -> None:
-    ui = resolve_ui(_control(regions={"OB": {"name": "{amount}"}}))
-    assert "{{amount}}" in ui.headlines["OB"].one
+    ui = resolve_ui(_control(regions={"OB": {"name": "{amount}", "label": "{owner}"}}))
+    for text in (ui.headlines["OB"].one, ui.headlines["OB"].other):
+        fields = [name for _, name, _, _ in string.Formatter().parse(text) if name is not None]
+        assert sorted(fields) == ["amount", "count", "noun"]
+
+
+def test_a_region_label_enters_the_control_hash_only_when_it_is_set() -> None:
+    plain = _control(regions={"OB": {"name": "Vampire"}})
+    labelled = _control(regions={"OB": {"name": "Vampire", "label": "Running and billed, never approved"}})
+    data = plain.model_dump(mode="json")
+    data.pop("ui")
+    data.pop("summarisers")
+    data["regions"]["OB"].pop("label")
+    before_labels = hashlib.sha256(json.dumps(data, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    assert plain.canonical_hash() == before_labels
+    assert labelled.canonical_hash() != plain.canonical_hash()
+
+
+def test_region_labels_come_from_the_control_then_its_own_names_then_the_defaults() -> None:
+    config = _control(
+        regions={"OB": {"name": "Vampire", "label": "Billed, never approved"}, "O": {"name": "Hand-written"}}
+    ).to_config()
+    labels = region_labels(config)
+    assert labels["OB"] == "Billed, never approved"
+    assert labels["O"] == "Hand-written"  # a control's own plain name is its label
+    assert labels["B"] == DEFAULT_REGION_LABELS["B"]
+    assert region_labels(_control(regions={"I": {"name": "Skeleton"}}).to_config())["I"] == DEFAULT_REGION_LABELS["I"]
 
 
 @pytest.mark.parametrize(

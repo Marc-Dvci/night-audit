@@ -32,6 +32,7 @@ from nightaudit.decisions import (
 )
 from nightaudit.evidence import canonical_json
 from nightaudit.models import Finding, RunResult
+from nightaudit.report import region_label
 from nightaudit.textfile import write_text_exact
 
 from .connectors import Clock, system_clock
@@ -88,6 +89,12 @@ def _rank(f: Finding) -> tuple[int, str]:
     return (REGION_ORDER.index(f.region_code) if f.region_code in REGION_ORDER else 99, f.key)
 
 
+def region_text(result: RunResult, f: Finding) -> str:
+    """The region as a reviewer reads it: the plain label, with the Halloween name after it in brackets."""
+    label = region_label(result, f.region_code)
+    return label if f.name in ("", label) else f"{label} ({f.name})"
+
+
 def review_rows(result: RunResult) -> list[dict[str, str]]:
     """One row per finding with the columns of Req 5.1; decision and date are empty."""
     rows: list[dict[str, str]] = []
@@ -96,7 +103,7 @@ def review_rows(result: RunResult) -> list[dict[str, str]]:
         rows.append(
             {
                 "person": f.key,
-                "region": f.name,
+                "region": region_text(result, f),
                 "region_code": f.region_code,
                 "systems": c.get("systems", ""),
                 "seats": c.get("seats", ""),

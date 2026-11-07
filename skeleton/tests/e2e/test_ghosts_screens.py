@@ -33,7 +33,7 @@ def ghost_nights() -> tuple[str, str]:
 def test_the_ghosts_overview_speaks_about_people(page: Any, base_url: str) -> None:
     _, second = ghost_nights()
     open_page(page, base_url, f"?app=ghosts-demo&run={second}")
-    assert page.inner_text("#headline").startswith("3 Ghosts have active accounts and paid seats")
+    assert page.inner_text("#headline").startswith("3 people have active accounts and paid seats")
     assert page.inner_text(".recorded") == "Recorded run. Not live data."
     assert "180 people" in page.inner_text(".ledgers")
     assert page.inner_text(".compare-intro").startswith("Every person is looked up in all three.")
@@ -52,7 +52,7 @@ def test_the_app_switch_offers_vampires_live_vampires_demo_ghosts_demo_and_own_b
 ) -> None:
     open_page(page, base_url, "?app=ghosts-demo")
     options = page.locator("#app-select option").all_inner_texts()
-    assert options == ["Vampires", "Vampires demo account", "Ghosts demo company", "Night Audit's own build"]
+    assert options == ["Cloud account", "Cloud account demo", "Staff access demo company", "Night Audit's own build"]
     assert page.locator("#app-select").input_value() == "ghosts-demo"
 
 
@@ -74,7 +74,9 @@ def test_an_opened_ghost_states_its_condition_and_shows_its_evidence(page: Any, 
     page.wait_for_selector("table.evidence")
     context = row.locator("dl.context").inner_text()
     assert "left on" in context.lower() and "2026-09-12" in context
-    assert "Ghost" in row.inner_text()
+    text = row.inner_text()
+    # The plain label comes first; the Halloween name is only the tag after it.
+    assert text.index("Account and paid seat, not on staff") < text.index("Ghost")
     assert_axe_clean(page)
 
 

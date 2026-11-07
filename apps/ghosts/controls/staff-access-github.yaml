@@ -63,32 +63,38 @@ regions:
     name: Living
     meaning: On the HR roster, with an active account and a paid seat.
   OB:
+    label: Account and paid seat, not on staff
     name: Ghost
     meaning: Has an active account and a paid seat, but is not on the HR roster on the run date.
     template: "{context:hr_status} Account still active, last sign-in {context:last_sign_in_on}. {context:seats_held}."
   O:
+    label: Account only, not on staff
     name: Poltergeist
     meaning: Has an active account, but is not on the HR roster and holds no paid seat.
     template: "{context:hr_status} Account active in {context:systems}, last sign-in {context:last_sign_in_on}. No paid seat."
   B:
+    label: Paid seat, no account, not on staff
     name: Phantom seat
     meaning: A paid seat is assigned to an address with no active account and no HR record.
     template: "{context:hr_status} No active account. Seat paid for in {context:seats_in}."
   I:
+    label: On staff, no account or seat yet
     name: Unprovisioned joiner
     meaning: On the HR roster, but has no active account and no paid seat.
     template: "{context:hr_status} No active account and no paid seat yet."
   IB:
+    label: On staff, paid seat, no account
     name: Wraith
     meaning: On the HR roster with a paid seat, but has no active account.
     template: "{context:hr_status} Seat paid for in {context:seats_in}, but no active account."
   IO:
+    label: On staff with account, no seat
     name: Unlicensed user
     meaning: On the HR roster with an active account and no paid seat. Informational.
     template: "{context:hr_status} Active account, last sign-in {context:last_sign_in_on}. No paid seat."
 
 ui:
-  title: Ghosts
+  title: Staff access
   tagline: Every night, the HR roster is checked against the accounts that exist and the seats that are paid for.
   noun: {singular: person, plural: people}
   unkeyed:
@@ -112,17 +118,17 @@ ui:
     - {label: Manager, from: "context:manager"}
   headlines:
     OB:
-      one: "{count} Ghost has an active account and a paid seat but is not on the HR roster: {amount} a month."
-      other: "{count} Ghosts have active accounts and paid seats but are not on the HR roster: {amount} a month."
+      one: "{count} {noun} has an active account and a paid seat but is not on the HR roster: {amount} a month."
+      other: "{count} {noun} have active accounts and paid seats but are not on the HR roster: {amount} a month."
     B:
-      one: "{count} Phantom seat is paid for an address with no account and no HR record: {amount} a month."
-      other: "{count} Phantom seats are paid for addresses with no account and no HR record: {amount} a month."
+      one: "{count} address with no account and no HR record has a paid seat: {amount} a month."
+      other: "{count} addresses with no account and no HR record have paid seats: {amount} a month."
     IB:
-      one: "{count} Wraith is on the HR roster with a paid seat but has no active account: {amount} a month."
-      other: "{count} Wraiths are on the HR roster with paid seats but have no active account: {amount} a month."
+      one: "{count} {noun} on the HR roster has a paid seat but no active account: {amount} a month."
+      other: "{count} {noun} on the HR roster have paid seats but no active account: {amount} a month."
     I:
       one: "{count} {noun} on the HR roster has no account and no seat yet."
       other: "{count} {noun} on the HR roster have no account and no seat yet."
     O:
-      one: "{count} Poltergeist is an active account with no HR record and no seat."
-      other: "{count} Poltergeists are active accounts with no HR record and no seat."
+      one: "{count} active account has no HR record and no seat."
+      other: "{count} active accounts have no HR record and no seat."

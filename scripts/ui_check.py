@@ -99,7 +99,7 @@ def main() -> int:
                 page.screenshot(path=str(shots / f"ui-{label.replace(' ', '-')}.png"), full_page=True)
             if code:
                 page.click(f'.legend-item[data-region="{code}"]')
-        # Hostile text from a ledger must render as text: open every Poltergeist row and look for a dialog.
+        # Hostile text from a ledger must render as text: open every row of region O and look for a dialog.
         page.click('.legend-item[data-region="O"]')
         for i in range(page.locator(".row-head").count()):
             page.locator(".row-head").nth(i).click()
@@ -121,8 +121,9 @@ def main() -> int:
         page.keyboard.press("Enter")
         page.wait_for_timeout(150)
         title = page.inner_text("#rows-title")
-        print("after Enter on Vampire:", json.dumps(title))
-        if not title.upper().startswith("VAMPIRE"):
+        label = page.inner_text('.legend-item[data-region="OB"] .legend-label')
+        print("after Enter on the OB legend item:", json.dumps(title))
+        if not label or not title.upper().startswith(label.upper()):
             failures.append("keyboard filter")
         browser.close()
     if errors:

@@ -30,6 +30,7 @@ from .explain import Explanation, ModelConfig, explain_finding
 from .grace import find_pending
 from .matcher import match
 from .models import (
+    DEFAULT_REGION_LABELS,
     DEFAULT_REGION_MEANINGS,
     DEFAULT_REGION_NAMES,
     DEFAULT_REGION_SEVERITIES,
@@ -53,6 +54,7 @@ from .steps import ControlContext
 
 __all__ = [
     # constants
+    "DEFAULT_REGION_LABELS",
     "DEFAULT_REGION_MEANINGS",
     "DEFAULT_REGION_NAMES",
     "DEFAULT_REGION_SEVERITIES",

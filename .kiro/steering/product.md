@@ -15,8 +15,10 @@ independent ledgers of the same reality:
 | Billed | What are we paying for? |
 
 A key present in all three ledgers is matched. Every other combination is a finding, and each combination has one
-fixed meaning. The Halloween names are the control's taxonomy, so a reader learns the meaning once and reads every
-screen with it.
+fixed meaning. **Plain words come first, everywhere a person reads** (the page, the report, the README, the
+write-up, the film): a region is called by its meaning ("running and billed, never approved"). The Halloween name is only a
+small secondary tag beside the meaning, and in one reference table. A sentence never relies on a reader knowing what a
+Vampire or a Phantom is.
 
 | Present in | Region code | Default name | Meaning |
 |---|---|---|---|

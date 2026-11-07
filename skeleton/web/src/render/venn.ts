@@ -16,9 +16,9 @@ const LABEL_AT: Record<string, [number, number]> = {
   I: [112, 128],
   O: [328, 128],
   B: [220, 312],
-  IO: [220, 100],
-  IB: [158, 222],
-  OB: [282, 222],
+  IO: [220, 104],
+  IB: [146, 230],
+  OB: [294, 230],
   IOB: [220, 176],
 };
 
@@ -36,18 +36,21 @@ export function regionAt(x: number, y: number): string | null {
 
 const capital = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 
-/** A region name longer than fits inside its region ("UNPROVISIONED JOINER") is drawn on two lines, split at a space
- * as near the middle as possible. Names of one word, or short names, stay on one line. */
-export const NAME_FITS = 12;
+/** A region label is drawn on up to three short lines inside its region ("Running and / billed, never / approved"),
+ * filled word by word so no line is longer than NAME_FITS characters unless one word is. A short label stays on one
+ * line. The lens regions are about 60 to 100 units wide, which holds 13 characters at the label's size. */
+export const NAME_FITS = 13;
+export const NAME_LINES = 3;
 export function nameLines(name: string): string[] {
-  if (name.length <= NAME_FITS || !name.includes(" ")) return [name];
-  const words = name.split(" ");
-  let best = 1;
-  for (let i = 1; i < words.length; i += 1) {
-    const diff = (s: number): number => Math.abs(words.slice(0, s).join(" ").length - words.slice(s).join(" ").length);
-    if (diff(i) < diff(best)) best = i;
+  const lines: string[] = [];
+  for (const word of name.split(" ").filter(Boolean)) {
+    const last = lines.length ? lines[lines.length - 1] : null;
+    if (last !== null && (last + " " + word).length <= NAME_FITS) lines[lines.length - 1] = `${last} ${word}`;
+    else lines.push(word);
   }
-  return [words.slice(0, best).join(" "), words.slice(best).join(" ")];
+  if (lines.length <= NAME_LINES) return lines;
+  // Never drop words: anything past the last line joins it.
+  return [...lines.slice(0, NAME_LINES - 1), lines.slice(NAME_LINES - 1).join(" ")];
 }
 
 export interface VennInput {
@@ -100,11 +103,11 @@ export function vennSvg(input: VennInput): string {
       const n = input.counts[code] ?? 0;
       const tone = code === "IOB" ? " living" : code === "IO" ? "" : n > 0 ? " hot" : " zero";
       const sel = input.selected === code ? " sel" : "";
-      const name = (input.names[code] ?? code).toUpperCase();
+      const name = input.names[code] ?? code;
       const lines = nameLines(name);
-      const lift = (lines.length - 1) * 12; // a second line would cross into the region below
+      const lift = (lines.length - 1) * 11; // later lines would cross into the region below
       return `<text class="venn-count${tone}${sel}" x="${x}" y="${y - lift}" text-anchor="middle">${n}</text>
-        ${lines.map((line, i) => `<text class="venn-name${sel}" x="${x}" y="${y - lift + 17 + i * 13}" text-anchor="middle">${esc(line)}</text>`).join("")}`;
+        ${lines.map((line, i) => `<text class="venn-name${sel}" x="${x}" y="${y - lift + 16 + i * 12}" text-anchor="middle">${esc(line)}</text>`).join("")}`;
     })
     .join("");
 

@@ -1,0 +1,27 @@
+{
+  "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+  "complete": true,
+  "control_hash": "c5ee914d48532dc89713da28627c18577edbaa355d0597f8daffb1355062c22e",
+  "final_chain_hash": "75cb92f60aa97f19eda1f9114252134025bae91c19beae6a9d5172b7dc64aa08",
+  "finding_count": 6,
+  "ledgers": {
+    "billed": {
+      "count": 8,
+      "hash": "f7395c0bc584aaa997231f5cea05d0c8224c395df11350aecefe95d3186a2454",
+      "source": "billed.csv"
+    },
+    "intended": {
+      "count": 8,
+      "hash": "84df86de11a53753351a6166dce6a9e4361392a2880e6cbe8a4020a4f9ca75f3",
+      "source": "intended.csv"
+    },
+    "observed": {
+      "count": 8,
+      "hash": "1b111b3e552ef315d9f48c35c8ba86b3b0c369ae97f96242a2a309dd5124944a",
+      "source": "observed.csv"
+    }
+  },
+  "row_count": 31,
+  "run_id": "753fe373dc461391",
+  "run_time": "2026-11-04T02:00:00Z"
+}

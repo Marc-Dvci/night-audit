@@ -570,7 +570,7 @@ def test_a_record_row_of_another_ledger_fails_verification_at_its_row(tmp_path: 
 
 
 def _vampire_night(tmp: Path) -> tuple[Path, RunResult]:
-    """One Vampire billed $0.7172358001, the lab night's figure, so the headline rounds it to $0.7172."""
+    """One resource running and billed with no approval, $0.7172358001, the lab night's figure, so the headline rounds it to $0.7172."""
     snapshots = [
         LedgerSnapshot(name=LedgerName.intended, source="i", records=[]),
         LedgerSnapshot(
@@ -628,7 +628,7 @@ def _set_headline(shown: dict[str, Any], old: str, new: str) -> None:
     [
         ("$0.7172", "0.7173 dollars", "0.7173"),
         ("$0.7172", "USD 0.7173", "0.7173"),
-        ("1 Vampire", "2 Vampire", "2"),
+        ("1 item", "2 item", "2"),
         (": $0.7172.", ": $0.7172, for 3 nights.", "3"),
         ("$0.7172", "$0.7172 (0.7172358001 exactly)", ""),
     ],
@@ -658,7 +658,7 @@ def test_a_headline_with_a_digit_that_is_not_ascii_fails_verification(tmp_path: 
     could disagree; both refuse it instead."""
     pack, result = _vampire_night(tmp_path)
     shown = _shown(result)
-    _set_headline(shown, "1 Vampire", "\u0661 Vampire")
+    _set_headline(shown, "1 item", "\u0661 item")
     verdict = verify_evidence_pack(pack, shown)
     assert not verdict.ok
     assert "headline: the page shows a digit that is not 0 to 9" in verdict.detail

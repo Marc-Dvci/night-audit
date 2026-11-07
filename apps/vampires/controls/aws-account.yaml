@@ -47,26 +47,32 @@ enrichers:
 
 regions:
   OB:
+    label: Running and billed, never approved
     name: Vampire
     meaning: Running and on the bill, but in no declared stack and no approved change.
   O:
+    label: Exists, never approved, free
     name: Poltergeist
     meaning: Exists but was never declared. It costs nothing, which is why nobody notices it.
   B:
+    label: Billed, nothing to see
     name: Phantom
     meaning: On the bill, but the inventory cannot see it and nobody declared it.
   I:
+    label: Approved, but gone
     name: Skeleton
     meaning: Declared in a stack or an approved change, but gone and no longer billed.
   IB:
+    label: Approved and billed, not seen
     name: Wraith
     meaning: Declared and billed, but the inventory cannot see it.
   IO:
+    label: Approved and present, not billed yet
     name: Familiar
     meaning: Declared and present, with no charge on the bill yet.
 
 ui:
-  title: Vampires
+  title: Cloud account
   tagline: Every night, this AWS account is checked against what was declared and what is on the bill.
   noun: {singular: resource, plural: resources}
   ledgers:
@@ -83,17 +89,17 @@ ui:
     - {label: On the bill, from: amount}
   headlines:
     OB:
-      one: "{count} Vampire is running and on the bill with no approval: {amount} so far."
-      other: "{count} Vampires are running and on the bill with no approval: {amount} so far."
+      one: "{count} {noun} is running and on the bill with no approval: {amount} so far."
+      other: "{count} {noun} are running and on the bill with no approval: {amount} so far."
     B:
-      one: "{count} Phantom is billed, but nobody declared it or can see it: {amount}."
-      other: "{count} Phantoms are billed, but nobody declared them or can see them: {amount}."
+      one: "{count} {noun} is billed, but nobody declared it or can see it: {amount}."
+      other: "{count} {noun} are billed, but nobody declared them or can see them: {amount}."
     IB:
-      one: "{count} Wraith is declared and billed, but cannot be seen: {amount}."
-      other: "{count} Wraiths are declared and billed, but cannot be seen: {amount}."
+      one: "{count} approved {noun} is billed, but cannot be seen: {amount}."
+      other: "{count} approved {noun} are billed, but cannot be seen: {amount}."
     I:
-      one: "{count} declared {noun} is gone."
-      other: "{count} declared {noun} are gone."
+      one: "{count} approved {noun} is gone."
+      other: "{count} approved {noun} are gone."
     O:
-      one: "{count} Poltergeist costs nothing."
-      other: "{count} Poltergeists cost nothing."
+      one: "{count} {noun} exists with no approval and costs nothing."
+      other: "{count} {noun} exist with no approval and cost nothing."

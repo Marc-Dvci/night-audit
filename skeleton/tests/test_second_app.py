@@ -511,10 +511,15 @@ def test_decisions_that_do_not_verify_are_not_shown(tmp_path: Path) -> None:
 
 
 def test_a_control_without_the_new_sections_keeps_its_run_ids() -> None:
-    """The Vampires demo night 1 had run id 2a6b3e85b13673ed before Req 10 (commit ec92469), and keeps it."""
-    control_file = load_control_file(ROOT / "apps" / "vampires" / "demo" / "night-1" / "control.yaml")
+    """The Vampires demo night 1 had run id 2a6b3e85b13673ed before Req 10 (commit ec92469), and keeps it.
+
+    The file is that night's control as it was before regions had a ``label``, frozen in ``fixtures/``: neither the Req
+    10 fields nor the absent label may change its hash.
+    """
+    control_file = load_control_file(Path(__file__).parent / "fixtures" / "vampires-night-1-before-labels.yaml")
     digest = hashlib.sha256(f"{RUN_TIME.isoformat()}:{control_file.canonical_hash()}".encode()).hexdigest()[:16]
     assert digest == "2a6b3e85b13673ed"
+    assert all(override.label is None for override in control_file.regions.values())
 
 
 @pytest.mark.integration

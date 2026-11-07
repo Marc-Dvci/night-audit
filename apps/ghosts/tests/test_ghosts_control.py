@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from nightaudit.control import region_names, resolve_ui
+from nightaudit.control import region_labels, region_names, resolve_ui
 from nightaudit.runner import load_control_file, run_control
 
 CONTROLS = Path(__file__).resolve().parents[1] / "controls"
@@ -23,6 +23,20 @@ EXPECTED_NAMES = {
     "IOB": "Living",
 }
 
+#: A headline is read without knowing any of these words (product rules: plain words first).
+HALLOWEEN_WORDS = ("Ghost", "Poltergeist", "Phantom", "Wraith", "Familiar", "Living", "Skeleton", "Vampire")
+
+#: What a reader sees first: each region's plain label. The Halloween names above are only tags beside them.
+EXPECTED_LABELS = {
+    "OB": "Account and paid seat, not on staff",
+    "O": "Account only, not on staff",
+    "B": "Paid seat, no account, not on staff",
+    "I": "On staff, no account or seat yet",
+    "IB": "On staff, paid seat, no account",
+    "IO": "On staff with account, no seat",
+    "IOB": "Matched",
+}
+
 
 @pytest.mark.parametrize("path", ALL, ids=lambda p: p.name)
 def test_the_control_declares_the_people_rules(path: Path) -> None:
@@ -36,13 +50,14 @@ def test_the_control_declares_the_people_rules(path: Path) -> None:
         "billed": ["email_canonical"],
     }
     assert region_names(control.to_config()) == EXPECTED_NAMES
+    assert region_labels(control.to_config()) == EXPECTED_LABELS
 
 
 @pytest.mark.parametrize("path", ALL, ids=lambda p: p.name)
 def test_the_page_speaks_about_people(path: Path) -> None:
     control = load_control_file(path)
     ui = resolve_ui(control)
-    assert ui.title == "Ghosts"
+    assert ui.title == "Staff access"
     assert (ui.noun.singular, ui.noun.plural) == ("person", "people")
     assert {k: v.label for k, v in ui.ledgers.items()} == {
         "intended": "HR roster",
@@ -59,6 +74,9 @@ def test_the_page_speaks_about_people(path: Path) -> None:
         ("Manager", "context:manager"),
     ]
     assert control.ui is not None and set(control.ui.headlines) == {"OB", "B", "IB", "I", "O"}
+    for headline in control.ui.headlines.values():
+        for text in (headline.one, headline.other):
+            assert not any(word in text for word in HALLOWEEN_WORDS), text
 
 
 @pytest.mark.parametrize("path", ALL, ids=lambda p: p.name)

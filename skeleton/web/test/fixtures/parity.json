@@ -792,6 +792,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -1035,12 +1036,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -1107,6 +1108,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -1366,12 +1368,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -1438,6 +1440,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -1681,12 +1684,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -1753,6 +1756,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -1996,12 +2000,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -2068,6 +2072,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -2311,12 +2316,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -2383,6 +2388,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -2610,12 +2616,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -2682,6 +2688,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -2941,12 +2948,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -3013,6 +3020,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -3256,12 +3264,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -3328,6 +3336,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -3571,12 +3580,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -3643,6 +3652,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -3886,12 +3896,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -3958,6 +3968,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -4201,12 +4212,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -4273,6 +4284,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -4516,12 +4528,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -4588,6 +4600,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -4701,12 +4714,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -4773,6 +4786,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -5016,12 +5030,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -5088,6 +5102,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -5331,12 +5346,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -5403,6 +5418,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -5646,12 +5662,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -5717,6 +5733,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -5960,12 +5977,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -6032,6 +6049,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -6275,12 +6293,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.118. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.118. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.118.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.118.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -6347,6 +6365,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -6590,12 +6609,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.1172358001. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.1172358001. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.1172358001.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.1172358001.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -6662,6 +6681,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -6905,12 +6925,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -6977,6 +6997,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -7220,12 +7241,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: 7.118 dollars. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: 7.118 dollars. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: 7.118 dollars.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: 7.118 dollars.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -7292,6 +7313,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -7535,12 +7557,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "11 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "11 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "11 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "11 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -7607,6 +7629,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -7850,12 +7873,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. For 9 nights. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. For 9 nights. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20. For 9 nights.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20. For 9 nights.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -7922,6 +7945,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -8165,12 +8189,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. x\u00e9-7. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. x\u00e9-7. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20. x\u00e9-7.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20. x\u00e9-7.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -8237,6 +8261,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -8480,12 +8505,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. \u22122. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. \u22122. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20. \u22122.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20. \u22122.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -8552,6 +8577,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -8795,12 +8821,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. \u0662. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. \u0662. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20. \u0662.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20. \u0662.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -8889,6 +8915,7 @@
      "control_title": "",
      "app": "",
      "region_names": {},
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -9026,6 +9053,7 @@
      "control_title": "",
      "app": "",
      "region_names": {},
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -9170,6 +9198,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -9413,12 +9442,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -9504,6 +9533,7 @@
      "control_title": "",
      "app": "",
      "region_names": {},
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -9648,6 +9678,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -9891,12 +9922,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -9990,6 +10021,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -10158,6 +10190,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -10326,6 +10359,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -10569,12 +10603,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {
@@ -10668,6 +10702,7 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
+     "region_labels": {},
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -10911,12 +10946,12 @@
      },
      "notes": [],
      "view": {
-      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline": "1 item exists and is on the bill with no approval: $41.20. 2 items are on the bill, but nobody approved them or can see them: $7.117. 1 item exists with no approval and costs nothing. 3 approved items are gone and unbilled.",
       "headline_sentences": [
-       "1 Vampire exists and is on the bill with no approval: $41.20.",
-       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
-       "1 Poltergeist exists with no approval and costs nothing.",
-       "3 Skeletons are approved but gone and unbilled."
+       "1 item exists and is on the bill with no approval: $41.20.",
+       "2 items are on the bill, but nobody approved them or can see them: $7.117.",
+       "1 item exists with no approval and costs nothing.",
+       "3 approved items are gone and unbilled."
       ],
       "calm": false,
       "ledger_keys": {

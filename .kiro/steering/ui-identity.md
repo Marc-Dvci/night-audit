@@ -26,6 +26,7 @@ Contrast: every text/background pair meets WCAG 2.2 AA (4.5:1 for body text).
 - Findings are printout rows on alternating green-bar bands, never cards and never boxes with borders.
 - Monospace for evidence values (`IBM Plex Mono`), a humanist sans for prose (`IBM Plex Sans`). Self-host the fonts.
 - The Venn diagram is the main navigation: clicking a region filters the rows to that region.
-- Each monster is a small single-colour line glyph next to its name. The name is always written in words too.
+- Each region is labelled by its plain meaning first. Its Halloween name follows as a small, quieter tag with its
+  single-colour line glyph. No headline, count or button text depends on the Halloween name alone.
 - Motion: a slow scan-line sweep on the header when a run completes. Respect `prefers-reduced-motion`.
 - Every interactive element is reachable by keyboard and has a visible phosphor focus ring.

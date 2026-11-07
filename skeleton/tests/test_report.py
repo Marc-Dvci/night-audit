@@ -9,7 +9,17 @@ from html.parser import HTMLParser
 import pytest
 from hostile import CLOUD, RUN_TIME, display_numbers
 from nightaudit.matcher import match
-from nightaudit.models import HeadlineUi, LedgerName, LedgerSnapshot, LedgerUi, NounUi, Record, RunResult, UiConfig
+from nightaudit.models import (
+    DEFAULT_REGION_NAMES,
+    HeadlineUi,
+    LedgerName,
+    LedgerSnapshot,
+    LedgerUi,
+    NounUi,
+    Record,
+    RunResult,
+    UiConfig,
+)
 from nightaudit.report import (
     CALM_HEADLINE,
     headline,
@@ -158,9 +168,16 @@ def test_default_words_name_every_region_in_a_fixed_order() -> None:
         rec(B, "b4", "vm", "4.00"),
     )
     text = headline(result)
-    positions = [text.index(name) for name in ("Vampire", "Phantom", "Wraith", "Poltergeist", "Skeleton")]
-    assert positions == sorted(positions)
-    assert text.startswith("1 Vampire exists and is on the bill with no approval: $4.00.")
+    # In plain words, in the order OB, B, IB, O, I; no sentence needs a region's Halloween name.
+    sentences = (
+        "1 item exists and is on the bill with no approval: $4.00.",
+        "1 item is on the bill, but nobody approved it or can see it: $3.00.",
+        "1 approved item is billed but cannot be seen: $2.00.",
+        "1 item exists with no approval and costs nothing.",
+        "1 approved item is gone and unbilled.",
+    )
+    assert text == " ".join(sentences)
+    assert not any(name in text for name in DEFAULT_REGION_NAMES.values())
 
 
 def test_regions_with_no_findings_are_left_out() -> None:

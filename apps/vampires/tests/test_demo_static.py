@@ -82,7 +82,7 @@ def test_each_demo_night_has_its_files_and_its_evidence_verifies(summary: dict[s
     assert verdict.final_hash == run.evidence_chain_hash
     assert view["finding_count"] == summary["findings"]
     assert "new_findings" in summary
-    assert run.ui.title == "Vampires"
+    assert run.ui.title == "Cloud account"
     report = (folder / "report.html").read_text("utf-8")
     assert "Recorded run. Not live data." in report
     assert run_numbers(run)

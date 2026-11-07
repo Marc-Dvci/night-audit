@@ -17,7 +17,19 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 #: The seven non-empty subsets of {I, O, B} in I-O-B order.
 REGION_CODES: tuple[str, ...] = ("IOB", "IO", "IB", "OB", "I", "O", "B")
 
-#: Default monster name for each region code (product glossary).
+#: Default short label for each region code: its meaning in a few plain words, short enough for the Venn diagram and
+#: the region list on a phone. A person reads this first, everywhere (product rules).
+DEFAULT_REGION_LABELS: dict[str, str] = {
+    "IOB": "Matched",
+    "IO": "Approved and present, not billed",
+    "IB": "Approved and billed, not seen",
+    "OB": "Exists and billed, never approved",
+    "I": "Approved, but absent",
+    "O": "Exists, never approved, not billed",
+    "B": "Billed, never approved, not seen",
+}
+
+#: Default Halloween name for each region code (product glossary). Shown only as a small tag beside the label.
 DEFAULT_REGION_NAMES: dict[str, str] = {
     "IOB": "Living",
     "IO": "Familiar",
@@ -268,6 +280,8 @@ class RunResult(BaseModel):
     control_title: str = ""
     app: str = ""
     region_names: dict[str, str] = Field(default_factory=dict)
+    #: Each region's short plain label. Runs saved before labels existed load empty; readers fall back to the defaults.
+    region_labels: dict[str, str] = Field(default_factory=dict)
     region_meanings: dict[str, str] = Field(default_factory=dict)
     ledger_errors: dict[str, str] = Field(default_factory=dict)
     excluded: dict[str, int] = Field(default_factory=dict)

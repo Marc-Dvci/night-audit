@@ -1,12 +1,12 @@
 # A finished night, without running anything
 
-`vampires-night/` is the third night of the Vampires demo: a demo AWS account audited at 02:00 UTC on 6 Nov 2026
-(run `75b641467552e35a`). The files are copied byte for byte from the committed demo by
+`vampires-night/` is the third night of the cloud account demo (`apps/vampires`): a demo AWS account audited at 02:00 UTC on 6 Nov 2026
+(run `a0a2ba62d0546b39`). The files are copied byte for byte from the committed demo by
 `uv run python scripts/build_examples.py`, and `skeleton/tests/test_examples.py` fails if they ever differ.
 
 | File | What it is |
 |---|---|
-| [`vampires-night/report.html`](vampires-night/report.html) | The morning report: 8 findings, 2 of them Vampires billed $42.56 together |
+| [`vampires-night/report.html`](vampires-night/report.html) | The morning report: 8 findings, 2 of them resources running and billed with no approval, $42.56 together |
 | [`vampires-night/evidence.jsonl`](vampires-night/evidence.jsonl) | The evidence chain: a header row, every ledger record, then one row per finding, each row carrying the SHA-256 of the row before it |
 | [`vampires-night/manifest.json`](vampires-night/manifest.json) | The pack's manifest: the control hash, each ledger's hash and count, the final chain hash |
 | [`vampires-night/run.json`](vampires-night/run.json) | The run as the page shows it. `verify` compares it with the chain |

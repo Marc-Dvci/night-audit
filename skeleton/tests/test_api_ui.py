@@ -28,7 +28,7 @@ def test_the_run_document_carries_the_view(served: tuple[TestClient, str, Path])
     http, run_id, _ = served
     data = http.get(f"/api/runs/{run_id}").json()
     view = data["view"]
-    assert view["headline"].startswith("1 Vampire exists and is on the bill with no approval: $41.20.")
+    assert view["headline"].startswith("1 item exists and is on the bill with no approval: $41.20.")
     assert view["ledger_keys"] == {"intended": 2, "observed": 3, "billed": 2}
     assert (view["keyed_total"], view["unkeyed_total"], view["billed_total"]) == ("44.30", "0.62", "44.92")
     assert data["ui"]["columns"][0] == {"label": "Key", "from": "key"}

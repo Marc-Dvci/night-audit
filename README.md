@@ -3,14 +3,14 @@
 [![CI](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml)
 [![Licence: Apache 2.0](https://img.shields.io/badge/licence-Apache%202.0-blue.svg)](LICENSE)
-![Tests: 1057](https://img.shields.io/badge/tests-1057-brightgreen)
+![Tests: 1059](https://img.shields.io/badge/tests-1059-brightgreen)
 ![Decision core coverage: 96.85%](https://img.shields.io/badge/decision%20core%20coverage-96.85%25-brightgreen)
 ![Casebook: 18 of 18](https://img.shields.io/badge/casebook-18%20of%2018-brightgreen)
 
 ![Night Audit on the demo account, night of 6 Nov 2026: the headline, the bill, the three-circle Venn diagram of declared, running and billed resources, and the list of regions](docs/figures/ui-night-3.png)
 
 **Night Audit checks every night that what you approved, what is running and what you pay for are the same three
-lists, and names whatever appears in only one or two of them.**
+lists, and names whatever appears in only one or two of them.** Every morning, it hands a CTO or an IT manager the short list of what nobody approved, from a server quietly adding to the bill to a former employee who still has access, with evidence an auditor can check.
 
 I test access and change-management controls in IT audits at a bank's technology practice. The control I trust most
 is the oldest one in accounts payable: an invoice is paid only when the purchase order, the goods receipt and the
@@ -18,10 +18,10 @@ invoice agree. Night Audit runs that three-way match on a cloud account.
 
 | | |
 |---|---|
-| Live app, no login | [The real lab account, audited every night](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/) · [Vampires demo account](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=vampires-demo) · [Ghosts demo company](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=ghosts-demo) · [This repository's own build](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=own-build-demo) |
+| Live app, no login | [The real lab account, audited every night](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/) · [Cloud account demo](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=vampires-demo) · [Staff access demo company](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=ghosts-demo) · [This repository's own build](https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=own-build-demo) |
 | Category | Kiroween 2026, Skeleton Crew |
 | Built with | Kiro CLI (specs, custom agents, hooks, steering, MCP, a power, a Crew app), Python 3.12, FastAPI, TypeScript, Lean 4, AWS Lambda, EventBridge Scheduler, S3, Cost and Usage Report 2.0 |
-| Headline | Real lab night: 4 planted findings, 4 found, 0 Phantoms, 0 false Vampires. Casebooks: development 18 of 18, held-out 6 of 6 |
+| Headline | Real lab night: 4 planted findings, 4 found, and no other finding except the planted server's own disk and network interface. Casebooks: development 18 of 18, held-out 6 of 6 |
 
 Menu: [For judges](#for-judges) · [See it work](#see-it-work) · [Quickstart](#quickstart-no-credentials) ·
 [How it works](#how-it-works) · [How Kiro is used](#how-kiro-is-used) · [Claims](#claims-and-the-tests-that-pin-them) ·
@@ -36,29 +36,30 @@ Code links point at lines in the release tag `v1.0.0`.
 | Potential Impact | [The problem](#the-problem). The real lab night: [`lab/expected.yaml`](lab/expected.yaml) was written before any audit; the findings are in [Evidence](#evidence). Region rules a reader learns once: [`_region_code`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/matcher.py#L35-L44) |
 | Technological Implementation | [How Kiro is used](#how-kiro-is-used) and [`.kiro/`](.kiro). The matcher: [`_match`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/matcher.py#L110-L315). The number guard: [`numbers_are_safe`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L167-L172) and [`explain_finding`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L344-L380). The evidence chain: [`write_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L149-L221) and [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L528-L657). The partition theorem: [`Partition.lean`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/lean/NightAudit/Partition.lean#L166-L173) |
 | Design | [See it work](#see-it-work). The identity: [`ui-identity.md`](.kiro/steering/ui-identity.md). The Venn diagram: [`vennSvg`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/web/src/render/venn.ts#L68-L119). Accessibility: [Evidence](#evidence) |
-| Innovation / Idea | [How it works](#how-it-works). One skeleton, three controls: [vampires](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/vampires/controls/aws-account.yaml#L1-L95), [ghosts](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/ghosts/controls/staff-access.yaml#L1-L72) and [this repository's own build](apps/own-build/README.md) |
+| Innovation / Idea | [How it works](#how-it-works). One skeleton, three controls: [the cloud account app (`apps/vampires`)](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/vampires/controls/aws-account.yaml#L1-L95), [the staff access app (`apps/ghosts`)](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/ghosts/controls/staff-access.yaml#L1-L72) and [this repository's own build](apps/own-build/README.md) |
 | Presentation | The three GIFs and the figures in [See it work](#see-it-work), the [architecture](#how-it-works), the [claims table](#claims-and-the-tests-that-pin-them) |
 
 ## See it work
 
-**Click the Vampire.** The Venn diagram is the navigation: a click on a region filters the rows, and a row opens to the
-ledger lines it came from.
+**Click a region.** The Venn diagram is the navigation: a click on a region filters the rows, and a row opens to the
+ledger lines it came from. Each region is named by what it means, such as "running and billed, never approved".
 
-![Clicking the Vampire region of the Venn diagram filters the rows to the two Vampires; the first opens to its billed line and its inventory line](docs/figures/venn-click.gif)
+![Clicking the region of resources running and billed with no approval filters the rows to those two resources; the first opens to its billed line and its inventory line](docs/figures/venn-click.gif)
 
 **Verify this night, then change one byte.** The page re-computes the evidence chain in the browser. One changed byte
 fails it.
 
 ![The evidence footer: Verify this night shows every row OK; Change one byte makes the verdict fail](docs/figures/verify-then-change-one-byte.gif)
 
-**Ghosts, with a decision.** The second app, on staff access. A reviewer's decision shows next to the finding it
-settles, and only when its own chain verifies.
+**Staff access, with a decision.** The second app checks who has access. A reviewer's decision shows next to the
+finding it settles, and only when its own chain verifies.
 
-![The Ghosts demo company: three Ghosts with active accounts and paid seats, and the first opened with its decision, revoke, by the reviewer](docs/figures/ghosts-decision.gif)
+![The staff access demo company: three people with active accounts and paid seats who are not on the HR roster, and the first opened with its decision, revoke, by the reviewer](docs/figures/ghosts-decision.gif)
 
-An opened Vampire. The tag value that reads like an instruction is shown as data and changes no region:
+An opened finding, a resource running and billed with no approval. The tag value that reads like an instruction is
+shown as data and changes no region:
 
-![The Vampire row opened: the billed line, the inventory line and an instruction planted in the Name tag, shown as data](docs/figures/ui-vampire-evidence.png)
+![The finding opened: the billed line, the inventory line and an instruction planted in the Name tag, shown as data](docs/figures/ui-vampire-evidence.png)
 
 ## The problem
 
@@ -84,17 +85,18 @@ manager preparing a quarterly access review that an auditor will test.
 
 Source: [`docs/figures/architecture.html`](docs/figures/architecture.html), rendered by `scripts/render_figure.py`.
 
-Every key lands in exactly one of seven regions. The Halloween names are the taxonomy:
+Every key lands in exactly one of seven regions. The page and the report name each region by its meaning; the
+Halloween name is only a small tag beside it. This is the one table of both:
 
-| Present in | Name | Meaning |
+| Present in | Meaning (the label a reader sees) | Halloween tag |
 |---|---|---|
-| observed, billed | **Vampire** | Running and paid for, but nobody declared it |
-| observed | **Poltergeist** | Exists, undeclared, costs nothing |
-| billed | **Phantom** | On the bill, invisible to the inventory, undeclared |
-| intended | **Skeleton** | Declared, but gone |
-| intended, billed | **Wraith** | Declared and billed, but not observed |
-| intended, observed | Familiar | Declared and present, not billed yet (informational) |
-| all three | Living | Matched |
+| observed, billed | **Running and billed, never approved** (staff access: account and paid seat, not on staff) | Vampire (staff access: Ghost) |
+| observed | **Exists, never approved, free** (staff access: account only, not on staff) | Poltergeist |
+| billed | **Billed, nothing to see**: on the bill, but nobody approved it and the inventory cannot see it (staff access: paid seat, no account, not on staff) | Phantom |
+| intended | **Approved, but gone** (staff access: on staff, no account or seat yet) | Skeleton |
+| intended, billed | **Approved and billed, not seen** (staff access: on staff, paid seat, no account) | Wraith |
+| intended, observed | Approved and present, not billed yet (informational; staff access: on staff with account, no seat) | Familiar |
+| all three | Matched | Living |
 
 Code decides every region, amount and date. A language model may only explain a decided finding, and any explanation
 that cites a number absent from the evidence is replaced by a fixed template. Ledger text (tags, names, descriptions) is
@@ -106,8 +108,8 @@ The repository is a Skeleton Crew entry: `skeleton/` is the reusable template (p
 | Folder | What it is |
 |---|---|
 | `skeleton/` | Normalisers, matcher, grace window, night-over-night state, evidence chain, explanation guard, API, CLI, web UI kit |
-| `apps/vampires/` | AWS account: declared stacks and approvals, live inventory in every enabled region, CUR 2.0 |
-| `apps/ghosts/` | Staff access: HR roster, identity exports, SaaS licences ([spec](.kiro/specs/ghosts-app/requirements.md)) |
+| `apps/vampires/` | The cloud account app: declared stacks and approvals, live inventory in every enabled region, CUR 2.0 |
+| `apps/ghosts/` | The staff access app: HR roster, identity exports, SaaS licences ([spec](.kiro/specs/ghosts-app/requirements.md)) |
 | `apps/own-build/` | This repository: the specs, the tracked files and Kiro's work ([README](apps/own-build/README.md)) |
 | `power/`, `crew/` | The Kiro power `night-audit` and the Crew app `night-shift` |
 | `lean/` | The partition theorem and the Lean model checked against the Python matcher |
@@ -160,7 +162,7 @@ What the deployed roles can and cannot do, and how to report a security problem:
 | Connectors make no write call; the role writes only its own runs and logs | [`stack.yaml`](deploy/stack.yaml) | `test_a_connector_module_calls_no_aws_operation_that_is_not_a_read`, `test_a_role_can_write_only_what_the_claim_names` |
 | A hook file Kiro would skip fails a test | [`.kiro/hooks`](.kiro/hooks) | `test_a_hook_file_kiro_would_skip_silently_fails_here_instead` |
 | The sealed casebook is unreadable in every spelling | [`seal_heldout.py`](scripts/hooks/seal_heldout.py) | `test_seal_blocks_every_spelling_of_the_heldout_folder` |
-| Ghosts finds exactly its 8 planted findings | [`planted.yaml`](apps/ghosts/planted.yaml) | `test_the_run_finds_exactly_the_planted_findings` |
+| The staff access app finds exactly its 8 planted findings | [`planted.yaml`](apps/ghosts/planted.yaml) | `test_the_run_finds_exactly_the_planted_findings` |
 | A spec path resolves to the one tracked file it ends | [`promised_files`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/own-build/src/own_build/paths.py#L144-L157) | `test_a_spec_promises_exactly_the_files_the_casebook_says_given_the_tracked_files` |
 | The power finds each planted condition in an empty project | [`power/night-audit`](power/night-audit) | `test_the_example_control_finds_each_planted_condition_through_nightaudit` |
 | The Crew manifest passes the rules Crew 0.13.0 enforces | [`crew/night-shift/app.json`](crew/night-shift/app.json) | `test_the_manifest_follows_the_documented_rules`, `test_regression_a_command_cron_is_rejected_on_windows_so_the_audit_is_a_script_cron`, `test_regression_the_investigator_tool_refs_name_servers_the_agent_declares` |
@@ -174,12 +176,12 @@ Every figure comes from a command in this repository. More in [`docs/RESULTS.md`
 
 | Figure | Command |
 |---|---|
-| 1057 tests: 1054 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
+| 1059 tests: 1056 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
 | 41 property-based tests, 263 integration tests, 46 browser tests, 261 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
 | Decision core coverage 96.85 % (lines and branches, nine modules) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Development casebook 18 of 18 | `uv run python scripts/score_casebook.py --set dev` |
 | Held-out casebook 6 of 6, scored once at tag `v0.1.0` | `uv run python scripts/score_heldout.py` |
-| Real lab night, 7 Nov 02:00 UTC: 4 planted, 4 found, 0 Phantoms, 0 false Vampires. The instance, its volume and its network interface cost $0.7172 together, as Vampires | `uv run nightaudit run apps/vampires/controls/aws-account.yaml --runs runs/live` (read-only profile on the lab account); expected findings in `lab/expected.yaml` |
+| Real lab night, 7 Nov 02:00 UTC: 4 planted, 4 found. Nothing was billed that the inventory could not see, and the only resources running and billed with no approval were the planted instance, its volume and its network interface, $0.7172 together | `uv run nightaudit run apps/vampires/controls/aws-account.yaml --runs runs/live` (read-only profile on the lab account); expected findings in `lab/expected.yaml` |
 | Property-based testing found 7 bugs that 38 example tests, 18 of 18 development cases and 6 of 6 held-out cases had missed | `uv run pytest -m property`; the `test_regression_` tests |
 | 0 axe-core violations (WCAG 2.0, 2.1, 2.2 A and AA) in 8 screen states, on the deployed demo (`?app=vampires-demo`) and on the live lab night, 7 Nov 2026; hostile tag text shown as text on the demo | `uv run python scripts/ui_check.py <url>`; both URLs and results in [`docs/RESULTS.md`](docs/RESULTS.md#accessibility) |
 | 298,000 records matched in 1.49 s (199,855 a second) | `uv run python scripts/bench.py 100000` |
@@ -207,16 +209,16 @@ uv run nightaudit serve --app vampires --runs runs/demo
 
 Or with Docker: `docker build -t night-audit . && docker run --rm -p 8000:8000 night-audit`.
 
-To read a finished night without running anything, open [`examples/`](examples/README.md): one Vampires demo night's
-report, its evidence pack and the three ledgers it read.
+To read a finished night without running anything, open [`examples/`](examples/README.md): one night of the cloud account
+demo: its report, its evidence pack and the three ledgers it read.
 
 Run it on your own account with a read-only profile: edit `apps/vampires/controls/aws-account.yaml`, then
 `uv run nightaudit run apps/vampires/controls/aws-account.yaml --runs runs/live`.
 
 ## Two apps and a third control
 
-The same skeleton runs both submitted apps unchanged. [`apps/vampires`](apps/vampires) reconciles an AWS account.
-[`apps/ghosts`](apps/ghosts) reconciles staff access: an HR roster, identity and SaaS user lists, and licence seats. It
+The same skeleton runs both submitted apps unchanged. The cloud account app ([`apps/vampires`](apps/vampires))
+reconciles an AWS account. The staff access app ([`apps/ghosts`](apps/ghosts)) reconciles staff access: an HR roster, identity and SaaS user lists, and licence seats. It
 was built by an agent with no write permission on `skeleton/` and found its 8 planted findings with nothing extra; the
 skeleton is unchanged between commits `b6f5e46` and `ec92469`. The agent then reported five things the template could not
 do. They were fixed afterwards in the open ([`git log`](https://github.com/Marc-Dvci/night-audit/commits/main)).

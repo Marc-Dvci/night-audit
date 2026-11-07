@@ -118,7 +118,11 @@ def test_the_page_reads_in_files_and_states_the_allocation(page: Any, url: str) 
 def test_the_app_switch_lists_the_own_build_demo_last_and_selects_it(page: Any, url: str) -> None:
     open_page(page, url, "?app=own-build-demo")
     options = page.locator("#app-select option").all_inner_texts()
-    assert options[-1] == "Night Audit's own build" and "Vampires" in options and "Ghosts demo company" in options
+    assert (
+        options[-1] == "Night Audit's own build"
+        and "Cloud account" in options
+        and "Staff access demo company" in options
+    )
     assert page.locator("#app-select").input_value() == "own-build-demo"
 
 

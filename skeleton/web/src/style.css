@@ -154,7 +154,7 @@ a { color: var(--phosphor); }
 .venn-count.hot { fill: var(--amber); }
 .venn-count.living { fill: var(--phosphor); }
 .venn-count.zero { fill: var(--bone-dim); font-weight: 400; }
-.venn-name { font: 10.5px var(--mono); letter-spacing: 0.14em; fill: var(--bone-dim); }
+.venn-name { font: 10px var(--mono); fill: var(--bone-dim); }
 /* A selected region is tinted more strongly, so its labels are drawn in full bone to keep 4.5:1. */
 .venn-name.sel, .venn-count.zero.sel { fill: var(--bone); }
 .venn.calm .venn-count { font-size: 34px; }
@@ -170,18 +170,26 @@ a { color: var(--phosphor); }
 .ledger-source { margin-top: 0.15rem; color: var(--bone-dim); font-size: 15px; }
 
 .legend-item {
-  width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) 3rem 3rem; gap: 0.7rem; align-items: center;
+  width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 3rem 3rem; gap: 0.7rem; align-items: center;
   padding: 0.42rem 0.7rem; background: transparent; border: 0; border-bottom: 1px solid var(--hairline);
   color: var(--bone-dim); text-align: left; cursor: pointer;
 }
 .legend li:nth-child(even) .legend-item { background: var(--ink-2); }
 .legend-item:hover { background: var(--ink-3); }
 .legend-item.has { color: var(--bone); }
-.legend-item.finding.has .legend-glyph { color: var(--amber); }
-.legend-item.living.has .legend-glyph { color: var(--phosphor); }
-.legend-item.familiar.has .legend-glyph { color: var(--moon); }
+.legend-item.finding.has .glyph { color: var(--amber); }
+.legend-item.living.has .glyph { color: var(--phosphor); }
+.legend-item.familiar.has .glyph { color: var(--moon); }
 .legend-item[aria-pressed="true"] { background: var(--ink-3); box-shadow: inset 3px 0 0 var(--phosphor); }
-.legend-glyph { display: inline-flex; }
+.legend-name { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0.55rem; row-gap: 0.1rem; }
+.legend-label { font-family: var(--sans); }
+
+/* A region's Halloween name: a small, quieter tag after its plain label, with its glyph (ui-identity). */
+.region-tag {
+  display: inline-flex; align-items: center; gap: 0.3rem; vertical-align: middle; white-space: nowrap;
+  font: 400 12px var(--mono); letter-spacing: 0.06em; color: var(--bone-dim);
+}
+.region-tag .glyph { width: 16px; height: 16px; }
 .legend-count { font: 600 16px var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
 .legend-code { font: 12px var(--mono); letter-spacing: 0.1em; text-align: right; color: var(--bone-dim); }
 
@@ -213,8 +221,8 @@ a { color: var(--phosphor); }
 .findings { padding-bottom: 2.4rem; }
 .findings:focus { outline: none; }
 .filter-note { padding: 0.8rem 0.7rem 0.9rem; background: var(--ink-2); margin: 0.2rem 0 0.6rem; }
-.filter-name { display: flex; align-items: center; gap: 0.55rem; font: 600 1.15rem var(--sans); color: var(--bone); }
-.filter-glyph { display: inline-flex; color: var(--amber); }
+.filter-name { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; font: 600 1.15rem var(--sans); color: var(--bone); }
+.filter-name .region-tag .glyph { color: var(--amber); }
 .filter-code { font: 12px var(--mono); letter-spacing: 0.12em; color: var(--bone-dim); }
 .filter-meaning { margin: 0.2rem 0 0.35rem; max-width: 70ch; color: var(--bone); }
 
@@ -240,7 +248,8 @@ a { color: var(--phosphor); }
   position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
 .cell .mono { font-size: 14.5px; overflow-wrap: anywhere; }
-.finding-name, .row-region { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 600; }
+.finding-name, .row-region { display: inline; font-weight: 600; }
+.finding-name .region-tag, .row-region .region-tag { margin-left: 0.2rem; font-weight: 400; }
 .row-region { margin-bottom: 0.3rem; }
 .row.new .finding-name, .row.new .row-region { color: var(--amber); }
 .row.haunting .finding-name, .row.haunting .row-region { color: var(--bone); }
@@ -288,7 +297,7 @@ a { color: var(--phosphor); }
   gap: 0.2rem 1.1rem; padding: 0.5rem 0.7rem; align-items: baseline; font: 14px var(--mono); color: var(--bone-dim);
 }
 .rest-row:nth-child(odd) { background: var(--ink-2); }
-.rest-name { display: inline-flex; gap: 0.45rem; align-items: center; font-family: var(--sans); color: var(--bone); }
+.rest-name { display: inline; font-family: var(--sans); color: var(--bone); }
 .rest-row .key { color: var(--bone); }
 .rest-row .cell-label {
   position: static; width: auto; height: auto; overflow: visible; clip: auto;
@@ -332,7 +341,7 @@ a { color: var(--phosphor); }
   .rest-row { grid-template-columns: minmax(0, 1fr); }
   .printout > div { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
   .context > div { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .legend-item { grid-template-columns: 26px minmax(0, 1fr) 2.5rem 2.6rem; }
+  .legend-item { grid-template-columns: minmax(0, 1fr) 2.5rem 2.6rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

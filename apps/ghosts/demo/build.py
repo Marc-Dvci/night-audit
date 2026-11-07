@@ -33,7 +33,7 @@ RUNS = ROOT / "runs" / "ghosts-demo"
 DEMO_ROOT = ROOT / "skeleton" / "web" / "public" / "demo"
 TARGET = DEMO_ROOT / APP
 NIGHTS = [datetime(2026, 11, 4, 2, 0, tzinfo=UTC), datetime(2026, 11, 5, 2, 0, tzinfo=UTC)]
-APP_ENTRIES = [{"name": "ghosts-demo", "title": "Ghosts demo company", "mode": "demo", "base": f"demo/{APP}/"}]
+APP_ENTRIES = [{"name": "ghosts-demo", "title": "Staff access demo company", "mode": "demo", "base": f"demo/{APP}/"}]
 #: A fixed zip timestamp, so a rebuild with the same inputs writes the same bytes.
 ZIP_TIME = (2026, 11, 5, 2, 0, 0)
 RUN_FILES = ("run.json", "report.html", "evidence.jsonl", "manifest.json", "evidence.zip", "review.csv", "review.html")

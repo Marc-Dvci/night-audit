@@ -12,6 +12,8 @@ from e2e.browser_kit import HOSTILE_KEY, HOSTILE_NAME, Nights, assert_axe_clean,
 
 pytestmark = pytest.mark.e2e
 Served = tuple[Path, Nights]
+#: A region's label is read without knowing any of these words (product rules: plain words first).
+HALLOWEEN_WORDS = ("Vampire", "Ghost", "Poltergeist", "Phantom", "Skeleton", "Wraith", "Familiar", "Living")
 
 #: The rendered size of every text in <main>: CSS font size for HTML, font size times the drawing scale for SVG text.
 TEXT_SIZES = """() => [...document.querySelectorAll('main *')]
@@ -32,7 +34,7 @@ def test_overview_states_what_is_compared_and_tonights_result(page: Any, base_ur
     _, n = nights
     open_page(page, base_url, f"?app=vampires&run={n.demo[2]}")
     headline = page.inner_text("#headline")
-    assert headline.startswith("2 Vampires are running and on the bill with no approval:")
+    assert headline.startswith("2 resources are running and on the bill with no approval:")
     assert page.inner_text(".tagline").startswith("Every night, this AWS account is checked")
     ledgers = page.inner_text(".ledgers")
     for word in ("DECLARED", "RUNNING", "BILLED", "resources", "Cost and Usage Report 2.0 line items."):
@@ -56,6 +58,11 @@ def test_each_region_filter_names_the_region_and_its_meaning(
     assert query(page)["region"] == [code]
     assert page.get_attribute(f'.legend-item[data-region="{code}"]', "aria-pressed") == "true"
     assert page.inner_text(".filter-meaning")
+    # The region is named by its plain label: the filter note and the section title lead with it, never the tag.
+    label = page.inner_text(".filter-label")
+    assert label and not any(word in label for word in HALLOWEEN_WORDS), label
+    assert page.inner_text("#rows-title").upper().startswith(label.upper())  # the rule title is set in capitals
+    assert page.inner_text(f'.legend-item[data-region="{code}"] .legend-label') == label
     assert_axe_clean(page)
     page.click('[data-action="clear-filter"]')
     assert "region" not in query(page)
@@ -66,7 +73,7 @@ def test_a_venn_region_click_filters_the_rows(page: Any, base_url: str, nights: 
     open_page(page, base_url, f"?app=vampires&run={n.demo[2]}")
     venn = page.locator("svg.venn")
     box = venn.bounding_box()
-    # The OB label sits at (282, 222) of the 440 x 400 view box. locator.click scrolls the diagram into view first.
+    # (282, 222) of the 440 x 400 view box is inside the OB region. locator.click scrolls the diagram into view first.
     venn.click(position={"x": box["width"] * 282 / 440, "y": box["height"] * 222 / 400})
     assert query(page)["region"] == ["OB"]
 
@@ -122,8 +129,9 @@ def test_laid_to_rest_lists_what_was_resolved(page: Any, base_url: str, nights: 
     open_page(page, base_url, f"?app=vampires&run={n.rested}")
     text = page.inner_text(".rest")
     assert "LAID TO REST" in text.upper()
-    for part in ("Poltergeist", "gone-soon", "10 Nov 2026", "2 nights"):
+    for part in ("Exists, never approved, not billed", "Poltergeist", "gone-soon", "10 Nov 2026", "2 nights"):
         assert part in text, part
+    assert text.index("Exists, never approved, not billed") < text.index("Poltergeist")
     assert_axe_clean(page)
 
 

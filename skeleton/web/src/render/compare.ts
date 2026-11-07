@@ -2,7 +2,7 @@
 // with the region legend as the keyboard path to the same filter (ui-kit Req 2.3-2.6).
 
 import { esc } from "../format";
-import { GLYPHS } from "../glyphs";
+import { regionLabel, regionTag } from "../regions";
 import type { RunResult } from "../types";
 import { LEDGERS, REGION_ORDER } from "../types";
 import { vennSvg } from "./venn";
@@ -36,8 +36,7 @@ function legend(run: RunResult, selected: string | null): string {
     const n = run.region_summaries[code]?.key_count ?? 0;
     const tone = code === "IOB" ? "living" : code === "IO" ? "familiar" : "finding";
     return `<li><button type="button" class="legend-item ${tone}${n ? " has" : ""}" data-region="${code}" aria-pressed="${selected === code}">
-        <span class="legend-glyph">${GLYPHS[code] ?? ""}</span>
-        <span class="legend-name">${esc(run.region_names[code] ?? code)}</span>
+        <span class="legend-name"><span class="legend-label">${esc(regionLabel(run, code))}</span>${regionTag(run, code)}</span>
         <span class="legend-count">${n}</span>
         <span class="legend-code">${code}</span>
       </button></li>`;
@@ -49,7 +48,9 @@ export function compare(run: RunResult, selected: string | null): string {
   const labels: Record<string, string> = {};
   for (const name of LEDGERS) labels[name] = run.ui.ledgers[name]?.label ?? name;
   const calm = run.view.calm;
-  const venn = vennSvg({ counts: counts(run), names: run.region_names, ledgerLabels: labels, selected, calm, noun: run.ui.noun.plural });
+  const names: Record<string, string> = {};
+  for (const code of REGION_ORDER) names[code] = regionLabel(run, code);
+  const venn = vennSvg({ counts: counts(run), names, ledgerLabels: labels, selected, calm, noun: run.ui.noun.plural });
   return `<section class="compare" aria-label="What is compared">
     <div class="venn-wrap">${venn}</div>
     <div class="compare-side">

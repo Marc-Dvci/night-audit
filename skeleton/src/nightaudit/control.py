@@ -15,6 +15,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .models import (
+    DEFAULT_REGION_LABELS,
     DEFAULT_REGION_MEANINGS,
     DEFAULT_REGION_NAMES,
     DEFAULT_REGION_SEVERITIES,
@@ -108,12 +109,23 @@ class ScopeFilter(BaseModel):
 
 
 class RegionOverride(BaseModel):
-    """Optional override for a region's name, severity, meaning, or template."""
+    """Optional override for a region's label, name, severity, meaning, or template."""
 
+    #: The short plain label a person reads first. ``name`` is the Halloween name, shown only as a tag beside it.
+    label: str | None = None
     name: str | None = None
     severity: str | None = None
     meaning: str | None = None
     template: str | None = None
+
+
+def _drop_absent_labels(data: dict[str, Any]) -> None:
+    """A region without a ``label`` hashes as it did before the field existed, so its run ids do not change."""
+    regions = data.get("regions")
+    if isinstance(regions, dict):
+        for override in regions.values():
+            if isinstance(override, dict) and override.get("label") is None:
+                override.pop("label", None)
 
 
 class ControlConfig(BaseModel):
@@ -128,6 +140,7 @@ class ControlConfig(BaseModel):
     def canonical_hash(self) -> str:
         """SHA-256 of the control's configuration in canonical JSON (Req 1.3)."""
         data: dict[str, Any] = self.model_dump(mode="json")
+        _drop_absent_labels(data)
         canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
@@ -198,28 +211,47 @@ def region_meanings(control: ControlConfig) -> dict[str, str]:
     return {code: resolve_region(code, control)[2] for code in DEFAULT_REGION_NAMES}
 
 
-#: Default headline sentences per finding region (ui-kit design §3). ``{name}`` is the region's resolved name and is
-#: filled in by ``resolve_ui``; control authors only get ``{count}``, ``{amount}`` and ``{noun}``.
+def region_labels(control: ControlConfig) -> dict[str, str]:
+    """The short plain label of every region code for this control: the words a person reads first.
+
+    A region's own ``label`` wins. A control that renames a region to a name of its own without giving a label (own
+    build's plain names) shows that name as the label. Otherwise the default plain label applies.
+    """
+    labels: dict[str, str] = {}
+    for code, default in DEFAULT_REGION_LABELS.items():
+        override = control.regions.get(code)
+        if override is not None and override.label is not None:
+            labels[code] = override.label
+        elif override is not None and override.name is not None and override.name != DEFAULT_REGION_NAMES[code]:
+            labels[code] = override.name
+        else:
+            labels[code] = default
+    return labels
+
+
+#: Default headline sentences per finding region (ui-kit design §3), in plain words: they count ``{noun}`` and never
+#: need a region's Halloween name to be understood. ``{name}`` is still filled in by ``resolve_ui`` if a template has
+#: it; control authors only get ``{count}``, ``{amount}`` and ``{noun}``.
 DEFAULT_HEADLINES: dict[str, tuple[str, str]] = {
     "OB": (
-        "{count} {name} exists and is on the bill with no approval: {amount}.",
-        "{count} {name}s exist and are on the bill with no approval: {amount}.",
+        "{count} {noun} exists and is on the bill with no approval: {amount}.",
+        "{count} {noun} exist and are on the bill with no approval: {amount}.",
     ),
     "B": (
-        "{count} {name} is on the bill for something nobody approved or can see: {amount}.",
-        "{count} {name}s are on the bill for something nobody approved or can see: {amount}.",
+        "{count} {noun} is on the bill, but nobody approved it or can see it: {amount}.",
+        "{count} {noun} are on the bill, but nobody approved them or can see them: {amount}.",
     ),
     "IB": (
-        "{count} {name} is approved and billed but cannot be seen: {amount}.",
-        "{count} {name}s are approved and billed but cannot be seen: {amount}.",
+        "{count} approved {noun} is billed but cannot be seen: {amount}.",
+        "{count} approved {noun} are billed but cannot be seen: {amount}.",
     ),
     "I": (
-        "{count} {name} is approved but gone and unbilled.",
-        "{count} {name}s are approved but gone and unbilled.",
+        "{count} approved {noun} is gone and unbilled.",
+        "{count} approved {noun} are gone and unbilled.",
     ),
     "O": (
-        "{count} {name} exists with no approval and costs nothing.",
-        "{count} {name}s exist with no approval and cost nothing.",
+        "{count} {noun} exists with no approval and costs nothing.",
+        "{count} {noun} exist with no approval and cost nothing.",
     ),
 }
 
@@ -327,5 +359,6 @@ class ControlFile(BaseModel):
                 data["ui"].pop("downloads", None)
         if not data.get("summarisers"):
             data.pop("summarisers", None)
+        _drop_absent_labels(data)
         canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

@@ -89,7 +89,7 @@ def test_the_sheet_has_one_line_per_finding_with_the_review_columns(run_dir: Pat
     assert {r["person"]: r["region_code"] for r in rows} == FINDINGS
     assert list(rows[0]) == list(COLUMNS)
     wren = next(r for r in rows if r["person"] == "c.wren@hollowpines.com")
-    assert wren["region"] == "Phantom seat"
+    assert wren["region"] == "Paid seat, no account, not on staff (Phantom seat)"
     assert wren["left_on"] == "2026-06-30"
     assert wren["seats"] == "Crypt Docs"
     assert wren["manager"] == "b.quill@hollowpines.com"
@@ -325,6 +325,8 @@ def sheet_run(person: str, name: str, manager: str) -> RunResult:
         control_hash="c",
         complete=True,
         control_title=name,
+        # The hostile value is the label too, so the region cell starts with it and must still be neutralised.
+        region_labels={"O": name},
         findings=[finding],
         evidence_chain_hash="e" * 64,
     )

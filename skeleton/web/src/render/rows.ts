@@ -3,7 +3,7 @@
 // findings laid to rest since the previous night (Req 4.3).
 
 import { dateText, esc, moneyText, plural } from "../format";
-import { GLYPHS } from "../glyphs";
+import { regionLabel, regionNamed, regionTag } from "../regions";
 import type { Finding, RunResult, UiColumn } from "../types";
 import { LEDGERS, REGION_ORDER } from "../types";
 
@@ -40,7 +40,7 @@ function kind(column: UiColumn): string {
   return ["key", "name", "status", "amount"].includes(column.from) ? column.from : "attr";
 }
 
-function cell(f: Finding, column: UiColumn): string {
+function cell(run: RunResult, f: Finding, column: UiColumn): string {
   const label = `<span class="cell-label">${esc(column.label)}</span>`;
   const source = column.from;
   let value: string;
@@ -48,7 +48,7 @@ function cell(f: Finding, column: UiColumn): string {
   if (source === "key") {
     value = `<span class="mono key">${esc(f.key)}</span>`;
   } else if (source === "name") {
-    value = `<span class="finding-name">${GLYPHS[f.region_code] ?? ""}<span>${esc(f.name)}</span></span>`;
+    value = `<span class="finding-name">${regionNamed(run, f.region_code, f.name)}</span>`;
   } else if (source === "status") {
     value = `<span class="status ${tone(f)}">${statusText(f)}</span>`;
   } else if (source === "amount") {
@@ -86,7 +86,7 @@ function evidence(f: Finding, index: number): string {
 
 function filterNote(run: RunResult, region: string): string {
   return `<div class="filter-note">
-    <p class="filter-name"><span class="filter-glyph">${GLYPHS[region] ?? ""}</span><span>${esc(run.region_names[region] ?? region)}</span><span class="filter-code">${region}</span></p>
+    <p class="filter-name"><span class="filter-label">${esc(regionLabel(run, region))}</span>${regionTag(run, region)}<span class="filter-code">${region}</span></p>
     <p class="filter-meaning">${esc(run.region_meanings?.[region] ?? "")}</p>
     <button type="button" class="text-button" data-action="clear-filter">Show all findings</button>
   </div>`;
@@ -133,11 +133,11 @@ export function findings(run: RunResult, region: string | null, open: string | n
   const items = visible
     .map((f, i) => {
       const isOpen = open === f.key;
-      const name = hasName ? "" : `<p class="row-region">${GLYPHS[f.region_code] ?? ""}<span>${esc(f.name)}</span></p>`;
+      const name = hasName ? "" : `<p class="row-region">${regionNamed(run, f.region_code, f.name)}</p>`;
       return `<li class="row ${tone(f)}" id="row-${i}">
         ${name}
         <button type="button" class="row-head" aria-expanded="${isOpen}" aria-controls="ev-${i}" data-key="${esc(f.key)}">${columns
-          .map((c) => cell(f, c))
+          .map((c) => cell(run, f, c))
           .join("")}</button>
         <p class="row-explain">${esc(f.explanation ?? f.meaning)}</p>
         ${decisionLine(run, f)}
@@ -147,7 +147,7 @@ export function findings(run: RunResult, region: string | null, open: string | n
     })
     .join("");
 
-  const title = region ? (run.region_names[region] ?? region) : "Findings";
+  const title = region ? regionLabel(run, region) : "Findings";
   let body: string;
   if (visible.length) body = `${header}<ol class="rows">${items}</ol>`;
   else if (region === "IOB" || (!region && run.view.calm)) body = matched(run) || `<p class="empty">Nothing in this region tonight.</p>`;
@@ -167,7 +167,7 @@ export function laidToRest(run: RunResult): string {
   const items = resolved
     .map(
       (f) => `<li class="rest-row">
-        <span class="rest-name">${GLYPHS[f.region_code] ?? ""}<span>${esc(f.name)}</span></span>
+        <span class="rest-name">${regionNamed(run, f.region_code, f.name)}</span>
         <span class="mono key">${esc(f.key)}</span>
         <span class="rest-seen"><span class="cell-label">First seen</span>${esc(dateText(f.first_seen))}</span>
         <span class="rest-lasted"><span class="cell-label">Lasted</span>${esc(plural(f.nights_persisted ?? 0, "night", "nights"))}</span>

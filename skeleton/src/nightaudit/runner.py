@@ -18,7 +18,7 @@ from typing import Any
 import yaml
 
 from .connectors import Connector, make_connectors
-from .control import ControlConfig, ControlFile, region_meanings, region_names, resolve_ui
+from .control import ControlConfig, ControlFile, region_labels, region_meanings, region_names, resolve_ui
 from .evidence import write_evidence_pack
 from .explain import ModelConfig, explain_finding, note_numbers, run_evidence_numbers
 from .matcher import KeyScope, match
@@ -192,6 +192,7 @@ def run_control(
     result.ledger_errors = errors
     result.ui = resolve_ui(control_file)
     result.region_names = region_names(control_config)
+    result.region_labels = region_labels(control_config)
     result.region_meanings = region_meanings(control_config)
 
     # Night-over-night state, kept per control id so editing a control keeps its history (Req 5).

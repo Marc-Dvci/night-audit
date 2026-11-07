@@ -17,7 +17,7 @@ from decimal import Decimal
 from pydantic import BaseModel, Field
 
 from .control import DEFAULT_HEADLINES, fill_region_name
-from .models import REGION_CODES, Finding, HeadlineUi, LedgerName, RunResult, UnkeyedUi
+from .models import DEFAULT_REGION_LABELS, REGION_CODES, Finding, HeadlineUi, LedgerName, RunResult, UnkeyedUi
 
 #: Headline order: the regions on the bill first, then the unbilled ones, as in the Req 2.2 example (OB, O, I).
 HEADLINE_ORDER: tuple[str, ...] = ("OB", "B", "IB", "O", "I")
@@ -340,6 +340,7 @@ dl div:nth-child(odd) { background: #e8f5ec; }
 dt { min-width: 52mm; color: #1e5c3a; }
 dd { margin: 0; overflow-wrap: anywhere; }
 .note { color: #3c4252; }
+.tag { font-size: 7.5pt; color: #3c4252; white-space: nowrap; }
 footer { margin-top: 4mm; }
 """
 
@@ -354,6 +355,19 @@ def report_csp() -> str:
 
 def _e(value: object) -> str:
     return html.escape("" if value is None else str(value), quote=True)
+
+
+def region_label(run: RunResult, code: str) -> str:
+    """The short plain label of a region in this run. A run saved before labels existed uses the default label."""
+    return run.region_labels.get(code) or DEFAULT_REGION_LABELS.get(code, code)
+
+
+def _region_cell(run: RunResult, code: str, name: str | None = None) -> str:
+    """A region as the report prints it: the plain label, then the Halloween name as a small tag when it differs."""
+    label = region_label(run, code)
+    tag = name if name is not None else run.region_names.get(code, "")
+    tag_html = f' <span class="tag">{_e(tag)}</span>' if tag and tag != label else ""
+    return f"{_e(label)}{tag_html}"
 
 
 def report_html(run: RunResult, recorded: bool = False) -> str:
@@ -391,7 +405,7 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
         count = summary.key_count if summary else 0
         amount = money_text(summary.billed_amount) if summary and "B" in code else ""
         parts.append(
-            f"<tr><td>{_e(run.region_names.get(code, code))}</td><td>{code}</td>"
+            f"<tr><td>{_region_cell(run, code)}</td><td>{code}</td>"
             f'<td class="num">{count}</td><td class="num">{_e(amount)}</td></tr>'
         )
     parts.append("</tbody></table>")
@@ -410,7 +424,8 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
             status = "New tonight" if f.status == "new" else "Persisting"
             billed = money_text(f.billed_amount) if "B" in f.region_code else "not billed"
             parts.append(
-                f'<tr class="{"new" if f.status == "new" else "old"}"><td>{status}</td><td>{_e(f.name)}</td>'
+                f'<tr class="{"new" if f.status == "new" else "old"}"><td>{status}</td>'
+                f"<td>{_region_cell(run, f.region_code, f.name)}</td>"
                 f'<td class="key">{_e(f.key)}</td><td>{_e(date_text(f.first_seen))}</td>'
                 f'<td class="num">{_e(f.nights_persisted if f.nights_persisted is not None else "")}</td>'
                 f'<td class="num">{_e(billed)}</td></tr>'
@@ -429,7 +444,7 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
         )
         for f in resolved:
             parts.append(
-                f'<tr><td>{_e(f.name)}</td><td class="key">{_e(f.key)}</td>'
+                f'<tr><td>{_region_cell(run, f.region_code, f.name)}</td><td class="key">{_e(f.key)}</td>'
                 f"<td>{_e(date_text(f.first_seen))}</td>"
                 f'<td class="num">{_e(_nights_text(f.nights_persisted))}</td></tr>'
             )

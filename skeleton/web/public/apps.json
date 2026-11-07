@@ -1,19 +1,19 @@
 [
   {
     "name": "vampires",
-    "title": "Vampires",
+    "title": "Cloud account",
     "mode": "live",
     "base": "api/"
   },
   {
     "name": "vampires-demo",
-    "title": "Vampires demo account",
+    "title": "Cloud account demo",
     "mode": "demo",
     "base": "demo/vampires/"
   },
   {
     "name": "ghosts-demo",
-    "title": "Ghosts demo company",
+    "title": "Staff access demo company",
     "mode": "demo",
     "base": "demo/ghosts/"
   },

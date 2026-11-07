@@ -1,0 +1,9 @@
+person,region,region_code,systems,seats,left_on,last_sign_in,manager,decision,decision_date,run_id,evidence_chain_hash
+j.marsh@hollowpines.com,"Account and paid seat, not on staff (Ghost)",OB,Hollow Pines directory,"Belfry CRM, Crypt Docs",2026-09-12,2026-10-30T19:42:00Z,m.beck@hollowpines.com,,,a4bed96aeb15ff7e,c3b8679d53d4fd1b75a78237e575fdc3c48087a68d2f15c1b3df0b6fe0b5ace0
+p.lindqvist@hollowpines.com,"Account and paid seat, not on staff (Ghost)",OB,Hollow Pines directory,Lantern Chat,2026-06-30,2026-10-21T08:05:00Z,t.upton@hollowpines.com,,,a4bed96aeb15ff7e,c3b8679d53d4fd1b75a78237e575fdc3c48087a68d2f15c1b3df0b6fe0b5ace0
+r.voss@hollowpines.com,"Account and paid seat, not on staff (Ghost)",OB,Hollow Pines directory,Ossuary Design,2026-08-01,2026-07-31T16:58:00Z,s.ingram@hollowpines.com,,,a4bed96aeb15ff7e,c3b8679d53d4fd1b75a78237e575fdc3c48087a68d2f15c1b3df0b6fe0b5ace0
+temp.contractor@hollowpines.com,"Paid seat, no account, not on staff (Phantom seat)",B,,Belfry CRM,,,,,,a4bed96aeb15ff7e,c3b8679d53d4fd1b75a78237e575fdc3c48087a68d2f15c1b3df0b6fe0b5ace0
+e.castell@hollowpines.com,"On staff, paid seat, no account (Wraith)",IB,,Crypt Docs,,,m.crane@hollowpines.com,,,a4bed96aeb15ff7e,c3b8679d53d4fd1b75a78237e575fdc3c48087a68d2f15c1b3df0b6fe0b5ace0
+noor.haddad@hollowpines.com,"On staff, no account or seat yet (Unprovisioned joiner)",I,,,,,j.chandra@hollowpines.com,,,a4bed96aeb15ff7e,c3b8679d53d4fd1b75a78237e575fdc3c48087a68d2f15c1b3df0b6fe0b5ace0
+svc-reporting@hollowpines.com,"Account only, not on staff (Poltergeist)",O,Hollow Pines directory,,,2026-11-03T23:15:00Z,,,,a4bed96aeb15ff7e,c3b8679d53d4fd1b75a78237e575fdc3c48087a68d2f15c1b3df0b6fe0b5ace0
+test.admin@hollowpines.com,"Account only, not on staff (Poltergeist)",O,Hollow Pines directory,,,2025-06-02T11:30:00Z,,,,a4bed96aeb15ff7e,c3b8679d53d4fd1b75a78237e575fdc3c48087a68d2f15c1b3df0b6fe0b5ace0
