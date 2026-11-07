@@ -1,6 +1,6 @@
 # Demo account
 
-A synthetic account (111122223333) over three nights, used for the no-login demo and the film. Every id is invented.
+A demo account (111122223333) over three nights, used for the no-login demo and the film.
 
 | Night | What changed |
 |---|---|

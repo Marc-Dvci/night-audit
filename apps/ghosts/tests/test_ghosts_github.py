@@ -1,6 +1,6 @@
 """Contract tests: the GitHub organisation members connector replays a recorded response (Req 3.2).
 
-The network edge is faked: a replay client answers GET requests from the recorded fixture and records every request.
+The network edge is stubbed: a replay client answers GET requests from the recorded fixture and records every request.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from nightaudit.runner import load_control_file
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 RECORDING = json.loads((FIXTURES / "github" / "members.json").read_text("utf-8"))
-TOKEN = "github_pat_synthetic_test_token"
+TOKEN = "github_pat_example_test_token"
 ENV = {"GITHUB_TOKEN": TOKEN}
 
 

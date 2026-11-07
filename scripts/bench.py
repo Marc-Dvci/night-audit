@@ -1,4 +1,4 @@
-"""Matcher throughput on a synthetic account: n keys in each ledger, 1% of them made into each kind of finding.
+"""Matcher throughput: n keys in each ledger, 1% of them made into each kind of finding.
 
 uv run python scripts/bench.py 100000
 """

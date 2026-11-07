@@ -290,7 +290,7 @@ changed character is shown before and after. "Restore the original" re-runs veri
 
 | Band | Content | Type |
 |---|---|---|
-| Masthead | `NIGHT AUDIT`, app switch, "Recorded run, synthetic account" for demo apps, night picker, "Morning report" link, scan line | mono |
+| Masthead | `NIGHT AUDIT`, app switch, "Recorded run. Not live data." for demo apps, night picker, "Morning report" link, scan line | mono |
 | Lede | tagline (sans, bone-dim), headline (sans, largest after masthead), money lines (mono, printout bands) | sans + mono |
 | Ledgers + Venn | three ledger entries (label in mono caps, source sentence in sans, key count in mono) beside the Venn; legend under it | mixed |
 | Nights | strip of up to 30 marks, each a button with its date, findings and new findings as text | mono |
@@ -343,7 +343,7 @@ is expanded and scrolled into view (instant when reduced motion is set).
 
 `apps.json`: `[{"name": "vampires", "title": "Vampires", "mode": "demo", "base": "./"}]`, written by the demo build and
 by any deployment build. The masthead shows a `<select>` when there are two or more apps and a plain label otherwise.
-A `demo` app prints "Recorded run · synthetic account" next to its title, always in words.
+A `demo` app prints "Recorded run. Not live data." next to its title, always in words.
 
 ### Untrusted values (Req 11)
 

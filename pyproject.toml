@@ -116,6 +116,6 @@ module = ["pyarrow", "pyarrow.*", "boto3", "boto3.*", "botocore", "botocore.*", 
 ignore_missing_imports = true
 
 [tool.codespell]
-# British English is the project's spelling: these are correct here. Then names and titles in the synthetic staff data.
+# British English is the project's spelling: these are correct here. Then names and titles in the demo staff data.
 ignore-words-list = "bale,ines,coo,caf,unparseable,normalise,normalised,normaliser,normalisers,normalising,organisation,licence,behaviour,colour,favour,honour,recognise,summarise,summariser,summarisers,artefact,catalogue,analyse,initialise,authorise,authorised,serialise,serialised,centre,minimise,prioritise,optimise,unrecognised,customise"
 skip = "*.png,*.jpg,*.gif,*.svg,*.woff2,*.zip,*.parquet,*.lock,package-lock.json,.git,.venv,node_modules,dist,build,runs,.hypothesis,.mypy_cache,.ruff_cache,.pytest_cache,*/casebook/heldout,casebook/heldout,*/public/demo,*.jsonl"

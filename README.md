@@ -3,7 +3,7 @@
 [![CI](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml)
 [![Licence: Apache 2.0](https://img.shields.io/badge/licence-Apache%202.0-blue.svg)](LICENSE)
-![Tests: 1046](https://img.shields.io/badge/tests-1046-brightgreen)
+![Tests: 1057](https://img.shields.io/badge/tests-1057-brightgreen)
 ![Decision core coverage: 96.85%](https://img.shields.io/badge/decision%20core%20coverage-96.85%25-brightgreen)
 ![Casebook: 18 of 18](https://img.shields.io/badge/casebook-18%20of%2018-brightgreen)
 
@@ -170,13 +170,12 @@ What the deployed roles can and cannot do, and how to report a security problem:
 
 ## Evidence
 
-Every figure comes from a command in this repository. Synthetic data is labelled as synthetic. More in
-[`docs/RESULTS.md`](docs/RESULTS.md).
+Every figure comes from a command in this repository. More in [`docs/RESULTS.md`](docs/RESULTS.md).
 
 | Figure | Command |
 |---|---|
-| 1046 tests: 1043 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
-| 41 property-based tests, 252 integration tests, 46 browser tests, 261 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
+| 1057 tests: 1054 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
+| 41 property-based tests, 263 integration tests, 46 browser tests, 261 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
 | Decision core coverage 96.85 % (lines and branches, nine modules) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Development casebook 18 of 18 | `uv run python scripts/score_casebook.py --set dev` |
 | Held-out casebook 6 of 6, scored once at tag `v0.1.0` | `uv run python scripts/score_heldout.py` |
@@ -187,8 +186,8 @@ Every figure comes from a command in this repository. Synthetic data is labelled
 | Evidence of the live night verifies; the investigator's note passed the guard | `uv run nightaudit verify <run>/evidence`, `uv run nightaudit verify-notes <run>/evidence` |
 | Kiro Crew 0.13.0 on Windows 11, 7 Nov, with the final code: the `night-audit` cron (`0af6390d`) wrote 4 runs and all 4 verify (`847b2b2514c14574`, `ebd45fd5644e4159`, `4c3e32bf3ef8c9ab`, `6ad680fc05a50128`). The `night-notes` cron (`9d342b56`), run with the read-only investigator, picked `6ad680fc05a50128` and asked nothing, since its five `OB` and `O` findings persist from the night before: `0 accepted, 0 rejected, 0 unavailable, 0 skipped`. The 5 notes on that earlier night, `1e9e38e57a33f5c4`, verify (`5 notes verify (5 accepted)`). Both jobs paused | `kirocrew cron trigger <id>`; `uv run nightaudit verify runs/<run>/evidence`; `uv run nightaudit verify-notes runs/<run>/evidence`; details in [`crew/README.md`](crew/README.md) |
 
-**Real and synthetic.** The lab night is a real AWS account with a planted lab ([`lab/`](lab)); the Vampires and Ghosts
-demos, both casebooks and the benchmark are synthetic; the third control reads this repository itself.
+**Real.** The lab night is a real AWS account with a planted lab ([`lab/`](lab)). The third control reads this
+repository itself.
 
 ## Quickstart (no credentials)
 
@@ -255,11 +254,6 @@ The snapshot is one commit: `uv run python apps/own-build/snapshot.py` records t
 paths its specs promise, and a change after that commit enters at the next snapshot. The credits are an allocation: a
 session reports one figure and the export splits it equally across the files the session touched, so a file's credits
 are not what it cost.
-
-## Limits
-
-Both casebooks are synthetic and small (18 and 6 cases). Findings are conditions with evidence, and a person decides what
-each means. Billing data arrives late, so a resource younger than the grace window is pending until its bill lands.
 
 ## Layout and licence
 

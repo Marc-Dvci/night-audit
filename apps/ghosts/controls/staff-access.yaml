@@ -1,6 +1,6 @@
-# Night Audit control: staff access at Hollow Pines Credit Union (a fictional company), three ledgers.
+# Night Audit control: staff access at Hollow Pines Credit Union (the demo company), three ledgers.
 # Intended = HR roster on the run date. Observed = active accounts. Billed = paid seats per vendor invoice.
-# Paths are relative to this file. The data is synthetic and describes 2026-11-04. The roster is read as of the run date,
+# Paths are relative to this file. The data describes 2026-11-04. The roster is read as of the run date,
 # which the skeleton gives every connector, so `nightaudit run --at 2026-11-04T02:00Z` reads it as of that date.
 id: staff-access
 title: Hollow Pines Credit Union

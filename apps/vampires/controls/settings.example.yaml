@@ -1,7 +1,7 @@
 # The values that belong to one AWS account. Copy this file to settings.local.yaml (git-ignored) and fill it in, or set
 # the environment variables named on the right. An environment variable wins over the file.
 #
-# These are synthetic values. 111122223333 is not an account.
+# These are example values. 111122223333 is not an account.
 
 account_id: "111122223333"            # NIGHT_AUDIT_ACCOUNT_ID
 approver: Pat Example                  # NIGHT_AUDIT_APPROVER, named as approver on the approved changes in this folder

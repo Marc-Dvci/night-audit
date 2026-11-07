@@ -1,4 +1,4 @@
-"""Seeded generator for Hollow Pines Credit Union, a fictional company (Req 6).
+"""Seeded generator for Hollow Pines Credit Union, the demo company (Req 6).
 
 ``python -m ghosts.generate [--seed N] [--out DIR] [--healthy]`` writes the HR roster, the identity export, the
 licence assignments and the invoices. The same seed gives the same bytes: the generator uses ``random.Random(seed)``,
@@ -7,8 +7,6 @@ never the clock, and writes UTF-8 CSV with ``\\n`` line endings. It depends only
 The planted findings of ``apps/ghosts/planted.yaml`` (written before this generator) are planted here explicitly, with
 the dates, systems and seats their stories give. Everything else is a healthy company that must produce no finding:
 the healthy mode (``plant=False``) writes the same company without the planted cases, with a seat for everyone.
-
-Every person, branch and vendor is invented.
 """
 
 from __future__ import annotations

@@ -24,7 +24,7 @@ TREE = {
 }
 
 
-class FakeGit:
+class StubGit:
     """The git edge: a commit holding ``TREE``. It records every command it was asked to run."""
 
     def __init__(self, tree: dict[str, str]) -> None:
@@ -46,7 +46,7 @@ class FakeGit:
 
 
 def test_the_tracked_files_are_sorted_and_all_name_the_commit(tmp_path: Path) -> None:
-    git = FakeGit(TREE)
+    git = StubGit(TREE)
     assert record(git, "HEAD", tmp_path) == COMMIT
     lines = (tmp_path / "tracked-files.csv").read_text(encoding="utf-8").splitlines()
     assert lines[0] == "file,commit"
@@ -55,7 +55,7 @@ def test_the_tracked_files_are_sorted_and_all_name_the_commit(tmp_path: Path) ->
 
 
 def test_the_promises_come_from_the_design_tasks_and_requirements_documents_only(tmp_path: Path) -> None:
-    record(FakeGit(TREE), "HEAD", tmp_path)
+    record(StubGit(TREE), "HEAD", tmp_path)
     assert (tmp_path / "spec-files.csv").read_text(encoding="utf-8").splitlines() == [
         "file,spec,doc,commit",
         f"deploy/stack.yaml,alpha,tasks.md,{COMMIT}",
@@ -65,21 +65,21 @@ def test_the_promises_come_from_the_design_tasks_and_requirements_documents_only
 
 
 def test_the_files_are_written_with_unix_line_endings_whatever_the_platform(tmp_path: Path) -> None:
-    record(FakeGit(TREE), "HEAD", tmp_path)
+    record(StubGit(TREE), "HEAD", tmp_path)
     for name in ("tracked-files.csv", "spec-files.csv"):
         data = (tmp_path / name).read_bytes()
         assert b"\r" not in data and data.endswith(b"\n")
 
 
 def test_a_second_snapshot_of_the_same_commit_has_the_same_bytes(tmp_path: Path) -> None:
-    record(FakeGit(TREE), "HEAD", tmp_path / "one")
-    record(FakeGit(dict(reversed(TREE.items()))), "HEAD", tmp_path / "two")
+    record(StubGit(TREE), "HEAD", tmp_path / "one")
+    record(StubGit(dict(reversed(TREE.items()))), "HEAD", tmp_path / "two")
     for name in ("tracked-files.csv", "spec-files.csv"):
         assert (tmp_path / "one" / name).read_bytes() == (tmp_path / "two" / name).read_bytes()
 
 
 def test_every_command_the_snapshot_runs_is_a_read_command(tmp_path: Path) -> None:
-    git = FakeGit(TREE)
+    git = StubGit(TREE)
     record(git, "HEAD", tmp_path)
     assert git.calls and {call[0] for call in git.calls} <= READ_ONLY_GIT
 
@@ -127,7 +127,7 @@ def test_a_relative_path_a_folder_and_build_output_are_resolved_against_the_comm
         "p/u/h.py": "",
         "q/u/h.py": "",
     }
-    record(FakeGit(tree), "HEAD", tmp_path)
+    record(StubGit(tree), "HEAD", tmp_path)
     assert (tmp_path / "spec-files.csv").read_text(encoding="utf-8").splitlines() == [
         "file,spec,doc,commit",
         f"lib/a.py,beta,design.md,{COMMIT}",

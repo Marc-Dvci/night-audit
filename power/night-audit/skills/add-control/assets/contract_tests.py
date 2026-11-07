@@ -26,10 +26,10 @@ RUN_TIME = datetime(2026, 1, 1, tzinfo=UTC)
 ACCESS_KEY = re.compile(r"\b(?:AKIA|ASIA)[0-9A-Z]{16}\b")
 ARN_ACCOUNT = re.compile(r"arn:aws[a-z-]*:[a-z0-9-]*:[a-z0-9-]*:(\d{12}):")
 EMAIL = re.compile(r"[\w.+-]+@([\w-]+(?:\.[\w-]+)+)")
-SYNTHETIC_ACCOUNTS = {"111122223333", "000000000000", "123456789012"}
+EXAMPLE_ACCOUNTS = {"111122223333", "000000000000", "123456789012"}
 
 
-def _synthetic_domain(domain: str) -> bool:
+def _example_domain(domain: str) -> bool:
     labels = domain.lower().split(".")
     return labels[-1] in {"test", "example", "invalid", "localhost"} or labels[-2].startswith("example")
 
@@ -76,7 +76,7 @@ def test_every_source_loads_its_recorded_fixture_through_its_connector(path: Pat
         assert len(set(row_ids)) == len(row_ids), f"{connector.source}: row ids must be unique within a source"
 
 
-def test_fixtures_hold_only_synthetic_or_redacted_values() -> None:
+def test_fixtures_hold_only_example_or_redacted_values() -> None:
     problems: list[str] = []
     for file in sorted((ROOT / "fixtures").rglob("*")) if (ROOT / "fixtures").is_dir() else []:
         if not file.is_file():
@@ -84,8 +84,8 @@ def test_fixtures_hold_only_synthetic_or_redacted_values() -> None:
         text = file.read_text(encoding="utf-8", errors="replace")
         name = file.relative_to(ROOT).as_posix()
         problems += [f"{name}: access key id {m}" for m in ACCESS_KEY.findall(text)]
-        problems += [f"{name}: account id {a}" for a in ARN_ACCOUNT.findall(text) if a not in SYNTHETIC_ACCOUNTS]
-        problems += [f"{name}: email domain {d}" for d in EMAIL.findall(text) if not _synthetic_domain(d)]
+        problems += [f"{name}: account id {a}" for a in ARN_ACCOUNT.findall(text) if a not in EXAMPLE_ACCOUNTS]
+        problems += [f"{name}: email domain {d}" for d in EMAIL.findall(text) if not _example_domain(d)]
     assert not problems, "redact these before they are committed (use 111122223333 and example.test): " + "; ".join(
         sorted(set(problems))
     )

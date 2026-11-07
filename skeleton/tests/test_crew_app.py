@@ -3,7 +3,7 @@
 The documents are ``manifest-reference.md``; where they and the source differ, these tests follow the source
 (``build/crew-docs/src/``): ``bridges_crons.py`` and ``cron_script_paths.py`` for script crons, ``bridges_agents.py``
 for an agent's ``@server`` tool refs and host placeholders. The cron callables in ``crons/night_jobs.py`` are run here
-with the subprocess faked at the edge.
+with the subprocess stubbed at the edge.
 """
 
 from __future__ import annotations
@@ -390,13 +390,13 @@ def test_the_nightly_script_runs_every_control_even_after_one_fails(
         (controls / f"{name}.yaml").write_text("ledgers: {}\n", encoding="utf-8")
     seen: list[str] = []
 
-    def fake_main(argv: list[str]) -> int:
+    def stub_main(argv: list[str]) -> int:
         seen.append(Path(argv[1]).name)
         if argv[1].endswith("a.yaml"):
             raise RuntimeError("source unreachable")
         return 0
 
-    monkeypatch.setattr(nightly, "nightaudit_main", fake_main)
+    monkeypatch.setattr(nightly, "nightaudit_main", stub_main)
     assert nightly.main(["--apps-dir", str(tmp_path), "--runs", str(tmp_path / "runs")]) == 1
     assert seen == ["a.yaml", "b.yaml"]
     assert "FAILED a.yaml: RuntimeError: source unreachable" in capsys.readouterr().err
@@ -412,7 +412,7 @@ def load_jobs() -> Any:
     return module
 
 
-def fake_checkout(tmp_path: Path) -> Path:
+def stub_checkout(tmp_path: Path) -> Path:
     (tmp_path / "scripts").mkdir()
     (tmp_path / "scripts" / "nightly.py").write_text("", encoding="utf-8")
     (tmp_path / "pyproject.toml").write_text("", encoding="utf-8")
@@ -423,7 +423,7 @@ def ctx_for(checkout: object) -> SimpleNamespace:
     return SimpleNamespace(job=SimpleNamespace(id="abc123", message=json.dumps({"checkout": str(checkout)})))
 
 
-class FakeRun:
+class StubRun:
     """The subprocess edge: records each call and returns or raises what it was given."""
 
     def __init__(self, returncode: int = 0, stdout: str = "", stderr: str = "", raises: Exception | None = None):
@@ -448,9 +448,9 @@ def jobs(monkeypatch: pytest.MonkeyPatch) -> Any:
 def test_the_audit_job_runs_nightly_py_through_uv_as_an_argument_list_and_reports_its_output(
     jobs: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    checkout = fake_checkout(tmp_path)
+    checkout = stub_checkout(tmp_path)
     monkeypatch.setenv("VIRTUAL_ENV", "/gateway/.venv")
-    run = FakeRun(stdout="run 1e9e38e57a33f5c4\n  complete: True\n")
+    run = StubRun(stdout="run 1e9e38e57a33f5c4\n  complete: True\n")
     with pytest.raises(jobs.Report) as reported:
         jobs.nightly(ctx_for(checkout), run=run)
     ((argv, kwargs),) = run.calls
@@ -463,9 +463,9 @@ def test_the_audit_job_runs_nightly_py_through_uv_as_an_argument_list_and_report
 def test_the_audit_job_fails_with_the_exit_code_and_the_output_tail_when_nightly_py_fails(
     jobs: Any, tmp_path: Path
 ) -> None:
-    run = FakeRun(returncode=1, stderr="FAILED aws-account.yaml: RuntimeError: source unreachable")
+    run = StubRun(returncode=1, stderr="FAILED aws-account.yaml: RuntimeError: source unreachable")
     with pytest.raises(jobs.JobFailed, match=r"exited with code 1: .*source unreachable"):
-        jobs.nightly(ctx_for(fake_checkout(tmp_path)), run=run)
+        jobs.nightly(ctx_for(stub_checkout(tmp_path)), run=run)
 
 
 @pytest.mark.parametrize(
@@ -480,23 +480,23 @@ def test_the_audit_job_fails_with_the_exit_code_and_the_output_tail_when_nightly
 def test_a_job_whose_message_names_no_checkout_fails_with_one_line_and_runs_nothing(
     jobs: Any, message: str, says: str
 ) -> None:
-    run = FakeRun()
+    run = StubRun()
     with pytest.raises(jobs.JobFailed, match=says) as failed:
         jobs.nightly(SimpleNamespace(job=SimpleNamespace(id="x", message=message)), run=run)
     assert "\n" not in str(failed.value) and run.calls == []
 
 
 def test_a_checkout_that_is_missing_fails_with_one_line_and_runs_nothing(jobs: Any, tmp_path: Path) -> None:
-    run = FakeRun()
+    run = StubRun()
     with pytest.raises(jobs.JobFailed, match="is not a Night Audit checkout") as failed:
         jobs.notes(ctx_for(tmp_path / "nowhere"), run=run)
     assert "\n" not in str(failed.value) and run.calls == []
 
 
 def test_a_job_that_runs_too_long_fails_with_its_time_limit(jobs: Any, tmp_path: Path) -> None:
-    run = FakeRun(raises=subprocess.TimeoutExpired(["uv"], 1440))
+    run = StubRun(raises=subprocess.TimeoutExpired(["uv"], 1440))
     with pytest.raises(jobs.JobFailed, match=r"scripts/nightly.py did not finish within 1440 s"):
-        jobs.nightly(ctx_for(fake_checkout(tmp_path)), run=run)
+        jobs.nightly(ctx_for(stub_checkout(tmp_path)), run=run)
 
 
 def test_a_job_fails_with_one_line_when_uv_is_not_on_the_path(
@@ -504,16 +504,16 @@ def test_a_job_fails_with_one_line_when_uv_is_not_on_the_path(
 ) -> None:
     monkeypatch.setattr(jobs.shutil, "which", lambda name: None)
     with pytest.raises(jobs.JobFailed, match="uv is not on the gateway's PATH"):
-        jobs.nightly(ctx_for(fake_checkout(tmp_path)), run=FakeRun())
+        jobs.nightly(ctx_for(stub_checkout(tmp_path)), run=StubRun())
 
 
 def test_the_notes_job_runs_night_shift_py_with_its_limits_and_the_gateway_profile(
     jobs: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setenv("AWS_PROFILE", "night-audit")
-    run = FakeRun(stdout="run 1e9e38e57a33f5c4: 5 accepted, 0 rejected, 0 unavailable, 0 skipped")
+    run = StubRun(stdout="run 1e9e38e57a33f5c4: 5 accepted, 0 rejected, 0 unavailable, 0 skipped")
     with pytest.raises(jobs.Report, match="5 accepted"):
-        jobs.notes(ctx_for(fake_checkout(tmp_path)), run=run)
+        jobs.notes(ctx_for(stub_checkout(tmp_path)), run=run)
     ((argv, kwargs),) = run.calls
     assert argv[5:] == [
         "scripts/night_shift.py", "--runs", "runs", "--limit", "12", "--timeout", "240", "--profile", "night-audit"
@@ -522,9 +522,9 @@ def test_the_notes_job_runs_night_shift_py_with_its_limits_and_the_gateway_profi
 
 
 def test_the_notes_job_fails_when_kiro_was_unavailable_for_a_finding(jobs: Any, tmp_path: Path) -> None:
-    run = FakeRun(returncode=2, stdout="unavailable  lab-debug: kiro-cli exited with code 3")
+    run = StubRun(returncode=2, stdout="unavailable  lab-debug: kiro-cli exited with code 3")
     with pytest.raises(jobs.JobFailed, match="exited with code 2: .*kiro-cli exited with code 3"):
-        jobs.notes(ctx_for(fake_checkout(tmp_path)), run=run)
+        jobs.notes(ctx_for(stub_checkout(tmp_path)), run=run)
 
 
 def test_the_job_file_passes_crews_body_scan_patterns() -> None:

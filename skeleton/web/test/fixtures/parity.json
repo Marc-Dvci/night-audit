@@ -1089,7 +1089,7 @@
     }
    },
    {
-    "name": "a fake finding",
+    "name": "a forged finding",
     "document": {
      "run_id": "ad25e22fb3a05034",
      "run_time": "2026-11-06T02:00:00Z",
@@ -1263,7 +1263,7 @@
        "context": {}
       },
       {
-       "key": "fake-\u202e\ud83d\udc7b-\u00e9",
+       "key": "forged-\u202e\ud83d\udc7b-\u00e9",
        "region_code": "B",
        "name": "Phantom",
        "severity": "high",
@@ -1416,7 +1416,7 @@
      "rows": 0,
      "findings": 0,
      "final_hash": null,
-     "detail": "the page differs from the evidence: finding \"fake-\\u202e\\ud83d\\udc7b-\\u00e9\" is shown but is not in the evidence"
+     "detail": "the page differs from the evidence: finding \"forged-\\u202e\\ud83d\\udc7b-\\u00e9\" is shown but is not in the evidence"
     }
    },
    {

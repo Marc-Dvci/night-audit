@@ -24,7 +24,7 @@ export function masthead(run: RunResult, apps: AppEntry[], app: AppEntry, runs: 
     .map((r) => `<option value="${esc(r.run_id)}"${r.run_id === run.run_id ? " selected" : ""}>${esc(dateText(r.run_time))} · ${r.findings} ${r.findings === 1 ? "finding" : "findings"}</option>`)
     .join("");
   const recorded =
-    app.mode === "demo" ? `<p class="recorded">Recorded run of synthetic data. Not live data.</p>` : "";
+    app.mode === "demo" ? `<p class="recorded">Recorded run. Not live data.</p>` : "";
   return `<header class="masthead${sweep ? " sweep" : ""}">
     <div class="mast-line">
       <p class="brand"><span class="brand-mark" aria-hidden="true">◐</span>NIGHT AUDIT</p>

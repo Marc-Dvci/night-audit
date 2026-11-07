@@ -1,5 +1,5 @@
 # Night Audit control: staff-access.yaml plus the members of a GitHub organisation as a second observed source (Req 3.2).
-# Hollow Pines is fictional, so this variant is a template for a real organisation:
+# Hollow Pines is a demo company, so this variant is a template for a real organisation:
 #   1. set `org` to the organisation's login (the placeholder below is not a valid name and fails before any request);
 #   2. export GITHUB_TOKEN with a fine-grained token that has only the organisation permission "Members: read";
 #   3. give each engineer's login in the roster's github_login column.

@@ -1,5 +1,5 @@
 {
-  "note": "Recorded shape of GET /orgs/{org}/members (GitHub REST API 2022-11-28): a JSON array of simple-user objects per page, paginated with a Link header. Logins, ids and the organisation are synthetic.",
+  "note": "Recorded shape of GET /orgs/{org}/members (GitHub REST API 2022-11-28): a JSON array of simple-user objects per page, paginated with a Link header. Logins, ids and the organisation are example values.",
   "pages": [
     {
       "url": "https://api.github.com/orgs/hollow-pines-demo/members?per_page=100",

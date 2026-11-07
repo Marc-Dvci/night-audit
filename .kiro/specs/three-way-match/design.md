@@ -647,7 +647,7 @@ region. The region is computed by the matcher from ledger membership, not from a
 ### Testing
 
 No network access in unit and property tests (tech rule). The Bedrock call is tested with a mock or
-the template fallback. The number guard is tested with synthetic model responses.
+the template fallback. The number guard is tested with scripted model responses.
 
 ## 12. Connector interface
 

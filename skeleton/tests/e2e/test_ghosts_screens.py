@@ -34,7 +34,7 @@ def test_the_ghosts_overview_speaks_about_people(page: Any, base_url: str) -> No
     _, second = ghost_nights()
     open_page(page, base_url, f"?app=ghosts-demo&run={second}")
     assert page.inner_text("#headline").startswith("3 Ghosts have active accounts and paid seats")
-    assert page.inner_text(".recorded") == "Recorded run of synthetic data. Not live data."
+    assert page.inner_text(".recorded") == "Recorded run. Not live data."
     assert "180 people" in page.inner_text(".ledgers")
     assert page.inner_text(".compare-intro").startswith("Every person is looked up in all three.")
     assert page.text_content("#venn-title") == "People by region across the three ledgers"

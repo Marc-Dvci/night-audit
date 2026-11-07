@@ -307,7 +307,7 @@ values = st.text(
 )
 
 
-def synthetic(person: str, name: str, manager: str) -> RunResult:
+def sheet_run(person: str, name: str, manager: str) -> RunResult:
     record = Record(ledger=LedgerName.observed, source="s", row_id="r", raw_key=person, key=person)
     finding = Finding(
         key=person,
@@ -359,13 +359,13 @@ def markup(page: str) -> Markup:
 @given(person=values, name=values, manager=values)
 def test_property_the_review_sheet_shows_values_only_as_text(person: str, name: str, manager: str) -> None:
     """G9 (Req 5.1): hostile values change no tag of the HTML sheet; the CSV neutralises formulas and round-trips."""
-    hostile = markup(sheet_html(synthetic(person, name, manager)))
-    benign = markup(sheet_html(synthetic("p" * len(person), "n" * len(name), "m" * len(manager))))
+    hostile = markup(sheet_html(sheet_run(person, name, manager)))
+    benign = markup(sheet_html(sheet_run("p" * len(person), "n" * len(name), "m" * len(manager))))
     assert hostile.tags == benign.tags
     text = "".join(hostile.text)
     assert person in text and name in text and manager in text
 
-    (row,) = list(csv.DictReader(io.StringIO(sheet_csv(synthetic(person, name, manager)), newline="")))
+    (row,) = list(csv.DictReader(io.StringIO(sheet_csv(sheet_run(person, name, manager)), newline="")))
     for column in ("person", "region", "manager", "systems", "seats"):
         assert not row[column].startswith(FORMULA_START)
     assert (restore(row["person"]), restore(row["region"]), restore(row["manager"])) == (person, name, manager)

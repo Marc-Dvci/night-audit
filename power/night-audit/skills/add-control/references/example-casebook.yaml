@@ -1,5 +1,5 @@
 # Example casebook for example-control.yaml. Written by hand from the region table, before any matcher run.
-# Every address is synthetic. `now` is the run time (UTC); keys are written as the source would write them.
+# `now` is the run time (UTC); keys are written as the source would write them.
 control: example-control.yaml
 now: "2026-11-04T02:00:00Z"
 

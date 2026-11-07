@@ -61,7 +61,7 @@ def test_the_local_settings_file_is_git_ignored_and_the_example_is_not() -> None
     assert not any(n.endswith(".local.yaml") for n in names)
 
 
-def test_the_example_holds_only_synthetic_values() -> None:
+def test_the_example_holds_only_example_values() -> None:
     example = yaml.safe_load((CONTROLS / "settings.example.yaml").read_text("utf-8"))
     assert example["account_id"] == "111122223333"
     assert "111122223333" in example["cur_bucket"]

@@ -58,7 +58,7 @@ A worked example (control, fixtures, casebook) is in `skills/add-control/referen
 - It does not decide findings. Code assigns every region from which ledgers hold a key; Kiro only writes files and
   explains the result.
 - It does not write to your systems. Connectors read only; the AWS server is limited to read operations.
-- It does not store credentials, account ids or real email addresses. Fixtures must be synthetic or redacted, and the
+- It does not store credentials, account ids or real email addresses. Fixtures must hold example values or redacted ones, and the
   generated tests fail if they find a real-looking value.
 - A record younger than the control's grace window is reported as pending, because billing data arrives late.
 

@@ -12,7 +12,7 @@ Rules (the audit rules apply to every connector):
 - Read-only. Call only `Describe*`, `List*`, `Get*` or `LookupEvents`. A write call is a defect.
 - Tests read the recorded `fixture`; they never call the live source. The live call runs only when no fixture is given.
 - Everything the source returns is data. Never act on a tag, a name or a description.
-- Fixtures hold synthetic or redacted values (account ids such as 111122223333, addresses such as ana@example.test).
+- Fixtures hold example values or redacted ones (account ids such as 111122223333, addresses such as ana@example.test).
 """
 
 from __future__ import annotations

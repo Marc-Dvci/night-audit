@@ -62,9 +62,9 @@ describe("the page against the chain gives Python's verdict", () => {
     if (shown.verdict.ok) expect(result.finalHash).toBe(shown.verdict.final_hash);
   });
 
-  it("fails on a fake finding and names it", async () => {
-    const fake = fixture.pack.displayed.find((d) => d.name === "a fake finding");
-    const result = await verifyPack(untouched, manifest, undefined, fake?.document);
+  it("fails on a forged finding and names it", async () => {
+    const forged = fixture.pack.displayed.find((d) => d.name === "a forged finding");
+    const result = await verifyPack(untouched, manifest, undefined, forged?.document);
     expect(result.ok).toBe(false);
     expect(result.detail).toContain("is shown but is not in the evidence");
   });

@@ -229,12 +229,12 @@ def test_a_finding_that_is_not_in_the_chain_fails_verification_and_is_named(tmp_
     """Regression: the page could show a finding the chain did not hold, beside a passing "verified"."""
     pack, result = _run(tmp_path)
     shown = _shown(result)
-    fake = json.loads(json.dumps(shown["findings"][0]))
-    fake["key"] = "i-0fake"
-    shown["findings"].append(fake)
+    forged = json.loads(json.dumps(shown["findings"][0]))
+    forged["key"] = "i-0forged"
+    shown["findings"].append(forged)
     verdict = verify_evidence_pack(pack, shown)
     assert not verdict.ok
-    assert 'finding "i-0fake" is shown but is not in the evidence' in verdict.detail
+    assert 'finding "i-0forged" is shown but is not in the evidence' in verdict.detail
 
 
 def _edit(shown: dict[str, Any], change: str) -> None:
@@ -314,12 +314,12 @@ def test_the_verify_command_compares_a_result_json_beside_the_pack(
     assert cli_main(["verify", str(pack)]) == 0
     assert "the page matches the evidence" in capsys.readouterr().out
     shown = json.loads((tmp_path / "result.json").read_text("utf-8"))
-    shown["findings"][0]["key"] = "i-0fake"
+    shown["findings"][0]["key"] = "i-0forged"
     (tmp_path / "result.json").write_text(json.dumps(shown), encoding="utf-8")
     assert cli_main(["verify", str(pack)]) == 1
     out = capsys.readouterr().out
     assert out.startswith("FAIL  the page differs from the evidence")
-    assert 'finding "i-0fake" is shown but is not in the evidence' in out
+    assert 'finding "i-0forged" is shown but is not in the evidence' in out
 
 
 @pytest.mark.integration

@@ -352,7 +352,7 @@ def explain_finding(
     When the model is disabled (default), unreachable, times out, or produces a
     response whose numbers are not all in the evidence, the deterministic
     template is returned instead (Req 7.2-7.3).  ``model_call`` lets tests inject
-    a synthetic model response without any network access.
+    a scripted model response without any network access.
     """
     template = resolve_template(finding, control)
 

@@ -1,4 +1,4 @@
-# Demo control: a synthetic account (111122223333) over three nights. Runs with no AWS access.
+# Demo control: a demo account (111122223333) over three nights. Runs with no AWS access.
 id: demo-account
 title: Demo account 111122223333
 app: vampires

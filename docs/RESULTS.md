@@ -1,22 +1,22 @@
 # Results
 
-Every figure here comes from a command in this repository. Synthetic data is labelled as synthetic. Figures were
-measured on 7 Nov 2026 at commit `2035d42` plus the working changes that follow it.
+Every figure here comes from a command in this repository. Figures were measured on 7 Nov 2026 at
+commit `2035d42` plus the working changes that follow it.
 
 ## Tests
 
 | Figure | Value | Command |
 |---|---|---|
-| All tests | 1046 collected: 1043 passed, 3 skipped | `uv run pytest -q` |
+| All tests | 1057 collected: 1054 passed, 3 skipped | `uv run pytest -q` |
 | Skipped | 3, all `-m lean` differential tests, which need the Lean toolchain (`lake`); the `lean` CI job runs them with `NIGHTAUDIT_REQUIRE_LEAN=1` | `uv run pytest -q -ra` |
-| Property-based, integration, browser | 41, 252 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
+| Property-based, integration, browser | 41, 263 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
 | TypeScript | 261 tests in 4 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
 | Decision core coverage | 96.85 % of lines and branches over `matcher`, `normalisers`, `grace`, `scope`, `state`, `evidence`, `explain`, `control`, `report` (floor 90 %) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Lint, format, types | ruff, ruff format and `mypy --strict` clean | `uv run ruff check . && uv run ruff format --check . && uv run mypy` |
 
 Tests run in random order (`pytest-randomly`), with a 30 s timeout each, no network and no real clock.
 
-## Casebook (synthetic, labelled by hand before the matcher existed)
+## Casebook (labelled by hand before the matcher existed)
 
 | Set | Cases | Passed | When | Command |
 |---|---|---|---|---|
@@ -77,7 +77,7 @@ spelled two ways gave two run ids. Tests:
 
 An independent review by an agent on a different model that cannot write files reported four things, all fixed: Cost and
 Usage Report rounding below 1e-7, a pack's `run_id` that could change without failing verification
-(`test_changing_the_run_id_in_the_manifest_fails_verification`), a fake finding on the page beside a passing verify (the page is
+(`test_changing_the_run_id_in_the_manifest_fails_verification`), a forged finding on the page beside a passing verify (the page is
 now compared with the chain), and attribute names reaching the prompt unquoted
 (`test_a_hostile_attribute_name_is_quoted_and_cannot_forge_a_prompt_line`).
 
@@ -121,7 +121,7 @@ region filter, with a finding opened) and runs axe-core with the WCAG 2.0, 2.1 a
 
 | URL | Violations in the eight states | Script-payload check | Keyboard | Result |
 |---|---|---|---|---|
-| `https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=vampires-demo` (demo, synthetic) | 0 in each (axe passes 28 to 30 rules per state) | `payload in the data 2 time(s), shown as text in 1 place(s), no dialog` | Enter on the Vampire legend item shows `"VAMPIRE 2"` | `RESULT: PASS` |
+| `https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=vampires-demo` (demo) | 0 in each (axe passes 28 to 30 rules per state) | `payload in the data 2 time(s), shown as text in 1 place(s), no dialog` | Enter on the Vampire legend item shows `"VAMPIRE 2"` | `RESULT: PASS` |
 | `https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/` (the live lab night) | 0 in each (28 to 31 rules pass per state) | `not applicable, no payload on this night` | `"VAMPIRE 3"` | `RESULT: PASS` |
 
 The first run on each URL also printed a Playwright traceback before `RESULT: PASS`: one JSON response on the deployed

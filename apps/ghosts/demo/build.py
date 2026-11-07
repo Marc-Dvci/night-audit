@@ -8,8 +8,7 @@
 Each night's folder holds the files the skeleton's ``nightaudit.demo.export_run`` writes, including ``review.csv`` and
 ``review.html`` (the control's downloads) and, on the second night, ``decisions.jsonl``.
 
-The target is ``skeleton/web/public/demo/ghosts/``; nothing else is written there. Every person and decision is
-synthetic.
+The target is ``skeleton/web/public/demo/ghosts/``; nothing else is written there.
 
 Rebuild every demo: ``uv run python scripts/build_demos.py``. This app only: ``uv run python apps/ghosts/demo/build.py``
 """
@@ -38,7 +37,7 @@ APP_ENTRIES = [{"name": "ghosts-demo", "title": "Ghosts demo company", "mode": "
 #: A fixed zip timestamp, so a rebuild with the same inputs writes the same bytes.
 ZIP_TIME = (2026, 11, 5, 2, 0, 0)
 RUN_FILES = ("run.json", "report.html", "evidence.jsonl", "manifest.json", "evidence.zip", "review.csv", "review.html")
-#: The synthetic reviewer and the three decisions recorded against the second night.
+#: The reviewer and the three decisions recorded against the second night.
 REVIEWER = "Dana Okafor, IT manager"
 DECIDED_ON = "2026-11-05"
 IMPORTED_AT = datetime(2026, 11, 5, 15, 30, tzinfo=UTC)

@@ -26,7 +26,7 @@ DISPLAY_ORDER: tuple[str, ...] = ("OB", "B", "IB", "I", "O", "IO", "IOB")
 
 CALM_HEADLINE = "All three ledgers agree. Nothing to report tonight."
 #: How a recorded demo run is marked, in the report and on the page. It names no domain, so it fits every app.
-RECORDED_TEXT = "Recorded run of synthetic data, not live data"
+RECORDED_TEXT = "Recorded run. Not live data."
 MINUS = "\u2212"
 _MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 #: Sums of money never round: the default 28-digit context drops digits (the matcher uses the same rule).

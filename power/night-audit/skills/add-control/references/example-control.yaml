@@ -1,4 +1,4 @@
-# Example Night Audit control: chat seats at a small company. Every address and name is synthetic.
+# Example Night Audit control: chat seats at a small company.
 # Intended = the HR roster. Observed = active chat accounts. Billed = paid seats on the vendor's invoice.
 # Paths are relative to this file. The skill writes the same shape to controls/<id>.yaml in your project.
 id: seat-audit

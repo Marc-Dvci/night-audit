@@ -1,6 +1,6 @@
 """When the model fails, the finding keeps its deterministic template (Req 7.2, 7.3, audit rule 1).
 
-The Bedrock client is faked at the network edge only: ``boto3.client`` returns an object whose ``converse`` raises or
+The Bedrock client is stubbed at the network edge only: ``boto3.client`` returns an object whose ``converse`` raises or
 answers as a recorded response would.
 """
 

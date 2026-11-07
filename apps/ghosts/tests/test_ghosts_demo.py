@@ -53,7 +53,7 @@ def test_a_fresh_build_has_two_nights_one_without_and_one_with_decisions(tmp_pat
         assert view["finding_count"] == 8
         assert run.ui.title == "Ghosts" and run.ui.noun.plural == "people"
         assert str(view["headline"]).startswith("3 Ghosts have active accounts and paid seats but are not on the HR")
-        assert "Recorded run of synthetic data" in (folder / "report.html").read_text("utf-8")
+        assert "Recorded run. Not live data." in (folder / "report.html").read_text("utf-8")
         assert run_numbers(run)
         assert extra["downloads"] == [
             {"label": "Review sheet (CSV)", "file": "review.csv"},

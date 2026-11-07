@@ -48,10 +48,10 @@ changes [Req 7.1].
       `python -m ghosts.run`. Tests: an invoice below its assignments is reported beside the run with the shortfall;
       property G3. [Req 4.3]
 
-## Synthetic company and acceptance
+## Demo company and acceptance
 
 - [x] **9. Generator.** `ghosts.generate`: `build_company(seed, plant)`, `write_company`, CLI. Writes
-      `apps/ghosts/data/`. Tests: 180 people belong on the run date, every name and vendor is from the fictional pools,
+      `apps/ghosts/data/`. Tests: 180 people belong on the run date, every name and vendor is from the fixed pools,
       the planted people match `planted.yaml`, the committed data equals a fresh build. Property G6. [Req 6.1, 6.2]
 
 - [x] **10. Acceptance run.** `ghosts.acceptance` and `test_ghosts_planted.py`: the Hollow Pines run equals

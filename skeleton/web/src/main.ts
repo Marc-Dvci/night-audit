@@ -180,7 +180,7 @@ async function verify(change: "none" | "tamper" = "none"): Promise<void> {
             }
           }
         : undefined,
-      // What the page displays must also be what the chain holds: a fake finding fails here (Req 6.6).
+      // What the page displays must also be what the chain holds: a forged finding fails here (Req 6.6).
       run as unknown as Record<string, unknown>,
     );
     const pageHash = run.evidence_chain_hash;

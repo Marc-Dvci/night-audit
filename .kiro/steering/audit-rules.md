@@ -20,4 +20,4 @@ These rules come from internal-audit practice. They apply to every change.
 7. **The held-out case set is sealed.** Never read, open, list or grep `casebook/heldout/`. It is scored only by
    `scripts/score_heldout.py` after a release is tagged.
 8. **Wording.** Findings describe conditions and evidence. Never write that someone acted maliciously.
-9. **No secrets in the repo.** Account ids, access keys and emails in fixtures are synthetic or redacted.
+9. **No secrets in the repo.** Fixtures hold no real account id, access key or email: they use reserved example values (such as `111122223333` and `example.com`) or redacted ones.

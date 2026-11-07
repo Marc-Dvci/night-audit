@@ -102,7 +102,7 @@ Billing data arrives late, so the control runs at 02:00 UTC on yesterday's bill 
    on any write beyond the claim above.
 6. THE SYSTEM SHALL keep account-specific values out of the committed control, approvals and deployment template. The
    CUR bucket, the account id and the approver come from `settings.local.yaml` beside the control (git-ignored;
-   `settings.example.yaml` documents it with the synthetic account `111122223333`) or from `NIGHT_AUDIT_CUR_BUCKET`,
+   `settings.example.yaml` documents it with the example account `111122223333`) or from `NIGHT_AUDIT_CUR_BUCKET`,
    `NIGHT_AUDIT_ACCOUNT_ID` and `NIGHT_AUDIT_APPROVER`, which win. The deployed function receives them as the stack
    parameters `CurBucket` and `Approver` and the account id from `AWS::AccountId`. A test fails when the real lab
    account number appears in a tracked file outside `lab/` and `docs/`.

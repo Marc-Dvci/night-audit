@@ -7,8 +7,8 @@ access, which accounts exist, and which seats the company pays for. Its user is 
 access review that an auditor will test. The skeleton is unchanged; the app supplies connectors, a control file and
 its own region names.
 
-The company in the demo is fictional: Hollow Pines Credit Union, about 180 staff. Every person, address and vendor in
-it is synthetic.
+The company in the demo is Hollow Pines Credit Union, about 180 staff. Its names, addresses and vendors never match a
+real person or product.
 
 ## Glossary
 
@@ -16,7 +16,7 @@ it is synthetic.
 - **Identity export**: CSV export of accounts from an identity provider, with status and last sign-in.
 - **Licence assignments**: per-vendor CSV of the people a paid seat is assigned to.
 - **Seat invoice**: per-vendor monthly invoice with a seat quantity and a unit price.
-- **Fictional vendors**: Lantern Chat, Crypt Docs, Belfry CRM, Ossuary Design. No real product names.
+- **Vendors**: Lantern Chat, Crypt Docs, Belfry CRM, Ossuary Design. No real product names.
 
 ## Requirement 1: the control file
 
@@ -36,7 +36,7 @@ it is synthetic.
 
 1. WHEN the observed ledger is read THE SYSTEM SHALL emit one record per active account in each identity export,
    keyed by email, with the system name, status and last sign-in as attributes.
-2. THE SYSTEM SHALL support at least two observed sources in one run: the synthetic identity provider export and one
+2. THE SYSTEM SHALL support at least two observed sources in one run: the demo identity provider export and one
    live source, the members of a GitHub organisation read through the GitHub API with a read-only token.
 
 ## Requirement 4: billed ledger
@@ -56,7 +56,7 @@ it is synthetic.
 2. WHEN a completed review sheet is imported THE SYSTEM SHALL record each decision in the evidence pack with the
    reviewer's name and date, and SHALL refuse a decision on a key that the run did not report.
 
-## Requirement 6: synthetic company
+## Requirement 6: demo company
 
 1. THE SYSTEM SHALL ship a seeded generator for Hollow Pines that writes the HR roster, the identity export, the licence
    assignments and the invoices, and a written list of the planted findings with their expected regions, committed

@@ -80,7 +80,7 @@ def test_every_department_has_a_head_and_every_manager_is_on_the_roster() -> Non
     assert sum(1 for p in ROSTER.values() if not p["manager_email"]) == 1  # the chief executive
 
 
-def test_every_name_and_vendor_is_from_the_fictional_pools() -> None:
+def test_every_name_and_vendor_is_from_the_fixed_pools() -> None:
     for person in ROSTER.values():
         pair = (person["given_name"], person["family_name"])
         assert pair in PLANTED_NAMES or (pair[0] in GIVEN_NAMES and pair[1] in FAMILY_NAMES)

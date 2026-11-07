@@ -3,7 +3,7 @@
 ## 1. Overview
 
 `apps/ghosts/` is the second application on the Night Audit skeleton. It reconciles staff access for Hollow Pines
-Credit Union, a fictional company of 180 current staff, and produces an access review sheet that an IT manager hands to
+Credit Union, a demo company of 180 current staff, and produces an access review sheet that an IT manager hands to
 an auditor. Nothing under `skeleton/` changes (Req 7.1). The app supplies:
 
 - a control file that declares the three ledgers, the normaliser chain, the grace window, the region names and the
@@ -13,7 +13,7 @@ an auditor. Nothing under `skeleton/` changes (Req 7.1). The app supplies:
 - an enricher, `people_context`, that adds the HR facts and the per-person summaries a reviewer reads (Req 2.2, 5.1),
 - a seat summary summariser that adds run notes (Req 4.3),
 - the review campaign: export, import, verify (Req 5),
-- a seeded generator for the synthetic company (Req 6),
+- a seeded generator for the demo company (Req 6),
 - a recorded demo for the shared page (Req 7.2).
 
 | Ledger | Question | Hollow Pines source | Key |
@@ -239,7 +239,7 @@ It prints `OK` or `FAIL` with the first failing row and exits non-zero on failur
 - 180 people belong on 2026-11-04 across eleven departments of a credit union (Executive, Member Services, Branch
   Operations, Lending, Card Services, Collections, Finance, Risk and Compliance, IT, Marketing, People). Each
   department has a head who reports to the chief executive, and larger departments have team leads.
-- Names come from fixed pools of common given and family names; branches have invented names. Emails are
+- Names come from fixed pools of common given and family names, and branch names from a fixed list. Emails are
   `<initial>.<surname>@hollowpines.com`, falling back to `<given>.<surname>` on a collision.
 - Seats follow department: Lantern Chat for nearly everyone, Crypt Docs for office departments, Belfry CRM for member
   facing departments, Ossuary Design for Marketing. A few part-time tellers hold no seat (Unlicensed user, `IO`).
@@ -255,7 +255,7 @@ It prints `OK` or `FAIL` with the first failing row and exits non-zero on failur
 ## 9. Demo (Req 7.2)
 
 `apps/ghosts/demo/build.py` runs `controls/staff-access.yaml` at 2026-11-04T02:00Z and 2026-11-05T02:00Z into
-`runs/ghosts-demo`. Each run writes its review sheet (the control's downloads). Three synthetic decisions by "Dana
+`runs/ghosts-demo`. Each run writes its review sheet (the control's downloads). Three decisions by "Dana
 Okafor, IT manager", dated 2026-11-05, are imported into the second night through `ghosts.review` with a fixed clock,
 so the first night shows no decision and the second shows three. The skeleton's `nightaudit.demo.export_run` writes
 each night into `skeleton/web/public/demo/ghosts/<run id>/`; `scripts/build_demos.py` runs this build and lists

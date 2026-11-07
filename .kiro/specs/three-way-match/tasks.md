@@ -144,7 +144,7 @@ its name starts with `test_property_`.
       [Req 6.3]
 
 - [x] **25. Explanation guard.** `tests/test_property_explanation_guard.py` — generate a finding with
-      known evidence numbers, supply a synthetic model response containing a number not in the
+      known evidence numbers, supply a scripted model response containing a number not in the
       evidence, assert the template is returned and the rejection is recorded. [Req 7.2]
 
 - [x] **26. Injection does not change regions.** `tests/test_property_injection.py` — generate a

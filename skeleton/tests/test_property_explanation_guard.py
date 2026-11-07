@@ -113,11 +113,11 @@ def test_property_a_response_citing_a_number_outside_the_evidence_is_replaced_by
     finding, response, stray = case
     prompts: list[str] = []
 
-    def fake_model(prompt: str) -> str:
+    def scripted_model(prompt: str) -> str:
         prompts.append(prompt)
         return response
 
-    explanation = explain_finding(finding, ModelConfig(enabled=True, model_id="fake"), CLOUD, model_call=fake_model)
+    explanation = explain_finding(finding, ModelConfig(enabled=True, model_id="stub"), CLOUD, model_call=scripted_model)
 
     assert len(prompts) == 1
     assert explanation.source == "template", f"{stray} accepted in {response!r}"
@@ -154,7 +154,7 @@ def test_regression_a_response_that_negates_an_evidence_number_is_rejected() -> 
     """
     finding = _phantom([_row(LedgerName.intended, attrs={"project": "41.20"})])
     explanation = explain_finding(
-        finding, ModelConfig(enabled=True, model_id="fake"), CLOUD, model_call=lambda prompt: "-41.20."
+        finding, ModelConfig(enabled=True, model_id="stub"), CLOUD, model_call=lambda prompt: "-41.20."
     )
     assert explanation.source == "template"
     assert explanation.rejected
@@ -196,7 +196,7 @@ def test_a_custom_template_can_still_write_the_key() -> None:
 def test_the_number_guard_still_rejects_a_stray_number_when_the_template_has_no_key() -> None:
     finding = _phantom([_row(LedgerName.billed, amount=Decimal("41.20"))])
     explanation = explain_finding(
-        finding, ModelConfig(enabled=True, model_id="fake"), CLOUD, model_call=lambda prompt: "It costs 99.99 a night."
+        finding, ModelConfig(enabled=True, model_id="stub"), CLOUD, model_call=lambda prompt: "It costs 99.99 a night."
     )
     assert explanation.source == "template"
     assert explanation.rejected

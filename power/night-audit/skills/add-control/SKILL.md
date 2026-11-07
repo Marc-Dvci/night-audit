@@ -49,7 +49,7 @@ Then `uv add --dev pytest` and add `[tool.pytest.ini_options] pythonpath = ["."]
   `normalisers` and a source. Use the built-in `csv` or `jsonl` source whenever the data can be exported. Write a
   Python connector only for a live API: copy `assets/connector_template.py`. It must be read-only, and `entry` must be
   importable from the project root. Run `nightaudit` as `uv run python -m nightaudit.cli ...` for such controls.
-- Record a small `fixtures/<id>/` for each source: a handful of rows, **synthetic or redacted** (account ids
+- Record a small `fixtures/<id>/` for each source: a handful of rows, **example values or redacted** (account ids
   `111122223333`, addresses at `example.test`). Point the control at the fixtures. Real exports belong in an
   untracked `*.live.yaml` copy.
 - To see the shape of an AWS source, the `aws-api` server may be used for `Describe*`, `List*` and `Get*` calls only.

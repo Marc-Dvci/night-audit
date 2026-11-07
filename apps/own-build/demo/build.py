@@ -5,7 +5,7 @@ files in ``apps/own-build/data/``: the files the specs name and the files git tr
 ``apps/own-build/snapshot.py`` for one commit), and Kiro's files and sessions exported from its own session store.
 There is one night because there is one snapshot; nothing here pretends to a history.
 
-Unlike the other two demos this data is real, not synthetic. It holds no prompt and no reply: file paths, session ids,
+This data is real: it holds no prompt and no reply: file paths, session ids,
 model names, times and credits only.
 
 The target is ``skeleton/web/public/demo/own-build/``; nothing else is written there.

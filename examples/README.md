@@ -1,6 +1,6 @@
 # A finished night, without running anything
 
-`vampires-night/` is the third night of the Vampires demo: a synthetic AWS account audited at 02:00 UTC on 6 Nov 2026
+`vampires-night/` is the third night of the Vampires demo: a demo AWS account audited at 02:00 UTC on 6 Nov 2026
 (run `75b641467552e35a`). The files are copied byte for byte from the committed demo by
 `uv run python scripts/build_examples.py`, and `skeleton/tests/test_examples.py` fails if they ever differ.
 

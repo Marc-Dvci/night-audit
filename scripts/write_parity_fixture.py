@@ -6,7 +6,7 @@
 * ``money``: a decimal string as the API sends it and ``report.money_text`` of it,
 * ``pack``: a hostile evidence pack (bidi overrides, astral characters, quotes, control characters, lone surrogates, row
   ids that sort differently by code point and by UTF-16 unit) and ``variants`` of it, each with Python's verdict, and
-  ``displayed``: the run as a page shows it, edited in ways a page could lie (a fake finding, a changed region, a
+  ``displayed``: the run as a page shows it, edited in ways a page could lie (a forged finding, a changed region, a
   hidden finding, a changed figure), each with Python's verdict from comparing it with the untouched pack.
 
 ``skeleton/tests/test_parity_fixture.py`` fails when the committed file differs from what this script writes, so the
@@ -237,9 +237,9 @@ def _displayed_variants(shown: dict[str, Any]) -> list[tuple[str, dict[str, Any]
         change(copy)
         return name, copy
 
-    def fake(d: dict[str, Any]) -> None:
+    def forged(d: dict[str, Any]) -> None:
         extra = json.loads(json.dumps(d["findings"][0]))
-        extra["key"] = "fake-\u202e\U0001f47b-\u00e9"
+        extra["key"] = "forged-\u202e\U0001f47b-\u00e9"
         d["findings"].append(extra)
 
     def region(d: dict[str, Any]) -> None:
@@ -265,7 +265,7 @@ def _displayed_variants(shown: dict[str, Any]) -> list[tuple[str, dict[str, Any]
 
     return [
         ("served as it is", shown),
-        edit("a fake finding", fake),
+        edit("a forged finding", forged),
         edit("a changed region", region),
         edit("a changed status", status),
         edit("a changed billed amount", amount),

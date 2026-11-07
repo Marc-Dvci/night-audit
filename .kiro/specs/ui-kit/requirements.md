@@ -105,7 +105,7 @@ review that an auditor will test.
 1. THE SYSTEM SHALL offer a switch in the masthead between the apps available to this deployment. The available apps come
    from `apps.json` (name, title, `live` or `demo`, base path), written at build time.
 2. WHEN an app's control declares `columns` THE SYSTEM SHALL render the finding rows with those columns, in that order.
-3. THE SYSTEM SHALL show recorded (synthetic) runs as such, in words, in the masthead. A recorded run is never presented as
+3. THE SYSTEM SHALL show recorded runs as such, in words, in the masthead. A recorded run is never presented as
    live data.
 
 ## Requirement 9: link card and first impression

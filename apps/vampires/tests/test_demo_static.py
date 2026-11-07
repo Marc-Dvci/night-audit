@@ -84,5 +84,5 @@ def test_each_demo_night_has_its_files_and_its_evidence_verifies(summary: dict[s
     assert "new_findings" in summary
     assert run.ui.title == "Vampires"
     report = (folder / "report.html").read_text("utf-8")
-    assert "Recorded run of synthetic data" in report
+    assert "Recorded run. Not live data." in report
     assert run_numbers(run)

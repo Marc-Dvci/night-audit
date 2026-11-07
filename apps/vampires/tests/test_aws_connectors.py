@@ -1,4 +1,4 @@
-"""Vampires connectors against a recorded fake AWS session (no network)."""
+"""Vampires connectors against a recorded stub AWS session (no network)."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ PLANTED = datetime(2026, 11, 4, 12, 29, tzinfo=UTC)
 RUN = datetime(2026, 11, 6, 2, 0, tzinfo=UTC)
 
 
-class FakePaginator:
+class StubPaginator:
     def __init__(self, pages: list[dict[str, Any]]) -> None:
         self._pages = pages
 
@@ -28,7 +28,7 @@ class FakePaginator:
         return self._pages
 
 
-class FakeClient:
+class StubClient:
     def __init__(self, service: str, region: str, data: dict[str, Any], calls: list[str]) -> None:
         self._service, self._region, self._data, self._calls = service, region, data, calls
 
@@ -36,20 +36,20 @@ class FakeClient:
         self._calls.append(op)
         return self._data.get(self._region, {}).get(self._service, {}).get(op, {})
 
-    def get_paginator(self, op: str) -> FakePaginator:
-        return FakePaginator([self._get(op)])
+    def get_paginator(self, op: str) -> StubPaginator:
+        return StubPaginator([self._get(op)])
 
     def __getattr__(self, op: str) -> Any:
         return lambda **_: self._get(op)
 
 
-class FakeSession:
+class StubSession:
     def __init__(self, data: dict[str, Any]) -> None:
         self.data = data
         self.calls: list[str] = []  # every operation name the connectors asked a client for
 
-    def client(self, service: str, region_name: str) -> FakeClient:
-        return FakeClient(service, region_name, self.data, self.calls)
+    def client(self, service: str, region_name: str) -> StubClient:
+        return StubClient(service, region_name, self.data, self.calls)
 
 
 ACCOUNT = {
@@ -217,14 +217,14 @@ def _cur(tmp: Path, rows: list[tuple[str, str, str, str, str, str]] | None = Non
 
 
 def test_declared_stacks_take_tagged_stacks_and_root_volumes() -> None:
-    records = DeclaredStacks(ledger=LedgerName.intended, regions=REGIONS, session=FakeSession(ACCOUNT)).fetch()
+    records = DeclaredStacks(ledger=LedgerName.intended, regions=REGIONS, session=StubSession(ACCOUNT)).fetch()
     keys = sorted(r.raw_key for r in records)
     assert keys == ["i-0lab", "lab-deployer", "vol-0lab"]  # bucket policy is not an audited type
     assert next(r for r in records if r.raw_key == "vol-0lab").attrs["declared_with"] == "i-0lab"
 
 
 def test_inventory_sees_every_region_and_global_iam() -> None:
-    records = Inventory(ledger=LedgerName.observed, regions=REGIONS, session=FakeSession(ACCOUNT)).fetch()
+    records = Inventory(ledger=LedgerName.observed, regions=REGIONS, session=StubSession(ACCOUNT)).fetch()
     assert sorted(r.raw_key for r in records) == [
         "AKIAEXAMPLEPOLTER01",
         "i-0lab",
@@ -311,7 +311,7 @@ def test_approved_changes_skip_expired(tmp_path: Path) -> None:
 
 
 def test_planted_lab_produces_the_expected_regions(tmp_path: Path) -> None:
-    session = FakeSession(ACCOUNT)
+    session = StubSession(ACCOUNT)
     intended = DeclaredStacks(ledger=LedgerName.intended, regions=REGIONS, session=session).fetch()
     observed = Inventory(ledger=LedgerName.observed, regions=REGIONS, session=session).fetch()
     billed = CostAndUsage(ledger=LedgerName.billed, path=str(_cur(tmp_path))).fetch()
@@ -340,22 +340,22 @@ def test_planted_lab_produces_the_expected_regions(tmp_path: Path) -> None:
 
 
 def test_creating_event_is_found_for_the_vampire() -> None:
-    observed = Inventory(ledger=LedgerName.observed, regions=REGIONS, session=FakeSession(ACCOUNT)).fetch()
+    observed = Inventory(ledger=LedgerName.observed, regions=REGIONS, session=StubSession(ACCOUNT)).fetch()
     vamp = next(r for r in observed if r.raw_key == "i-0vamp")
 
     class F:
         key = "i-0vamp"
         records = [vamp]
 
-    context = creating_events([F()], {"session": FakeSession(ACCOUNT)})
+    context = creating_events([F()], {"session": StubSession(ACCOUNT)})
     assert context["i-0vamp"]["creating_event"] == "RunInstances"
     assert context["i-0vamp"]["source_ip"] == "203.0.113.9"
-    masked = creating_events([F()], {"session": FakeSession(ACCOUNT), "mask_source_ip": True})
+    masked = creating_events([F()], {"session": StubSession(ACCOUNT), "mask_source_ip": True})
     assert masked["i-0vamp"]["source_ip"] == "203.0.x.x"
 
 
 def test_a_scope_list_keeps_only_listed_keys_and_prefixes(tmp_path: Path) -> None:
-    session = FakeSession(ACCOUNT)
+    session = StubSession(ACCOUNT)
     intended = DeclaredStacks(ledger=LedgerName.intended, regions=REGIONS, session=session).fetch()
     observed = Inventory(ledger=LedgerName.observed, regions=REGIONS, session=session).fetch()
     billed = CostAndUsage(ledger=LedgerName.billed, path=str(_cur(tmp_path))).fetch()
@@ -373,7 +373,7 @@ def test_a_scope_list_keeps_only_listed_keys_and_prefixes(tmp_path: Path) -> Non
 
 
 # --- What the first real bill taught (vampires-app Requirement 10) ------------------------------------------------
-# Synthetic ids throughout. The shapes (usage types, ARN forms, which id CloudFormation reports) come from the first
+# Example ids throughout. The shapes (usage types, ARN forms, which id CloudFormation reports) come from the first
 # real CUR; the values do not.
 
 FRESH_RUN = datetime(2026, 11, 6, 0, 0, tzinfo=UTC)
@@ -457,13 +457,13 @@ def _by_key(records: list[Record]) -> dict[str, Record]:
 
 
 def _run(
-    session: FakeSession,
+    session: StubSession,
     regions: list[str],
     tmp_path: Path,
     bill: list[tuple[str, str, str, str, str, str]],
     run_time: datetime = RUN,
 ) -> RunResult:
-    """The whole night: the three real connectors over the fake session and a CUR, then the skeleton's matcher."""
+    """The whole night: the three real connectors over the stub session and a CUR, then the skeleton's matcher."""
     intended = DeclaredStacks(ledger=LedgerName.intended, regions=regions, session=session).fetch()
     observed = Inventory(ledger=LedgerName.observed, regions=regions, session=session).fetch()
     billed = CostAndUsage(ledger=LedgerName.billed, path=str(_cur(tmp_path, bill))).fetch()
@@ -489,7 +489,7 @@ def _eni_arn(region: str, eni_id: str) -> str:
 
 def test_inventory_lists_a_network_interface_with_its_instance_region_description_and_type() -> None:
     data = {"eu-north-1": _region(enis=[_eni("eni-0vamp", "i-0vamp", PLANTED)])}
-    records = Inventory(ledger=LedgerName.observed, regions=["eu-north-1"], session=FakeSession(data)).fetch()
+    records = Inventory(ledger=LedgerName.observed, regions=["eu-north-1"], session=StubSession(data)).fetch()
     by_key = _by_key(records)
     assert "eni-0vamp" in by_key, "the inventory has no network-interface kind"
     eni = by_key["eni-0vamp"]
@@ -511,7 +511,7 @@ def test_inventory_keeps_a_requester_managed_interface_that_no_instance_owns() -
         RequesterManaged=True,
     )
     data = {"us-east-1": _region(enis=[nat_eni])}
-    records = Inventory(ledger=LedgerName.observed, regions=["us-east-1"], session=FakeSession(data)).fetch()
+    records = Inventory(ledger=LedgerName.observed, regions=["us-east-1"], session=StubSession(data)).fetch()
     by_key = _by_key(records)
     assert "eni-0nat" in by_key, "a requester-managed interface was dropped from the inventory"
     assert by_key["eni-0nat"].attrs["interface_type"] == "nat_gateway"
@@ -548,7 +548,7 @@ def test_public_ipv4_billed_on_an_undeclared_instances_interface_is_a_vampire_wi
             "eu-north-1",
         ),
     ]
-    result = _run(FakeSession(data), ["eu-north-1"], tmp_path, bill)
+    result = _run(StubSession(data), ["eu-north-1"], tmp_path, bill)
     assert result.regions["eni-0vamp"] == "OB"  # it was a Phantom (B): billed, but the inventory could not see it
     assert "B" not in result.regions.values()
     finding = next(f for f in result.findings if f.key == "eni-0vamp")
@@ -564,7 +564,7 @@ def test_a_declared_instance_declares_its_network_interface_with_it() -> None:
             stack=[_stack_resource("Web", "i-0web", "AWS::EC2::Instance")],
         )
     }
-    records = DeclaredStacks(ledger=LedgerName.intended, regions=["us-east-1"], session=FakeSession(data)).fetch()
+    records = DeclaredStacks(ledger=LedgerName.intended, regions=["us-east-1"], session=StubSession(data)).fetch()
     by_key = _by_key(records)
     assert sorted(by_key) == ["eni-0web", "i-0web", "vol-0web"]
     assert by_key["eni-0web"].attrs["declared_with"] == "i-0web"
@@ -579,7 +579,7 @@ def test_cloudformation_resource_operation_lines_become_unkeyed_billed_lines_tha
         ("Usage", "AWSCloudFormation", "USE1-Resource-Operation-Count", f"{STACK_ARN}::{logical}", "0", "us-east-1")
         for logical in ("Web", "WebVolume", "Address")
     ]
-    result = _run(FakeSession({"us-east-1": _region()}), ["us-east-1"], tmp_path, ops)
+    result = _run(StubSession({"us-east-1": _region()}), ["us-east-1"], tmp_path, ops)
     billed = next(s for s in result.snapshots if s.name == LedgerName.billed).records
     assert [r.raw_key for r in billed] == [""], "a stack operation was keyed as if it were a resource"
     assert billed[0].attrs["product"] == "AWSCloudFormation"
@@ -599,7 +599,7 @@ def test_a_declared_elastic_ip_is_keyed_by_allocation_id_when_the_stack_reports_
             stack=[_stack_resource("Address", PUBLIC_IP, "AWS::EC2::EIP")],
         )
     }
-    session = FakeSession(data)
+    session = StubSession(data)
     intended = DeclaredStacks(ledger=LedgerName.intended, regions=["us-east-1"], session=session).fetch()
     assert [r.raw_key for r in intended] == ["eipalloc-0lab"]
     assert intended[0].attrs["kind"] == "elastic-ip"
@@ -615,13 +615,13 @@ def test_a_declared_elastic_ip_that_is_no_longer_allocated_keeps_its_public_ip_a
     tmp_path: Path,
 ) -> None:
     data = {"us-east-1": _region(addresses=[], stack=[_stack_resource("Address", PUBLIC_IP, "AWS::EC2::EIP")])}
-    result = _run(FakeSession(data), ["us-east-1"], tmp_path, NO_USAGE)
+    result = _run(StubSession(data), ["us-east-1"], tmp_path, NO_USAGE)
     assert result.regions == {PUBLIC_IP: "I"}
 
 
 def test_a_declared_elastic_ip_already_reported_as_an_allocation_id_is_left_alone() -> None:
     data = {"us-east-1": _region(stack=[_stack_resource("Address", "eipalloc-0lab", "AWS::EC2::EIP")])}
-    session = FakeSession(data)
+    session = StubSession(data)
     records = DeclaredStacks(ledger=LedgerName.intended, regions=["us-east-1"], session=session).fetch()
     assert [r.raw_key for r in records] == ["eipalloc-0lab"]
     assert "describe_addresses" not in session.calls  # nothing to resolve, nothing to ask
@@ -651,7 +651,7 @@ def test_a_declared_instance_with_an_auto_assigned_public_ip_has_its_instance_vo
         ("Usage", "AmazonVPC", "USE1-PublicIPv4:InUseAddress", _eni_arn("us-east-1", "eni-0web"), "0.005", "us-east-1"),
         ("Usage", "AWSCloudFormation", "USE1-Resource-Operation-Count", f"{STACK_ARN}::Web", "0", "us-east-1"),
     ]
-    result = _run(FakeSession(data), ["us-east-1"], tmp_path, bill)
+    result = _run(StubSession(data), ["us-east-1"], tmp_path, bill)
     assert result.regions == {"i-0web": "IOB", "vol-0web": "IOB", "eni-0web": "IOB"}
     assert result.findings == []
     assert result.pending_keys == []
@@ -666,7 +666,7 @@ def test_a_new_network_interface_inside_the_grace_window_is_pending_not_a_findin
             enis=[_eni("eni-0new", "i-0new", launched)],
         )
     }
-    result = _run(FakeSession(data), ["us-east-1"], tmp_path, NO_USAGE, run_time=FRESH_RUN)
+    result = _run(StubSession(data), ["us-east-1"], tmp_path, NO_USAGE, run_time=FRESH_RUN)
     assert "eni-0new" in result.pending_keys
     assert result.findings == []
 
@@ -688,7 +688,7 @@ def test_every_aws_call_the_connectors_make_is_a_read(tmp_path: Path) -> None:
             enis=[_eni("eni-0vamp", "i-0vamp", PLANTED)],
         ),
     }
-    session = FakeSession(data)
+    session = StubSession(data)
     regions = ["eu-north-1", "us-east-1"]
     DeclaredStacks(ledger=LedgerName.intended, regions=regions, session=session).fetch()
     observed = Inventory(ledger=LedgerName.observed, regions=regions, session=session).fetch()

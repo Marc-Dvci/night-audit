@@ -41,7 +41,7 @@ power/night-audit/
 1. Ask: the three sources in plain words, the key and how each source spells it, the region names, the grace window,
    any scope. Explain the seven regions first (`references/region-table.md`). Do not write files until answered.
 2. Make `nightaudit` importable (`uv init --bare` when there is no `pyproject.toml`, then `uv add`).
-3. Write `controls/<id>.yaml`, `fixtures/<id>/*` (synthetic or redacted), connectors, and
+3. Write `controls/<id>.yaml`, `fixtures/<id>/*` (example values or redacted), connectors, and
    `tests/test_contracts.py` from `assets/contract_tests.py`. Run the contract tests.
 4. Write `casebook/<id>.yaml` (at least five labelled cases, one `healthy: true`, expectations worked out by hand from
    the region table) and `tests/test_casebook.py` from `assets/casebook_runner.py`.

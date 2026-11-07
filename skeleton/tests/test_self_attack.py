@@ -77,11 +77,11 @@ def test_injected_text_is_quoted_and_truncated_in_the_prompt() -> None:
     )
     seen: list[str] = []
 
-    def fake_model(prompt: str) -> str:
+    def scripted_model(prompt: str) -> str:
         seen.append(prompt)
         return "Unapproved and billed 41.20."
 
-    explain_finding(result.findings[0], ModelConfig(enabled=True), CONTROL, model_call=fake_model)
+    explain_finding(result.findings[0], ModelConfig(enabled=True), CONTROL, model_call=scripted_model)
     line = next(line for line in seen[0].splitlines() if line.strip().startswith('attribute name: "Name"'))
     assert len(line) < 260  # 200 characters of payload plus quoting and the fixed labels
 
@@ -105,11 +105,11 @@ def _prompt_for(attrs: dict[str, str], context: dict[str, str]) -> str:
     finding = result.findings[0].model_copy(update={"context": context})
     seen: list[str] = []
 
-    def fake_model(prompt: str) -> str:
+    def scripted_model(prompt: str) -> str:
         seen.append(prompt)
         return "Unapproved and billed 41.20."
 
-    explain_finding(finding, ModelConfig(enabled=True), CONTROL, model_call=fake_model)
+    explain_finding(finding, ModelConfig(enabled=True), CONTROL, model_call=scripted_model)
     return seen[0]
 
 
