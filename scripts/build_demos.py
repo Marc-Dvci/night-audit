@@ -2,7 +2,7 @@
 
 Each app's ``apps/<app>/demo/build.py`` exposes ``build(target, runs)`` and ``APP_ENTRIES``. This script calls each
 build with its own folder, ``skeleton/web/public/demo/<app>/``, then writes ``skeleton/web/public/apps.json`` from the
-entries in the order of ``APPS``: Vampires live, Vampires demo, Ghosts demo. A build only ever replaces its own
+entries in the order of ``APPS``: Vampires live, Vampires demo, Ghosts demo, Own build demo. A build only ever replaces its own
 folder, so building one app never removes another app's demo.
 
     uv run python scripts/build_demos.py            # every app
@@ -24,7 +24,7 @@ from nightaudit.textfile import write_text_exact
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "skeleton" / "web" / "public"
 #: The apps with a demo, in the order the masthead lists them.
-APPS = ("vampires", "ghosts")
+APPS = ("vampires", "ghosts", "own-build")
 
 
 def builder(app: str) -> ModuleType:

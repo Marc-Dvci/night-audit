@@ -1,0 +1,7 @@
+file,session,credit_share,started
+src/match.py,sess_a1,1.5,2026-11-06T22:01:00.000Z
+src/report.py,sess_a1,1.5,2026-11-06T22:01:00.000Z
+src/old_report.py,sess_a1,1.5,2026-11-06T22:01:00.000Z
+src/match.py,sess_a2,,2026-11-07T00:10:00.000Z
+src/extra.py,sess_a3,0.25,2026-11-07T02:00:00.000Z
+old/gone.py,sess_a3,0.25,2026-11-07T02:00:00.000Z

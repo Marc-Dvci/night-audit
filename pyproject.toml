@@ -6,6 +6,7 @@ dependencies = [
     "nightaudit",
     "vampires",
     "ghosts",
+    "own-build",
 ]
 
 [tool.uv.workspace]
@@ -15,6 +16,7 @@ members = ["skeleton", "apps/*"]
 nightaudit = { workspace = true }
 vampires = { workspace = true }
 ghosts = { workspace = true }
+own-build = { workspace = true }
 
 [dependency-groups]
 dev = [
@@ -89,21 +91,25 @@ files = [
     "skeleton/src",
     "apps/vampires/src",
     "apps/ghosts/src",
+    "apps/own-build/src",
     "skeleton/tests",
     "apps/vampires/tests",
     "apps/ghosts/tests",
+    "apps/own-build/tests",
 ]
 mypy_path = [
     "skeleton/src",
     "apps/vampires/src",
     "apps/ghosts/src",
+    "apps/own-build/src",
     "skeleton/tests",
     "apps/ghosts/tests",
+    "apps/own-build/tests",
 ]
 explicit_package_bases = true
 # Two test folders each have a conftest.py, and mypy cannot hold two top-level modules of one name. The Ghosts one
 # only registers a hypothesis profile; CI checks it on its own (`mypy apps/ghosts/tests/conftest.py`).
-exclude = ["^apps/ghosts/tests/conftest\\.py$"]
+exclude = ["^apps/(ghosts|own-build)/tests/conftest\\.py$"]
 
 [[tool.mypy.overrides]]
 module = ["pyarrow", "pyarrow.*", "boto3", "boto3.*", "botocore", "botocore.*", "playwright", "playwright.*"]

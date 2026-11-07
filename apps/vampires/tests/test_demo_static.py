@@ -45,6 +45,7 @@ def test_apps_json_lists_vampires_live_vampires_demo_and_ghosts_demo() -> None:
         ("vampires", "live", "api/"),
         ("vampires-demo", "demo", "demo/vampires/"),
         ("ghosts-demo", "demo", "demo/ghosts/"),
+        ("own-build-demo", "demo", "demo/own-build/"),
     ]
     assert all(set(a) == {"name", "title", "mode", "base"} for a in apps)
     for app in apps:

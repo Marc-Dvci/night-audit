@@ -1,0 +1,190 @@
+# Own-build casebook. Written by hand BEFORE the connectors, the path parser or any run existed.
+# Each case is a tiny repository: the markdown of some specs, the files git tracks, and the rows Kiro recorded.
+# `expect.regions` is the region of every key the control must produce (a key not listed must not exist).
+# `expect.promised` is the set of file paths the parser must read out of the specs, exactly.
+#
+# The rule for "plainly names a file" was fixed before any data was read:
+#   a span written in single backticks, outside a fenced block, that is one path of "/"-separated segments of
+#   letters, digits, "." "_" "-", with at least one "/", whose last segment ends in a dot and a letter-led extension
+#   (a leading "./" is dropped). So these are NOT files: a directory ("lean/"), a glob ("apps/*/x.py"), a template
+#   ("runs/<id>/x.json"), a bare name with no directory ("report.py"), a dotted identifier ("ghosts.review"),
+#   a URL route ("/api/runs"), a host name ("hollowpines.com"), a number ("0.50"), a command or a code expression.
+# A bare name locates nothing, and a path written relative to some other folder cannot be told from a repository path.
+# Both stay out or land where they land; the parser does not look at the repository to decide.
+
+regions:
+  - id: ob-01-healthy-repository
+    note: >-
+      Two files promised, tracked and worked on by Kiro. The spec also mentions a directory, a glob, a bare name,
+      a template and a dotted name, and quotes a path inside a fenced block. None of those is a promise.
+      A healthy repository must produce nothing.
+    specs:
+      alpha/design.md: |
+        The matcher lives in `src/match.py` and its tests in `tests/test_match.py`.
+        Layout: `src/` holds code, `docs/*.md` holds notes, `report.py` is generated, `runs/<id>/run.json` is output,
+        and `alpha.core` is a module. Run `uv run pytest -q`. Route `/api/runs`. Host `example.com`.
+
+        ```text
+        tests/not_a_promise.py
+        ```
+    tracked: [src/match.py, tests/test_match.py]
+    kiro:
+      - {file: src/match.py, session: s1, credit_share: "1.5"}
+      - {file: tests/test_match.py, session: s1, credit_share: "1.5"}
+    expect:
+      promised: [src/match.py, tests/test_match.py]
+      regions: {src/match.py: IOB, tests/test_match.py: IOB}
+      findings: 0
+      informational: 0
+      billed_total: "3.0"
+
+  - id: ob-02-promised-and-never-built
+    note: A spec names a file. Git does not track it and no Kiro session touched it. That is a promise not kept.
+    specs:
+      alpha/tasks.md: |
+        - [ ] 4. Write `deploy/stack.yaml` for the Lambda.
+        - [x] 1. Write `src/match.py`.
+    tracked: [src/match.py]
+    kiro:
+      - {file: src/match.py, session: s1, credit_share: "2.0"}
+    expect:
+      promised: [deploy/stack.yaml, src/match.py]
+      regions: {deploy/stack.yaml: I, src/match.py: IOB}
+      findings: 1
+      informational: 0
+      billed_total: "2.0"
+
+  - id: ob-03-built-with-kiro-and-no-spec-names-it
+    note: >-
+      Kiro worked on a tracked file in two sessions and no spec names it. The credits add up across sessions.
+      One of the two shares is blank (the run was stopped before it reported): it counts as zero and the line stays.
+    specs:
+      alpha/design.md: "The matcher is `src/match.py`."
+    tracked: [src/match.py, src/extra.py]
+    kiro:
+      - {file: src/match.py, session: s1, credit_share: "1.0"}
+      - {file: src/extra.py, session: s1, credit_share: "1.25"}
+      - {file: src/extra.py, session: s2, credit_share: ""}
+      - {file: src/extra.py, session: s3, credit_share: "0.5"}
+    expect:
+      promised: [src/match.py]
+      regions: {src/match.py: IOB, src/extra.py: OB}
+      findings: 1
+      informational: 0
+      billed_by_region: {IOB: "1.0", OB: "1.75"}
+      billed_total: "2.75"
+
+  - id: ob-04-written-by-hand-or-generated
+    note: >-
+      A tracked file no spec names and no Kiro session touched. It is a person's file, or generated data. It is a
+      finding of the lowest weight, not a defect.
+    specs:
+      alpha/design.md: "The matcher is `src/match.py`."
+    tracked: [src/match.py, README.md, .kiro/hooks/no-harm.json]
+    kiro:
+      - {file: src/match.py, session: s1, credit_share: "1.0"}
+    expect:
+      promised: [src/match.py]
+      regions: {src/match.py: IOB, README.md: O, .kiro/hooks/no-harm.json: O}
+      findings: 2
+      informational: 0
+      billed_total: "1.0"
+
+  - id: ob-05-gone-files
+    note: >-
+      Kiro worked on two files that git does not track at the recorded commit. One is named by a spec (IB), the other
+      by none (B). Both are conditions, not accusations: a file can be renamed, deleted or never committed.
+    specs:
+      alpha/design.md: "The first draft was `src/old_match.py`."
+    tracked: [src/match.py]
+    kiro:
+      - {file: src/old_match.py, session: s1, credit_share: "0.75"}
+      - {file: src/scratch.py, session: s1, credit_share: "0.25"}
+      - {file: src/match.py, session: s2, credit_share: "1.0"}
+    expect:
+      promised: [src/old_match.py]
+      regions: {src/old_match.py: IB, src/scratch.py: B, src/match.py: OB}
+      findings: 3
+      informational: 0
+      billed_by_region: {IB: "0.75", B: "0.25", OB: "1.0"}
+      billed_total: "2.0"
+
+  - id: ob-06-named-and-present-but-never-touched
+    note: A spec names a file that exists, and no Kiro session touched it. Informational, not a finding.
+    specs:
+      alpha/design.md: "Fixtures: `tests/fixtures/sample.csv`. Code: `src/match.py`."
+    tracked: [src/match.py, tests/fixtures/sample.csv]
+    kiro:
+      - {file: src/match.py, session: s1, credit_share: "1.0"}
+    expect:
+      promised: [src/match.py, tests/fixtures/sample.csv]
+      regions: {src/match.py: IOB, tests/fixtures/sample.csv: IO}
+      findings: 0
+      informational: 1
+      billed_total: "1.0"
+
+  - id: ob-07-a-line-with-only-blank-shares-is-still-a-line
+    note: >-
+      Every session that touched the file stopped before reporting credits. The file is billed at zero, and it is
+      still on the billed ledger, so it is OB and not O.
+    specs:
+      alpha/design.md: "Only `src/match.py`."
+    tracked: [src/match.py, src/stopped.py]
+    kiro:
+      - {file: src/match.py, session: s1, credit_share: "1.0"}
+      - {file: src/stopped.py, session: s2, credit_share: ""}
+    expect:
+      promised: [src/match.py]
+      regions: {src/match.py: IOB, src/stopped.py: OB}
+      findings: 1
+      informational: 0
+      billed_by_region: {IOB: "1.0", OB: "0"}
+      billed_total: "1.0"
+
+  - id: ob-08-the-same-file-spelled-three-ways-is-one-key
+    note: >-
+      Kiro may record a path with a leading "./" or with backslashes, and a spec may write "./". All are the same
+      repository path, so they are one key.
+    specs:
+      alpha/design.md: "See `./src/match.py`."
+    tracked: [src/match.py]
+    kiro:
+      - {file: "src\\match.py", session: s1, credit_share: "1.0"}
+      - {file: "./src/match.py", session: s2, credit_share: "0.5"}
+    expect:
+      promised: [src/match.py]
+      regions: {src/match.py: IOB}
+      findings: 0
+      informational: 0
+      billed_total: "1.5"
+
+parser:
+  # Spans that must be read as files, and spans that must not. Every case is a whole markdown text.
+  - id: ps-01-files-with-directories
+    text: "`src/a.py`, `.kiro/specs/x/design.md`, `skeleton/web/src/main.ts`, `.github/workflows/ci.yml`, `.devcontainer/Dockerfile.dev`"
+    expect:
+      [.devcontainer/Dockerfile.dev, .github/workflows/ci.yml, .kiro/specs/x/design.md, skeleton/web/src/main.ts, src/a.py]
+  - id: ps-02-directories-and-globs-are-not-files
+    text: "`src/`, `lean/NightAudit`, `apps/*/controls/`, `.kiro/hooks/*.json`, `test/**/*.test.ts`, `data/{a,b}.csv`, `a/b?.py`"
+    expect: []
+  - id: ps-03-placeholders-and-routes-are-not-files
+    text: "`runs/<run_id>/result.json`, `demo/{id}/run.json`, `/api/runs/{id}/evidence.zip`, `/etc/passwd.conf`, `skills/<name>/SKILL.md`"
+    expect: []
+  - id: ps-04-bare-names-and-dotted-names-are-not-files
+    text: "`report.py`, `pyproject.toml`, `apps.json`, `ghosts.review`, `Classical.choice`, `hollowpines.com`, `0.50`, `author.name`"
+    expect: []
+  - id: ps-05-commands-and-code-are-not-files
+    text: "`uv run python scripts/score_casebook.py --set dev`, `GET /api/runs/{id}`, `open(\"a/b.py\")`, `a/b.py:12`, `a/b.py#top`, `x = a/b.py`"
+    expect: []
+  - id: ps-06-fenced-blocks-are-skipped
+    text: "Before `a/one.py`.\n\n```text\n`a/two.py`\na/three.py\n```\n\nAfter `a/four.py`.\n\n~~~\n`a/five.py`\n~~~\n"
+    expect: [a/four.py, a/one.py]
+  - id: ps-07-a-leading-dot-slash-is-dropped-and-up-paths-are-refused
+    text: "`./a/b.py`, `../a/b.py`, `a/../b.py`, `a//b.py`, `a/./b.py`"
+    expect: [a/b.py]
+  - id: ps-08-one-path-twice-is-one-path
+    text: "`a/b.py` and again `a/b.py` and `a/B.py`"
+    expect: [a/B.py, a/b.py]
+  - id: ps-09-a-span-is-the-whole-path
+    text: "`a/b.py` is fine; `see a/c.py` is prose; ` a/d.py ` has spaces round it"
+    expect: [a/b.py]

@@ -1,0 +1,7 @@
+file,spec,doc,commit
+deploy/stack.yaml,beta,tasks.md,0123456789abcdef0123456789abcdef01234567
+src/match.py,alpha,design.md,0123456789abcdef0123456789abcdef01234567
+src/match.py,alpha,tasks.md,0123456789abcdef0123456789abcdef01234567
+src/old_report.py,alpha,design.md,0123456789abcdef0123456789abcdef01234567
+src/report.py,alpha,design.md,0123456789abcdef0123456789abcdef01234567
+tests/fixtures/sample.csv,alpha,tasks.md,0123456789abcdef0123456789abcdef01234567

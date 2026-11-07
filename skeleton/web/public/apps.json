@@ -16,5 +16,11 @@
     "title": "Ghosts demo company",
     "mode": "demo",
     "base": "demo/ghosts/"
+  },
+  {
+    "name": "own-build-demo",
+    "title": "Night Audit's own build",
+    "mode": "demo",
+    "base": "demo/own-build/"
   }
 ]

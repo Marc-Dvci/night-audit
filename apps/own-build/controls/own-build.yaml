@@ -1,0 +1,120 @@
+# Night Audit control: Night Audit audits its own build. Three ledgers, keyed by repository file path.
+# Intended = the file paths the specs promise. Observed = the files git tracks. Billed = the files Kiro worked on.
+# Paths are relative to this file. All three ledgers are recorded snapshots, so a night is repeatable:
+#   ../data/spec-files.csv, ../data/tracked-files.csv   written by `python apps/own-build/snapshot.py`
+#   ../data/kiro-files.csv, ../data/kiro-sessions.csv   exported from Kiro's session store (no prompts, no replies)
+#
+# The amount is Kiro credits, not money, and it is an ALLOCATION: a session reports one credit figure for the whole
+# session, and the export splits it equally across the files the session touched. That split is a choice made for this
+# audit. It is not a measurement of what any one file cost. A session stopped before it reported credits has a blank
+# share, which counts as zero and keeps the line.
+id: own-build
+title: Night Audit
+app: own-build
+# Git and Kiro both know a file the moment it exists, so no billing delay applies. Observed records carry no
+# timestamp, and a grace window of zero never marks a key pending.
+grace_hours: 0
+
+ledgers:
+  intended:
+    normalisers: [strip]
+    sources:
+      - type: python
+        entry: own_build.connectors:SpecFiles
+        options: {path: ../data/spec-files.csv}
+  observed:
+    normalisers: [strip]
+    sources:
+      - type: python
+        entry: own_build.connectors:TrackedFiles
+        options: {path: ../data/tracked-files.csv}
+  billed:
+    normalisers: [strip]
+    sources:
+      - type: python
+        entry: own_build.connectors:KiroFiles
+        options: {files: ../data/kiro-files.csv, sessions: ../data/kiro-sessions.csv}
+
+summarisers:
+  # Sentences about the allocation, so the page says it above the findings. They hold no numbers.
+  - entry: own_build.notes:allocation_notes
+    options: {sessions: ../data/kiro-sessions.csv}
+
+regions:
+  IOB:
+    name: Spec'd and built with Kiro
+    meaning: A spec names the file, git tracks it and a Kiro session worked on it. Matched.
+  OB:
+    name: Built with Kiro, no spec names it
+    meaning: Git tracks the file and a Kiro session worked on it, but no spec names it.
+    template: "Tracked by git. Kiro sessions that touched it: {attr:sessions}. No spec names this file."
+  O:
+    name: Written by hand or generated
+    meaning: >-
+      Git tracks the file, no spec names it and no Kiro session in the export touched it. Specs, hooks, steering and
+      generated data land here, which is right, because a person writes those.
+    template: "Tracked by git. No spec names this file and no Kiro session in the export touched it."
+  B:
+    name: Kiro worked on it, no spec, it is gone
+    meaning: A Kiro session worked on the file, no spec names it and git does not track it at the recorded commit.
+    template: >-
+      Kiro sessions that touched it: {attr:sessions}. No spec names it, and git does not track it at the recorded
+      commit.
+  I:
+    name: Promised by a spec, never built
+    meaning: A spec names the file, but git does not track it at the recorded commit and no Kiro session in the export touched it.
+    template: "Named by {attr:specs}. Git does not track it at the recorded commit and no Kiro session in the export touched it."
+  IB:
+    # Long names collide in the Venn, so this one is short. The full sentence is the meaning.
+    name: Built, spec'd, gone
+    meaning: Kiro worked on it and a spec names it, but git does not track it at the recorded commit. It is gone.
+    template: >-
+      Named by {attr:specs}. Kiro sessions that touched it: {attr:sessions}. Git does not track it at the recorded
+      commit.
+  IO:
+    # Long names collide in the Venn, so this one is short. The full sentence is the meaning.
+    name: Spec'd, no Kiro
+    meaning: A spec names it and it exists, but no Kiro session in the export touched it. Informational.
+    template: "Named by {attr:specs}. Tracked by git. No Kiro session in the export touched it."
+
+ui:
+  title: Own build
+  tagline: Every night, the files the specs promise are checked against the files in the repository and the files Kiro worked on.
+  noun: {singular: file, plural: files}
+  unkeyed:
+    singular: Kiro line with no file name
+    plural: Kiro lines with no file name
+    explanation: A Kiro record that names no file cannot be matched to the specs or the repository, so it is kept apart.
+  ledgers:
+    intended:
+      label: Specs
+      source: "The file paths written in backticks in .kiro/specs design, tasks and requirements files, read from a recorded snapshot. A path is read as written: a directory, a glob, a bare file name and a path relative to another folder are not resolved, so a file named that way can show as promised and never built."
+    observed:
+      label: Repository
+      source: The files git tracks at one recorded commit.
+    billed:
+      label: Kiro work
+      source: "The files Kiro worked on, summed across sessions. The amount is Kiro credits, not money, and the page prints it with a dollar sign. Each session's credits are split equally across the files it touched. That split is an allocation chosen for this audit, not a measurement. A blank share counts as zero and the line stays."
+  columns:
+    - {label: File, from: key}
+    - {label: Region, from: name}
+    - {label: Named by, from: "attr:specs"}
+    - {label: Kiro sessions, from: "attr:sessions"}
+    - {label: Credits (allocated), from: "attr:credits"}
+    - {label: Last Kiro session, from: "attr:last_session_on"}
+  headlines:
+    OB:
+      one: "{count} {noun} was built with Kiro and no spec names it."
+      other: "{count} {noun} were built with Kiro and no spec names them."
+    B:
+      one: "{count} {noun} was worked on by Kiro, named by no spec, and is gone."
+      other: "{count} {noun} were worked on by Kiro, named by no spec, and are gone."
+    IB:
+      one: "{count} {noun} was worked on by Kiro and named by a spec, and is gone."
+      other: "{count} {noun} were worked on by Kiro and named by a spec, and are gone."
+    I:
+      one: "{count} {noun} was promised by a spec and never built."
+      other: "{count} {noun} were promised by a spec and never built."
+    O:
+      one: "{count} {noun} was written by hand or generated: no spec names it and no Kiro session touched it."
+      other: "{count} {noun} were written by hand or generated: no spec names them and no Kiro session touched them."

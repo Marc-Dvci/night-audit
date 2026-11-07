@@ -1,0 +1,14 @@
+[
+  {
+    "run_id": "24b44bf4aecc992a",
+    "control_id": "own-build",
+    "control_title": "Night Audit",
+    "app": "own-build",
+    "run_time": "2026-11-08T02:00:00+00:00",
+    "control_hash": "2c2c2d7d6860dc67ae32867a7f5c729f402895e69aa885715f22d52567a8d600",
+    "complete": true,
+    "findings": 322,
+    "new_findings": 322,
+    "informational": 12
+  }
+]
