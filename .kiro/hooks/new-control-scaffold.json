@@ -5,7 +5,7 @@
       "name": "new-control-scaffold",
       "description": "When a control file is saved, generate whatever the skeleton needs for it: connectors, fixtures, contract tests and casebook rows.",
       "trigger": "PostFileSave",
-      "matcher": "apps[/\\][^/\\]+[/\\]controls[/\\].*\.ya?ml$",
+      "matcher": "apps[/\\\\][^/\\\\]+[/\\\\]controls[/\\\\].*\\.ya?ml$",
       "action": {
         "type": "agent",
         "prompt": "A Night Audit control file was just saved. Read it and the connector interface in skeleton/. For every ledger source it names that has no connector yet: write the connector class (read-only), a recorded fixture under the app's tests/fixtures, and a contract test that loads the fixture through the connector. Then run `uv run pytest -q` for that app and report the result. Do not modify the skeleton, and do not read casebook/heldout."

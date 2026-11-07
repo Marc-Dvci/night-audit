@@ -5,7 +5,7 @@
       "name": "properties-on-save",
       "description": "Run the property-based tests of the skeleton whenever the agent saves skeleton code. Failures go back to the agent.",
       "trigger": "PostFileSave",
-      "matcher": "skeleton[/\\].*\.py$",
+      "matcher": "skeleton[/\\\\].*\\.py$",
       "action": { "type": "command", "command": "uv run pytest -m property -q -x --no-header -p no:cacheprovider" },
       "timeout": 180
     }
