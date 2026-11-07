@@ -1,0 +1,6 @@
+{
+  "name": "ghosts-demo",
+  "title": "Hollow Pines demo company",
+  "mode": "demo",
+  "base": "demo/ghosts/"
+}

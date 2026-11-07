@@ -1,0 +1,3 @@
+invoice_id,vendor,period,seat_quantity,unit_price,currency
+CD-INV-2026-09,Crypt Docs,2026-09,88,12.00,USD
+CD-INV-2026-10,Crypt Docs,2026-10,88,12.00,USD

@@ -1,0 +1,46 @@
+{
+  "run_id": "7de7f3b7e6e8e2fe",
+  "evidence_chain_hash": "00aebecaa9fc0d352a32cd9b2e887411c517be282681be75e5cc4dc2fa95bf62",
+  "vendors": [
+    {
+      "vendor": "Belfry CRM",
+      "invoice_id": "BC-INV-2026-10",
+      "period": "2026-10",
+      "unit_price": "45.00",
+      "invoice_seats": 89,
+      "assigned_seats": 89,
+      "unnamed_seats": 0,
+      "short_seats": 0
+    },
+    {
+      "vendor": "Crypt Docs",
+      "invoice_id": "CD-INV-2026-10",
+      "period": "2026-10",
+      "unit_price": "12.00",
+      "invoice_seats": 88,
+      "assigned_seats": 88,
+      "unnamed_seats": 0,
+      "short_seats": 0
+    },
+    {
+      "vendor": "Lantern Chat",
+      "invoice_id": "LC-INV-2026-10",
+      "period": "2026-10",
+      "unit_price": "8.00",
+      "invoice_seats": 178,
+      "assigned_seats": 175,
+      "unnamed_seats": 3,
+      "short_seats": 0
+    },
+    {
+      "vendor": "Ossuary Design",
+      "invoice_id": "OD-INV-2026-10",
+      "period": "2026-10",
+      "unit_price": "22.00",
+      "invoice_seats": 9,
+      "assigned_seats": 9,
+      "unnamed_seats": 0,
+      "short_seats": 0
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+invoice_id,vendor,period,seat_quantity,unit_price,currency
+LC-INV-2026-09,Lantern Chat,2026-09,177,8.00,USD
+LC-INV-2026-10,Lantern Chat,2026-10,178,8.00,USD

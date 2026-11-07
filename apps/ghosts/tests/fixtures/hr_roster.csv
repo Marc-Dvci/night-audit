@@ -1,0 +1,9 @@
+employee_id,email,given_name,family_name,department,title,manager_email,employment_type,location,start_date,leaving_date,github_login
+E0001,a.thornfield@hollowpines.com,Ada,Thornfield,Executive,Chief Executive Officer,,employee,Head Office,2019-03-04,,
+E0002,b.quill@hollowpines.com,Bram,Quill,IT,Head of IT,a.thornfield@hollowpines.com,employee,Head Office,2020-06-01,,bquill-hp
+E0003,c.wren@hollowpines.com,Cora,Wren,IT,Systems Engineer,b.quill@hollowpines.com,contractor,Head Office,2025-01-06,2026-06-30,cwren-dev
+E0004,d.marlow@hollowpines.com,Dev,Marlow,Lending,Loan Officer,a.thornfield@hollowpines.com,employee,Mossbank Branch,2021-09-13,2026-11-04,
+E0005,e.ashby@hollowpines.com,Esme,Ashby,Finance,Accountant,a.thornfield@hollowpines.com,employee,Head Office,2022-02-01,2026-11-05,
+E0006,f.lowe@hollowpines.com,Finn,Lowe,Member Services,Member Advisor,a.thornfield@hollowpines.com,employee,Fernhollow Branch,2026-11-04,,
+E0007,g.okoro@hollowpines.com,Gita,Okoro,Member Services,Member Advisor,a.thornfield@hollowpines.com,employee,Fernhollow Branch,2026-11-05,,
+E0008,h.vale@hollowpines.com,Hal,Vale,Marketing,Designer,a.thornfield@hollowpines.com,employee,Head Office,2026-11-03,2026-11-03,

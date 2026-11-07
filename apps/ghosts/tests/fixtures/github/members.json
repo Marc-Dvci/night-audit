@@ -1,0 +1,92 @@
+{
+  "note": "Recorded shape of GET /orgs/{org}/members (GitHub REST API 2022-11-28): a JSON array of simple-user objects per page, paginated with a Link header. Logins, ids and the organisation are synthetic.",
+  "pages": [
+    {
+      "url": "https://api.github.com/orgs/hollow-pines-demo/members?per_page=100",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "x-github-api-version-selected": "2022-11-28",
+        "x-oauth-scopes": "read:org",
+        "link": "<https://api.github.com/organizations/90000001/members?per_page=100&page=2>; rel=\"next\", <https://api.github.com/organizations/90000001/members?per_page=100&page=2>; rel=\"last\""
+      },
+      "body": [
+        {
+          "login": "bquill-hp",
+          "id": 70000001,
+          "node_id": "U_kgDOBDcbAQ",
+          "avatar_url": "https://avatars.githubusercontent.com/u/70000001?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/bquill-hp",
+          "html_url": "https://github.com/bquill-hp",
+          "followers_url": "https://api.github.com/users/bquill-hp/followers",
+          "following_url": "https://api.github.com/users/bquill-hp/following{/other_user}",
+          "gists_url": "https://api.github.com/users/bquill-hp/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/bquill-hp/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/bquill-hp/subscriptions",
+          "organizations_url": "https://api.github.com/users/bquill-hp/orgs",
+          "repos_url": "https://api.github.com/users/bquill-hp/repos",
+          "events_url": "https://api.github.com/users/bquill-hp/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/bquill-hp/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        {
+          "login": "CWren-dev",
+          "id": 70000002,
+          "node_id": "U_kgDOBDcbAg",
+          "avatar_url": "https://avatars.githubusercontent.com/u/70000002?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/CWren-dev",
+          "html_url": "https://github.com/CWren-dev",
+          "followers_url": "https://api.github.com/users/CWren-dev/followers",
+          "following_url": "https://api.github.com/users/CWren-dev/following{/other_user}",
+          "gists_url": "https://api.github.com/users/CWren-dev/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/CWren-dev/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/CWren-dev/subscriptions",
+          "organizations_url": "https://api.github.com/users/CWren-dev/orgs",
+          "repos_url": "https://api.github.com/users/CWren-dev/repos",
+          "events_url": "https://api.github.com/users/CWren-dev/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/CWren-dev/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        }
+      ]
+    },
+    {
+      "url": "https://api.github.com/organizations/90000001/members?per_page=100&page=2",
+      "status": 200,
+      "headers": {
+        "content-type": "application/json; charset=utf-8",
+        "x-github-api-version-selected": "2022-11-28",
+        "x-oauth-scopes": "read:org",
+        "link": "<https://api.github.com/organizations/90000001/members?per_page=100&page=1>; rel=\"prev\", <https://api.github.com/organizations/90000001/members?per_page=100&page=1>; rel=\"first\""
+      },
+      "body": [
+        {
+          "login": "night-owl-42",
+          "id": 70000003,
+          "node_id": "U_kgDOBDcbAw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/70000003?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/night-owl-42",
+          "html_url": "https://github.com/night-owl-42",
+          "followers_url": "https://api.github.com/users/night-owl-42/followers",
+          "following_url": "https://api.github.com/users/night-owl-42/following{/other_user}",
+          "gists_url": "https://api.github.com/users/night-owl-42/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/night-owl-42/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/night-owl-42/subscriptions",
+          "organizations_url": "https://api.github.com/users/night-owl-42/orgs",
+          "repos_url": "https://api.github.com/users/night-owl-42/repos",
+          "events_url": "https://api.github.com/users/night-owl-42/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/night-owl-42/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        }
+      ]
+    }
+  ]
+}

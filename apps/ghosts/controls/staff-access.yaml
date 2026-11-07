@@ -1,0 +1,104 @@
+# Night Audit control: staff access at Hollow Pines Credit Union (a fictional company), three ledgers.
+# Intended = HR roster on the run date. Observed = active accounts. Billed = paid seats per vendor invoice.
+# Paths are relative to this file. The data is synthetic and describes 2026-11-04, so the roster is read as of that date.
+id: staff-access
+title: Hollow Pines Credit Union
+app: ghosts
+grace_hours: 72
+alias_domains: {hollowpines.org: hollowpines.com}
+
+ledgers:
+  intended:
+    normalisers: [email_canonical]
+    sources:
+      - type: python
+        entry: ghosts.connectors:HrRoster
+        options: {path: ../data/hr_roster.csv, today: "2026-11-04"}
+  observed:
+    normalisers: [email_canonical]
+    sources:
+      - type: python
+        entry: ghosts.connectors:IdentityExport
+        options: {path: ../data/identity_export.csv, system: Hollow Pines directory}
+  billed:
+    normalisers: [email_canonical]
+    sources:
+      - type: python
+        entry: ghosts.connectors:SeatAssignments
+        options: {vendor: Lantern Chat, assignments: ../data/licences/lantern-chat.csv,
+                  invoice: ../data/invoices/lantern-chat.csv}
+      - type: python
+        entry: ghosts.connectors:SeatAssignments
+        options: {vendor: Crypt Docs, assignments: ../data/licences/crypt-docs.csv,
+                  invoice: ../data/invoices/crypt-docs.csv}
+      - type: python
+        entry: ghosts.connectors:SeatAssignments
+        options: {vendor: Belfry CRM, assignments: ../data/licences/belfry-crm.csv,
+                  invoice: ../data/invoices/belfry-crm.csv}
+      - type: python
+        entry: ghosts.connectors:SeatAssignments
+        options: {vendor: Ossuary Design, assignments: ../data/licences/ossuary-design.csv,
+                  invoice: ../data/invoices/ossuary-design.csv}
+
+enrichers:
+  - entry: ghosts.context:people_context
+    regions: [OB, O, B, I, IB, IO]
+    # Enrichers get no control directory: a relative roster path resolves against apps/ghosts/controls/.
+    # The alias table repeats the control's (a test keeps them equal).
+    options: {roster: ../data/hr_roster.csv, alias_domains: {hollowpines.org: hollowpines.com}}
+
+regions:
+  IOB:
+    name: Living
+    meaning: On the HR roster, with an active account and a paid seat.
+  OB:
+    name: Ghost
+    meaning: Has an active account and a paid seat, but is not on the HR roster on the run date.
+  O:
+    name: Poltergeist
+    meaning: Has an active account, but is not on the HR roster and holds no paid seat.
+  B:
+    name: Phantom seat
+    meaning: A paid seat is assigned to an address with no active account and no HR record.
+  I:
+    name: Unprovisioned joiner
+    meaning: On the HR roster, but has no active account and no paid seat.
+  IB:
+    name: Wraith
+    meaning: On the HR roster with a paid seat, but has no active account.
+  IO:
+    name: Unlicensed user
+    meaning: On the HR roster with an active account and no paid seat. Informational.
+
+ui:
+  title: Ghosts
+  tagline: Every night, the HR roster is checked against the accounts that exist and the seats that are paid for.
+  noun: {singular: person, plural: people}
+  ledgers:
+    intended: {label: HR roster, source: Employees and contractors HR lists on the run date.}
+    observed: {label: Accounts, source: Active accounts in the identity export.}
+    billed: {label: Paid seats, source: Licence assignments priced by each vendor's latest invoice.}
+  columns:
+    - {label: Person, from: key}
+    - {label: Region, from: name}
+    - {label: Systems, from: "context:systems"}
+    - {label: Seats, from: "context:seats"}
+    - {label: Left on, from: "context:left_on"}
+    - {label: Last sign-in, from: "context:last_sign_in"}
+    - {label: Manager, from: "context:manager"}
+  headlines:
+    OB:
+      one: "{count} Ghost has an active account and a paid seat but is not on the HR roster: {amount} a month."
+      other: "{count} Ghosts have active accounts and paid seats but are not on the HR roster: {amount} a month."
+    B:
+      one: "{count} Phantom seat is paid for an address with no account and no HR record: {amount} a month."
+      other: "{count} Phantom seats are paid for addresses with no account and no HR record: {amount} a month."
+    IB:
+      one: "{count} Wraith is on the HR roster with a paid seat but has no active account: {amount} a month."
+      other: "{count} Wraiths are on the HR roster with paid seats but have no active account: {amount} a month."
+    I:
+      one: "{count} {noun} on the HR roster has no account and no seat yet."
+      other: "{count} {noun} on the HR roster have no account and no seat yet."
+    O:
+      one: "{count} Poltergeist is an active account with no HR record and no seat."
+      other: "{count} Poltergeists are active accounts with no HR record and no seat."
