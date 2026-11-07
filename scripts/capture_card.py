@@ -1,6 +1,7 @@
 """Capture the link card and the review screenshots from the built demo (ui-kit Req 9.1).
 
-* ``skeleton/web/public/og.png``: the demo overview at 1200 x 630, with the product name in the masthead.
+* ``skeleton/web/public/og.png``: the demo overview at 1200 x 630, with the product name in the masthead. Sections that
+  do not fit whole are left out, and the script stops if any text still touches an edge.
 * with ``--review``: full-page screenshots at 1440 and 390 px wide into ``build/screens/`` (gitignored), for the
   overview, a region filter, an opened finding, verify, change one byte and the morning report.
 
@@ -69,6 +70,52 @@ def _review(page: Page, base: str, width: int) -> None:
     page.screenshot(path=str(SCREENS / f"{tag}-report.png"), full_page=True)
 
 
+CARD_SIZE = {"width": 1200, "height": 630}
+
+#: Drops every top-level section of the page that does not fit whole in the card, so the bottom edge falls between
+#: sections and never through a heading. The masthead and the opening section stay, so the card shows the product name.
+_FIT_SECTIONS = """
+(height) => {
+  const dropped = [];
+  for (const section of document.querySelectorAll("main.page > section, main.page > footer")) {
+    if (section.getBoundingClientRect().bottom > height) {
+      section.style.display = "none";
+      dropped.push(section.getAttribute("aria-label") || section.className);
+    }
+  }
+  return dropped;
+}
+"""
+
+#: Lists every visible element that holds text and reaches past an edge of the card.
+_CUT_TEXT = """
+({width, height}) => {
+  const cut = [];
+  for (const el of document.querySelectorAll("body *")) {
+    if (el.closest(".skip")) continue; // parked off-screen until it has focus
+    const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim() !== "");
+    if (!own) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    if (r.top < 0 || r.left < 0 || r.bottom > height || r.right > width) {
+      cut.push(`${el.tagName.toLowerCase()} "${el.textContent.trim().slice(0, 40)}"`);
+    }
+  }
+  return cut;
+}
+"""
+
+
+def _fit_card(page: Page) -> None:
+    """Make the card show only whole sections, and fail if any text still touches an edge."""
+    page.evaluate(_FIT_SECTIONS, CARD_SIZE["height"])
+    if not page.locator("main.page > section").count():
+        raise SystemExit("the card has no whole section to show")
+    cut = page.evaluate(_CUT_TEXT, CARD_SIZE)
+    if cut:
+        raise SystemExit("text is cut at an edge of the card: " + "; ".join(cut))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--review", action="store_true", help="also write review screenshots to build/screens")
@@ -79,8 +126,9 @@ def main() -> int:
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            card = browser.new_page(viewport={"width": 1200, "height": 630}, reduced_motion="reduce")
+            card = browser.new_page(viewport=CARD_SIZE, reduced_motion="reduce")
             _open(card, base + DEMO)
+            _fit_card(card)
             card.screenshot(path=str(CARD))
             print(f"wrote {CARD.relative_to(ROOT)}")
             if args.review:

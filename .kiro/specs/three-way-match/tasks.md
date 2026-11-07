@@ -105,7 +105,7 @@ references are in brackets. Do not start implementation until this checklist is 
       `nightaudit serve --app <name>`, `nightaudit verify <pack>`, `nightaudit score --set dev`. Uses
       argparse. [all]
 
-- [ ] **17. UI kit.** Create `skeleton/web/` with Vite + TypeScript (no UI framework): `index.html`,
+- [x] **17. UI kit.** Create `skeleton/web/` with Vite + TypeScript (no UI framework): `index.html`,
       `src/main.ts` (fetches `/api/runs/{id}`), `src/venn.ts` (three-circle SVG Venn with key counts,
       click-to-filter), `src/findings.ts` (green-bar rows with monster name in words, key, nights,
       amount, explanation), `styles.css` (palette from ui-identity: ink, ink-2, phosphor, bone,

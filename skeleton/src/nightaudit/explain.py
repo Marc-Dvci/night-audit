@@ -182,8 +182,12 @@ def _leading_date(value: str) -> str:
 
 
 def _default_template(finding: Finding) -> str:
-    """Deterministic wording built only from the finding's own fields."""
-    parts = [f"{finding.key}: {finding.meaning}"]
+    """Deterministic wording built only from the finding's own fields.
+
+    It starts with the meaning and leaves out the key, which the UI already shows beside the explanation. A control's
+    own template can still use ``{key}``.
+    """
+    parts = [finding.meaning]
     if finding.billed_amount != 0:
         parts.append(f"On the bill: ${_money(finding.billed_amount)}.")
     created_by = finding.context.get("created_by")

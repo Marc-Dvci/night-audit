@@ -9,7 +9,7 @@ import pytest
 from hostile import CLOUD, LEDGERS, RUN_TIME, amounts, exact_sum, numbers_in, raw_keys, records
 from hypothesis import assume, given
 from hypothesis import strategies as st
-from nightaudit.control import resolve_region
+from nightaudit.control import RegionOverride, resolve_region
 from nightaudit.explain import ModelConfig, explain_finding, resolve_template
 from nightaudit.models import FINDING_REGIONS, INFORMATIONAL_REGIONS, Finding, LedgerName, Record
 
@@ -159,3 +159,29 @@ def test_regression_the_template_cites_a_creation_date_only_when_it_starts_with_
     assert "Created on" not in resolve_template(hostile, CLOUD)
     dated = _phantom([_row(LedgerName.billed)], {"created_by": "ci-role", "created_at": "2026-11-04T02:00:00Z"})
     assert "Created on 2026-11-04 by ci-role." in resolve_template(dated, CLOUD)
+
+
+def test_the_default_template_starts_with_the_meaning_and_not_the_key() -> None:
+    """The UI shows the key beside the explanation, so the default wording opens with the meaning."""
+    finding = _phantom([_row(LedgerName.billed, amount=Decimal("41.20"))])
+    text = resolve_template(finding, CLOUD)
+    assert text.startswith(finding.meaning)
+    assert not text.startswith(finding.key)
+    assert f"{finding.key}:" not in text
+    assert "On the bill: $41.20." in text
+
+
+def test_a_custom_template_can_still_write_the_key() -> None:
+    finding = _phantom([_row(LedgerName.billed, amount=Decimal("41.20"))])
+    control = CLOUD.model_copy(update={"regions": {"B": RegionOverride(template="{key} costs {billed_amount}.")}})
+    assert resolve_template(finding, control) == "i-0aa1 costs 41.20."
+
+
+def test_the_number_guard_still_rejects_a_stray_number_when_the_template_has_no_key() -> None:
+    finding = _phantom([_row(LedgerName.billed, amount=Decimal("41.20"))])
+    explanation = explain_finding(finding, ModelConfig(enabled=True, model_id="fake"), CLOUD,
+                                  model_call=lambda prompt: "It costs 99.99 a night.")
+    assert explanation.source == "template"
+    assert explanation.rejected
+    assert explanation.text.startswith(finding.meaning)
+    assert numbers_in(explanation.text) <= evidence_numbers(finding)

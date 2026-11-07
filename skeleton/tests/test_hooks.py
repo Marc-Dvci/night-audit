@@ -74,3 +74,16 @@ def test_read_only_guard_allows_reads(command: str) -> None:
 def test_read_only_guard_checks_mcp_aws_tools() -> None:
     assert _run("readonly_guard.py", "mcp_aws-api_call_aws", {"cli_command": "aws ec2 run-instances --count 1"}) == 2
     assert _run("readonly_guard.py", "mcp_aws-api_call_aws", {"cli_command": "aws ec2 describe-regions"}) == 0
+
+
+def test_no_harm_guard_refuses_a_delete_command() -> None:
+    assert _run("no_harm_guard.py", "execute_pwsh", {"command": "Remove-Item -Recurse build"}) == 2
+
+
+def test_no_harm_guard_refuses_a_push() -> None:
+    assert _run("no_harm_guard.py", "execute_pwsh", {"command": "git push origin main"}) == 2
+
+
+def test_no_harm_guard_allows_a_piped_build_command() -> None:
+    command = "npm run build 2>&1 | Select-Object -Last 20"
+    assert _run("no_harm_guard.py", "execute_pwsh", {"command": command}) == 0

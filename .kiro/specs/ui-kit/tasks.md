@@ -137,6 +137,6 @@ Status: every task but 28 is ticked. Task 28 waits on `uv run ruff check .`, whi
 
 ## Verification
 
-- [ ] **28. All checks.** `uv run ruff check .`, `uv run mypy skeleton apps/vampires/src`, `uv run pytest -q`,
+- [x] **28. All checks.** `uv run ruff check .`, `uv run mypy skeleton apps/vampires/src`, `uv run pytest -q`,
       `uv run python scripts/score_casebook.py --set dev`, `npm run build` and `npx vitest run` in `skeleton/web`. Tick
       task 17 of `.kiro/specs/three-way-match/tasks.md`. [all]
