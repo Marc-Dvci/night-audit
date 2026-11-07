@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from types import ModuleType
 
+from ghosts_testkit import as_windows
 from nightaudit.evidence import verify_evidence_pack
 from nightaudit.models import RunResult
 from nightaudit.report import run_numbers
@@ -92,3 +93,22 @@ def test_a_fresh_build_has_two_nights_one_without_and_one_with_decisions(tmp_pat
 def test_the_committed_demo_is_the_builders_output(tmp_path: Path) -> None:
     builder().build(tmp_path / "out", tmp_path / "runs")
     assert files(PUBLIC_DEMO) == files(tmp_path / "out"), "run: uv run python scripts/build_demos.py"
+
+
+def test_the_demo_has_the_same_bytes_when_the_platform_translates_newlines(tmp_path: Path) -> None:
+    """The first CI run failed here: Windows wrote CRLF into ``manifest.json`` (and so into ``evidence.zip``)."""
+    builder().build(tmp_path / "plain", tmp_path / "plain-runs")
+    with as_windows():
+        builder().build(tmp_path / "windows", tmp_path / "windows-runs")
+    assert files(tmp_path / "windows") == files(tmp_path / "plain")
+
+
+def test_the_review_sheet_is_crlf_in_every_line_and_the_html_has_none(tmp_path: Path) -> None:
+    builder().build(tmp_path / "out", tmp_path / "runs")
+    for folder in (tmp_path / "out").iterdir():
+        if not folder.is_dir():
+            continue
+        sheet = (folder / "review.csv").read_bytes()
+        assert sheet.count(b"\r\n") == sheet.count(b"\n") > 1, folder.name
+        assert b"\r\r" not in sheet
+        assert b"\r" not in (folder / "review.html").read_bytes()

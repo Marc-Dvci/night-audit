@@ -253,6 +253,8 @@ a { color: var(--phosphor); }
 .row-explain { margin-top: 0.4rem; max-width: 78ch; color: var(--bone-dim); }
 .row-decision { margin-top: 0.25rem; font: 14px var(--mono); color: var(--bone); }
 .decision-word { color: var(--phosphor); }
+.row-note { margin-top: 0.3rem; max-width: 78ch; color: var(--bone); }
+.note-label { font: 14px var(--mono); color: var(--phosphor); }
 .row-body { margin-top: 0.8rem; }
 
 .context { margin-bottom: 0.6rem; font-size: 14px; }

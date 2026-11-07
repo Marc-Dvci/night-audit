@@ -32,6 +32,7 @@ from nightaudit.decisions import (
 )
 from nightaudit.evidence import canonical_json
 from nightaudit.models import Finding, RunResult
+from nightaudit.textfile import write_text_exact
 
 from .connectors import Clock, system_clock
 
@@ -207,8 +208,8 @@ def export(run_dir: Path, out: Path | None = None) -> tuple[Path, Path]:
     folder = out or run_dir
     folder.mkdir(parents=True, exist_ok=True)
     csv_path, html_path = folder / "review.csv", folder / "review.html"
-    csv_path.write_text(sheet_csv(result), encoding="utf-8", newline="")
-    html_path.write_text(sheet_html(result), encoding="utf-8")
+    write_text_exact(csv_path, sheet_csv(result))
+    write_text_exact(html_path, sheet_html(result))
     return csv_path, html_path
 
 

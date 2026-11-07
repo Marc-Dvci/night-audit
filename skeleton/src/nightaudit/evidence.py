@@ -25,6 +25,7 @@ from typing import Any
 
 from .models import Finding, Record, RunResult
 from .report import money_text
+from .textfile import write_text_exact
 
 CHAIN_SEED = "0" * 64
 
@@ -205,7 +206,7 @@ def write_evidence_pack(result: RunResult, pack_dir: Path) -> str:
         "run_id": result.run_id,
         "run_time": _to_utc_iso(result.run_time),
     }
-    (pack_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    write_text_exact(pack_dir / "manifest.json", json.dumps(manifest, indent=2, sort_keys=True))
 
     return final_chain_hash
 

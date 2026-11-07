@@ -8,6 +8,7 @@ Endpoints:
 * ``GET /api/runs/{id}/evidence.zip``       the evidence pack as a zip file
 * ``GET /api/runs/{id}/evidence.jsonl``     the evidence chain, for verification in the browser
 * ``GET /api/runs/{id}/manifest.json``      the evidence manifest
+* ``GET /api/runs/{id}/notes.jsonl``        the investigator's notes chain, when the night shift wrote one
 * ``GET /api/runs/{id}/report.html``        the one-page morning report
 * ``GET /api/runs/{id}/files/{name}``       a download the control lists in ``ui.downloads`` (Req 10.6)
 
@@ -31,6 +32,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .decisions import page_decisions
 from .models import DOWNLOAD_FILE, Finding, RunResult
+from .notes import NOTES_FILE, page_notes
 from .report import report_csp, report_html, run_view
 from .runner import list_run_ids, load_run, run_summary
 
@@ -74,7 +76,8 @@ def run_document(result: RunResult, run_dir: Path | None = None) -> dict[str, An
     """The run as the page reads it: the stored result plus the view computed by ``report.py``.
 
     With the run's folder it also lists the downloads that exist there (Req 10.6) and the review decisions when the
-    evidence folder holds a decision chain (Req 10.7).
+    evidence folder holds a decision chain (Req 10.7), and the investigator's notes when it holds a notes chain
+    (night shift Req 1.2).
     """
     data = _as_json_dict(result)
     data["view"] = _as_json_dict(run_view(result))
@@ -86,6 +89,9 @@ def run_document(result: RunResult, run_dir: Path | None = None) -> dict[str, An
     decisions = page_decisions(run_dir, result) if run_dir is not None else None
     if decisions is not None:
         data["decisions"] = decisions
+    notes = page_notes(run_dir, result) if run_dir is not None else None
+    if notes is not None:
+        data["investigator_notes"] = notes
     return data
 
 
@@ -195,6 +201,10 @@ def create_app(runs_dir: Path, static_dir: Path | None = None) -> FastAPI:
     @app.get("/api/runs/{run_id}/evidence.jsonl")
     def get_evidence_jsonl(run_id: str) -> FileResponse:
         return FileResponse(_evidence_file(run_id, "evidence.jsonl"), media_type="application/x-ndjson")
+
+    @app.get("/api/runs/{run_id}/notes.jsonl")
+    def get_notes_jsonl(run_id: str) -> FileResponse:
+        return FileResponse(_evidence_file(run_id, NOTES_FILE), media_type="application/x-ndjson")
 
     @app.get("/api/runs/{run_id}/manifest.json")
     def get_manifest(run_id: str) -> FileResponse:

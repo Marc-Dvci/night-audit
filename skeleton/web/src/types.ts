@@ -90,6 +90,21 @@ export interface Decisions {
   rows: Decision[];
 }
 
+/** An investigator's note on a finding. The page only receives accepted notes, and only when their chain verifies. */
+export interface InvestigatorNote {
+  key: string;
+  region_code: string;
+  text: string;
+  model: string;
+  at: string;
+}
+
+export interface InvestigatorNotes {
+  ok: boolean;
+  detail: string;
+  rows: InvestigatorNote[];
+}
+
 export interface MoneyLine {
   label: string;
   value: string;
@@ -140,6 +155,8 @@ export interface RunResult {
   /** The downloads that exist beside this run. */
   downloads?: Download[];
   decisions?: Decisions;
+  /** The night shift's notes (night shift Req 1.2). Absent when the run has none. */
+  investigator_notes?: InvestigatorNotes;
 }
 
 export interface RunSummary {

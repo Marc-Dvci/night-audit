@@ -110,6 +110,17 @@ function decisionLine(run: RunResult, f: Finding): string {
   return `<p class="row-decision"><span class="decision-word">Decision: ${esc(d.decision)}</span> <span class="nowrap">by ${esc(d.reviewer)}</span> <span class="nowrap">on ${esc(d.decision_date)}</span></p>`;
 }
 
+/** The night shift's note on this finding, when one was accepted and its chain verifies. No note, no markup. */
+export const NOTE_LABEL = "Investigator's note, checked against the evidence";
+
+function noteLine(run: RunResult, f: Finding): string {
+  const n = run.investigator_notes?.ok
+    ? run.investigator_notes.rows.find((r) => r.key === f.key && r.region_code === f.region_code)
+    : undefined;
+  if (!n) return "";
+  return `<p class="row-note"><span class="note-label">${NOTE_LABEL}</span> <span class="note-text">${esc(n.text)}</span></p>`;
+}
+
 export function findings(run: RunResult, region: string | null, open: string | null): string {
   const columns = run.ui.columns.length ? run.ui.columns : [{ label: "Key", from: "key" }];
   const hasName = columns.some((c) => c.from === "name");
@@ -130,6 +141,7 @@ export function findings(run: RunResult, region: string | null, open: string | n
           .join("")}</button>
         <p class="row-explain">${esc(f.explanation ?? f.meaning)}</p>
         ${decisionLine(run, f)}
+        ${noteLine(run, f)}
         <div id="ev-${i}" class="row-body"${isOpen ? "" : " hidden"}>${isOpen ? evidence(f, i) : ""}</div>
       </li>`;
     })

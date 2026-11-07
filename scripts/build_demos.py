@@ -19,6 +19,8 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+from nightaudit.textfile import write_text_exact
+
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "skeleton" / "web" / "public"
 #: The apps with a demo, in the order the masthead lists them.
@@ -52,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
     for app in args.apps or APPS:
         module = builder(app)
         module.build(PUBLIC / "demo" / app)
-    (PUBLIC / "apps.json").write_text(json.dumps(app_entries(), indent=2) + "\n", encoding="utf-8")
+    write_text_exact(PUBLIC / "apps.json", json.dumps(app_entries(), indent=2) + "\n")
     print(f"apps.json lists {', '.join(e['name'] for e in app_entries())}")
     return 0
 

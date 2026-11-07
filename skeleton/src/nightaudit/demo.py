@@ -18,10 +18,14 @@ from pathlib import Path
 
 from .api import download_path, run_document
 from .decisions import DECISIONS_FILE
+from .notes import NOTES_FILE
 from .report import report_html
 from .runner import load_run, run_summary
+from .textfile import write_text_exact
 
 ZipTime = tuple[int, int, int, int, int, int]
+#: The "created by" system of every zip entry: Unix, whatever machine builds the demo.
+ZIP_CREATE_SYSTEM = 3
 
 
 def export_run(runs: Path, run_id: str, out: Path, zip_time: ZipTime) -> None:
@@ -29,8 +33,8 @@ def export_run(runs: Path, run_id: str, out: Path, zip_time: ZipTime) -> None:
     result = load_run(runs, run_id)
     run_dir = runs / run_id
     out.mkdir(parents=True)
-    (out / "run.json").write_text(json.dumps(run_document(result, run_dir)), encoding="utf-8")
-    (out / "report.html").write_text(report_html(result, recorded=True), encoding="utf-8")
+    write_text_exact(out / "run.json", json.dumps(run_document(result, run_dir)))
+    write_text_exact(out / "report.html", report_html(result, recorded=True))
     evidence = run_dir / "evidence"
     with zipfile.ZipFile(out / "evidence.zip", "w", zipfile.ZIP_DEFLATED) as zf:
         for name in ("evidence.jsonl", "manifest.json"):
@@ -38,9 +42,12 @@ def export_run(runs: Path, run_id: str, out: Path, zip_time: ZipTime) -> None:
             (out / name).write_bytes(data)
             info = zipfile.ZipInfo(name, date_time=zip_time)
             info.compress_type = zipfile.ZIP_DEFLATED
+            # ZipInfo records the platform that wrote the entry (0 on Windows, 3 elsewhere). Pin it.
+            info.create_system = ZIP_CREATE_SYSTEM
             zf.writestr(info, data)
-    if (evidence / DECISIONS_FILE).exists():
-        (out / DECISIONS_FILE).write_bytes((evidence / DECISIONS_FILE).read_bytes())
+    for name in (DECISIONS_FILE, NOTES_FILE):
+        if (evidence / name).exists():
+            (out / name).write_bytes((evidence / name).read_bytes())
     for download in result.ui.downloads:
         source = download_path(run_dir, result, download.file)
         if source is not None:
@@ -50,7 +57,7 @@ def export_run(runs: Path, run_id: str, out: Path, zip_time: ZipTime) -> None:
 def write_runs_json(runs: Path, run_ids: list[str], target: Path) -> None:
     """``runs.json``: the summaries of *run_ids*, newest run time first."""
     summaries = sorted((run_summary(load_run(runs, r)) for r in run_ids), key=lambda s: s["run_time"], reverse=True)
-    (target / "runs.json").write_text(json.dumps(summaries, indent=2), encoding="utf-8")
+    write_text_exact(target / "runs.json", json.dumps(summaries, indent=2))
 
 
 def replace_folder(target: Path, demo_root: Path, app: str) -> None:

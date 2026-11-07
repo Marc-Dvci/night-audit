@@ -5,6 +5,10 @@
 *.zip binary
 *.parquet binary
 *.woff2 binary
+# The demo (and apps.json) is built by scripts/build_demos.py, and a test compares it byte for byte with a fresh build,
+# so git must never rewrite a line ending in it (review.csv is CRLF on purpose).
+skeleton/web/public/demo/** -text
+skeleton/web/public/apps.json -text
 skeleton/web/public/demo/*.json linguist-generated
 skeleton/web/package-lock.json linguist-generated
 uv.lock linguist-generated

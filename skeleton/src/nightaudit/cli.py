@@ -2,7 +2,9 @@
 
 ``nightaudit run <control>``    run a control file end to end.
 ``nightaudit serve --app <name>`` serve the web UI and API.
-``nightaudit verify <pack>``     verify an evidence pack, and the run beside it (result.json or run.json) against it.
+``nightaudit verify <pack>``     verify an evidence pack, and the run beside it (result.json or run.json) against it,
+                                 and the investigator's notes when the pack holds them.
+``nightaudit verify-notes <pack>`` verify only the investigator's notes of a run.
 ``nightaudit score --set dev``   score the casebook.
 """
 
@@ -18,6 +20,8 @@ from typing import Any
 
 from .api import create_app
 from .evidence import verify_evidence_pack
+from .models import RunResult
+from .notes import NOTES_FILE, verify_note_chain
 from .runner import run_control
 
 
@@ -84,6 +88,25 @@ def _displayed_beside(pack: Path) -> Path | None:
     return None
 
 
+def _notes_check(pack: Path) -> tuple[bool, str]:
+    """Verify the investigator's notes beside *pack* (the run's ``evidence/`` folder): ``(ok, sentence)``."""
+    if not (pack / NOTES_FILE).is_file():
+        return True, "no investigator's notes recorded"
+    run_dir = pack.resolve().parent
+    try:
+        result = RunResult.model_validate_json((run_dir / "result.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return False, f"{NOTES_FILE} cannot be checked without the run's result.json beside the pack: {exc}"
+    chain = verify_note_chain(run_dir, result)
+    return chain.ok, chain.detail
+
+
+def _cmd_verify_notes(args: argparse.Namespace) -> int:
+    ok, detail = _notes_check(Path(args.pack))
+    print(f"{'OK' if ok else 'FAIL'}  {detail}")
+    return 0 if ok else 1
+
+
 def _cmd_verify(args: argparse.Namespace) -> int:
     pack = Path(args.pack)
     displayed: dict[str, Any] | None = None
@@ -102,6 +125,10 @@ def _cmd_verify(args: argparse.Namespace) -> int:
     print(f"{'OK' if result.ok else 'FAIL'}  {result.detail}")
     if result.ok and beside is None:
         print("      no result.json or run.json beside the pack, so what a page displays was not compared")
+    if result.ok and (pack / NOTES_FILE).is_file():
+        notes_ok, notes_detail = _notes_check(pack)
+        print(f"{'OK' if notes_ok else 'FAIL'}  {notes_detail}")
+        return 0 if notes_ok else 1
     return 0 if result.ok else 1
 
 
@@ -137,6 +164,10 @@ def build_parser() -> argparse.ArgumentParser:
     verify_p = sub.add_parser("verify", help="verify an evidence pack")
     verify_p.add_argument("pack", help="path to the evidence pack directory")
     verify_p.set_defaults(func=_cmd_verify)
+
+    notes_p = sub.add_parser("verify-notes", help="verify the investigator's notes of a run")
+    notes_p.add_argument("pack", help="path to the run's evidence pack directory (the one that holds notes.jsonl)")
+    notes_p.set_defaults(func=_cmd_verify_notes)
 
     score_p = sub.add_parser("score", help="score the casebook")
     score_p.add_argument("--set", choices=["dev", "heldout"], default="dev")

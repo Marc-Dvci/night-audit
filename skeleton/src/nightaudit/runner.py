@@ -25,6 +25,7 @@ from .matcher import KeyScope, match
 from .models import LedgerName, LedgerSnapshot, Record, RunNote, RunResult
 from .state import StateStore, compare_findings
 from .steps import ControlContext, call_step, load_callable
+from .textfile import write_text_exact
 
 
 def load_control_file(control_path: Path) -> ControlFile:
@@ -236,7 +237,7 @@ def run_control(
 
     # Persist the RunResult.
     run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "result.json").write_text(result.model_dump_json(indent=2), encoding="utf-8")
+    write_text_exact(run_dir / "result.json", result.model_dump_json(indent=2))
 
     return result
 

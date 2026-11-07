@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 from datetime import UTC, date, datetime, time
 from pathlib import Path
 from typing import Any
@@ -15,6 +16,20 @@ FIXTURES = APP / "tests" / "fixtures"
 DATA = APP / "data"
 RUN_TIME = datetime(2026, 11, 4, 2, 0, tzinfo=UTC)
 _PATH_OPTIONS = ("path", "assignments", "invoice", "roster")
+
+
+def _windows_text() -> Any:
+    """The skeleton's ``windows_text`` test helper, loaded by path so this app's tests also run on their own."""
+    path = APP.parents[1] / "skeleton" / "tests" / "windows_text.py"
+    spec = importlib.util.spec_from_file_location("windows_text", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+#: A context manager inside which files and zip entries are written as Windows writes them.
+as_windows = _windows_text().as_windows
 
 
 def on[C: Connector](day: str, connector: C) -> C:
