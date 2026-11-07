@@ -29,14 +29,14 @@ Menu: [For judges](#for-judges) · [See it work](#see-it-work) · [Quickstart](#
 
 ## For judges
 
-Code links point at lines in the release tag `v1.0.0`.
+Code links point at lines in the release tag `v1.0.1`.
 
 | Criterion | Where to look |
 |---|---|
-| Potential Impact | [The problem](#the-problem). The real lab night: [`lab/expected.yaml`](lab/expected.yaml) was written before any audit; the findings are in [Evidence](#evidence). Region rules a reader learns once: [`_region_code`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/matcher.py#L35-L44) |
-| Technological Implementation | [How Kiro is used](#how-kiro-is-used) and [`.kiro/`](.kiro). The matcher: [`_match`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/matcher.py#L110-L315). The number guard: [`numbers_are_safe`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L167-L172) and [`explain_finding`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L344-L380). The evidence chain: [`write_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L149-L221) and [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L528-L657). The partition theorem: [`Partition.lean`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/lean/NightAudit/Partition.lean#L166-L173) |
-| Design | [See it work](#see-it-work). The identity: [`ui-identity.md`](.kiro/steering/ui-identity.md). The Venn diagram: [`vennSvg`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/web/src/render/venn.ts#L68-L119). Accessibility: [Evidence](#evidence) |
-| Innovation / Idea | [How it works](#how-it-works). One skeleton, three controls: [the cloud account app (`apps/vampires`)](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/vampires/controls/aws-account.yaml#L1-L95), [the staff access app (`apps/ghosts`)](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/ghosts/controls/staff-access.yaml#L1-L72) and [this repository's own build](apps/own-build/README.md) |
+| Potential Impact | [The problem](#the-problem). The real lab night: [`lab/expected.yaml`](lab/expected.yaml) was written before any audit; the findings are in [Evidence](#evidence). Region rules a reader learns once: [`_region_code`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/matcher.py#L35-L44) |
+| Technological Implementation | [How Kiro is used](#how-kiro-is-used) and [`.kiro/`](.kiro). The matcher: [`_match`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/matcher.py#L110-L315). The number guard: [`numbers_are_safe`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/explain.py#L167-L172) and [`explain_finding`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/explain.py#L344-L380). The evidence chain: [`write_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/evidence.py#L149-L221) and [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/evidence.py#L528-L657). The partition theorem: [`Partition.lean`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/lean/NightAudit/Partition.lean#L166-L173) |
+| Design | [See it work](#see-it-work). The identity: [`ui-identity.md`](.kiro/steering/ui-identity.md). The Venn diagram: [`vennSvg`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/web/src/render/venn.ts#L71-L122). Accessibility: [Evidence](#evidence) |
+| Innovation / Idea | [How it works](#how-it-works). One skeleton, three controls: [the cloud account app (`apps/vampires`)](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/apps/vampires/controls/aws-account.yaml#L1-L95), [the staff access app (`apps/ghosts`)](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/apps/ghosts/controls/staff-access.yaml#L1-L72) and [this repository's own build](apps/own-build/README.md) |
 | Presentation | The three GIFs and the figures in [See it work](#see-it-work), the [architecture](#how-it-works), the [claims table](#claims-and-the-tests-that-pin-them) |
 
 ## See it work
@@ -137,7 +137,7 @@ files add up to 1072.7314 (an allocation, see [the third control](#two-apps-and-
 ## What it will not do
 
 - Write to the account. The connectors make no write call. The deployed role is `ReadOnlyAccess` plus `s3:PutObject` on its
-  own runs bucket and log writes to its own log groups ([`NightlyRole`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/deploy/stack.yaml#L32-L58)).
+  own runs bucket and log writes to its own log groups ([`NightlyRole`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/deploy/stack.yaml#L32-L58)).
   A Kiro hook refuses write calls during development.
 - Accuse anyone. Findings state a condition and its evidence.
 - Report billing it cannot see yet. Resources younger than the grace window (36 hours) are pending.
@@ -148,27 +148,27 @@ What the deployed roles can and cannot do, and how to report a security problem:
 
 | Claim | Code | Test |
 |---|---|---|
-| Every key lands in exactly one of the seven regions | [`_region_code`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/matcher.py#L35-L44) | `test_property_every_key_lands_in_exactly_one_region_named_by_its_ledgers` |
-| The same holds for every list of keys, proved | [`Partition.lean`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/lean/NightAudit/Partition.lean#L166-L173) | `test_property_the_lean_model_and_the_python_matcher_give_every_key_the_same_region` |
+| Every key lands in exactly one of the seven regions | [`_region_code`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/matcher.py#L35-L44) | `test_property_every_key_lands_in_exactly_one_region_named_by_its_ledgers` |
+| The same holds for every list of keys, proved | [`Partition.lean`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/lean/NightAudit/Partition.lean#L166-L173) | `test_property_the_lean_model_and_the_python_matcher_give_every_key_the_same_region` |
 | A healthy account gives zero findings | `_match` | `test_property_same_keys_in_all_three_ledgers_produce_zero_findings`, `test_healthy_account_of_ten_thousand_keys_is_silent` |
-| A record younger than the grace window is pending | [`find_pending`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/grace.py#L16-L35) | `test_property_a_young_unbilled_observed_key_is_pending_and_produces_no_finding` |
+| A record younger than the grace window is pending | [`find_pending`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/grace.py#L16-L35) | `test_property_a_young_unbilled_observed_key_is_pending_and_produces_no_finding` |
 | Ledger text never changes a region | `_match` | `test_property_an_instruction_in_an_attribute_assigns_the_same_regions_as_benign_text_of_equal_length` |
-| Ledger text enters a prompt quoted and cut | [`build_prompt`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L89-L109) | `test_injected_text_is_quoted_and_truncated_in_the_prompt` |
-| A number outside the evidence is replaced by the template | [`numbers_are_safe`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L167-L172) | `test_property_a_response_citing_a_number_outside_the_evidence_is_replaced_by_the_template` |
+| Ledger text enters a prompt quoted and cut | [`build_prompt`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/explain.py#L89-L109) | `test_injected_text_is_quoted_and_truncated_in_the_prompt` |
+| A number outside the evidence is replaced by the template | [`numbers_are_safe`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/explain.py#L167-L172) | `test_property_a_response_citing_a_number_outside_the_evidence_is_replaced_by_the_template` |
 | A minus sign counts: a charge cannot read as a refund | `numbers_are_safe` | `test_regression_a_response_that_negates_an_evidence_number_is_rejected` |
-| One changed byte in any evidence row fails verification | [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L528-L657) | `test_property_flipping_any_byte_of_any_evidence_row_fails_verification` |
+| One changed byte in any evidence row fails verification | [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/src/nightaudit/evidence.py#L528-L657) | `test_property_flipping_any_byte_of_any_evidence_row_fails_verification` |
 | Region amounts plus unkeyed lines equal the billed total | `_match` | `test_property_region_billed_amounts_plus_unkeyed_equal_the_billed_total` |
 | The same inputs give the same findings and evidence hash | `write_evidence_pack` | `test_property_repeating_a_run_with_identical_inputs_gives_identical_findings_and_evidence_hash` |
 | Connectors make no write call; the role writes only its own runs and logs | [`stack.yaml`](deploy/stack.yaml) | `test_a_connector_module_calls_no_aws_operation_that_is_not_a_read`, `test_a_role_can_write_only_what_the_claim_names` |
 | A hook file Kiro would skip fails a test | [`.kiro/hooks`](.kiro/hooks) | `test_a_hook_file_kiro_would_skip_silently_fails_here_instead` |
 | The sealed casebook is unreadable in every spelling | [`seal_heldout.py`](scripts/hooks/seal_heldout.py) | `test_seal_blocks_every_spelling_of_the_heldout_folder` |
 | The staff access app finds exactly its 8 planted findings | [`planted.yaml`](apps/ghosts/planted.yaml) | `test_the_run_finds_exactly_the_planted_findings` |
-| A spec path resolves to the one tracked file it ends | [`promised_files`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/own-build/src/own_build/paths.py#L144-L157) | `test_a_spec_promises_exactly_the_files_the_casebook_says_given_the_tracked_files` |
+| A spec path resolves to the one tracked file it ends | [`promised_files`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/apps/own-build/src/own_build/paths.py#L144-L157) | `test_a_spec_promises_exactly_the_files_the_casebook_says_given_the_tracked_files` |
 | The power finds each planted condition in an empty project | [`power/night-audit`](power/night-audit) | `test_the_example_control_finds_each_planted_condition_through_nightaudit` |
 | The Crew manifest passes the rules Crew 0.13.0 enforces | [`crew/night-shift/app.json`](crew/night-shift/app.json) | `test_the_manifest_follows_the_documented_rules`, `test_regression_a_command_cron_is_rejected_on_windows_so_the_audit_is_a_script_cron`, `test_regression_the_investigator_tool_refs_name_servers_the_agent_declares` |
 | Both investigator agents (the checkout's, which the notes job launches, and the Crew app's) can call only reads, from pinned servers | [`.kiro/agents/night-investigator.json`](.kiro/agents/night-investigator.json), [`.kiro/settings/mcp.json`](.kiro/settings/mcp.json) | `test_the_checkout_investigator_can_call_no_tool_that_is_not_a_read`, `test_every_server_the_checkout_investigator_mounts_is_pinned_and_aws_api_reads_only`, `test_the_crew_investigator_can_call_no_tool_that_is_not_a_read_and_its_servers_are_pinned` |
 | Recorded run, not a test: the Crew jobs wrote runs and notes that verify | [`docs/RESULTS.md`](docs/RESULTS.md#night-shift) | the `kirocrew cron trigger` commands and their output, recorded there |
-| A Venn click filters the rows | [`vennSvg`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/web/src/render/venn.ts#L68-L119) | `test_a_venn_region_click_filters_the_rows` |
+| A Venn click filters the rows | [`vennSvg`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.1/skeleton/web/src/render/venn.ts#L71-L122) | `test_a_venn_region_click_filters_the_rows` |
 
 ## Evidence
 
