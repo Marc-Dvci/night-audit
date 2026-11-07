@@ -13,7 +13,7 @@ from typing import Any
 import yaml
 from nightaudit.models import RunResult
 from nightaudit.runner import run_control
-from own_build.paths import spec_paths
+from own_build.paths import promised_files
 
 APP = Path(__file__).resolve().parents[1]
 CONTROL = APP / "controls" / "own-build.yaml"
@@ -74,12 +74,19 @@ def _csv(header: list[str], rows: list[list[str]]) -> str:
 def write_repository(folder: Path, specs: dict[str, str], tracked: list[str], kiro: list[dict[str, str]]) -> Path:
     """Write the four recorded files of a tiny repository into *folder* and return it.
 
-    *specs* maps ``<spec>/<document>`` to markdown; the promises are read out of it with the real parser. Every Kiro
+    *specs* maps ``<spec>/<document>`` to markdown; the promises are resolved out of it against *tracked* with the real
+    rules, as the snapshot does. Every Kiro
     session named by a row gets a sessions row whose credits are the sum of its shares (blank when all are blank).
     """
     folder.mkdir(parents=True, exist_ok=True)
     started = "2026-11-07T00:00:00.000Z"
-    promises = sorted({(file, *key.split("/", 1)) for key, text in specs.items() for file in spec_paths(text)})
+    promises = sorted(
+        {
+            (file, *key.split("/", 1))
+            for key, text in specs.items()
+            for file in promised_files(text, key.split("/", 1)[0], frozenset(tracked))
+        }
+    )
     (folder / "spec-files.csv").write_text(
         _csv(["file", "spec", "doc", "commit"], [[f, s, d, COMMIT] for f, s, d in promises]), encoding="utf-8"
     )

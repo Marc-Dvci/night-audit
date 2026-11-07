@@ -9,15 +9,22 @@
 #   (a leading "./" is dropped). So these are NOT files: a directory ("lean/"), a glob ("apps/*/x.py"), a template
 #   ("runs/<id>/x.json"), a bare name with no directory ("report.py"), a dotted identifier ("ghosts.review"),
 #   a URL route ("/api/runs"), a host name ("hollowpines.com"), a number ("0.50"), a command or a code expression.
-# A bare name locates nothing, and a path written relative to some other folder cannot be told from a repository path.
-# Both stay out or land where they land; the parser does not look at the repository to decide.
+# A bare name locates nothing. Reading a spec does not look at the repository.
+#
+# Added after the first recorded night, which showed that this reading alone overstated "promised and never built"
+# (24 of its 32 files were relative paths, folders or build output). The snapshot, which holds both the specs and the
+# tracked files of one commit, now resolves each span (section `resolve` below, and own_build.paths):
+#   a tracked file is itself; otherwise the one tracked path that the span ends (at a "/") ; otherwise the span as
+#   written; a folder span ("apps/ghosts/") is every tracked file under it; a path with a "dist" or "node_modules"
+#   segment is build output and not a promise; two files a spec says a tool writes into somebody else's project are
+#   not promises.
 
 regions:
   - id: ob-01-healthy-repository
     note: >-
-      Two files promised, tracked and worked on by Kiro. The spec also mentions a directory, a glob, a bare name,
-      a template and a dotted name, and quotes a path inside a fenced block. None of those is a promise.
-      A healthy repository must produce nothing.
+      Two files promised, tracked and worked on by Kiro. The spec also mentions a directory (which holds only files
+      already promised), a glob, a bare name, a template and a dotted name, and quotes a path inside a fenced block.
+      None of those adds a promise. A healthy repository must produce nothing.
     specs:
       alpha/design.md: |
         The matcher lives in `src/match.py` and its tests in `tests/test_match.py`.
@@ -158,6 +165,40 @@ regions:
       informational: 0
       billed_total: "1.5"
 
+  - id: ob-09-relative-paths-folders-and-build-output
+    note: >-
+      A spec writes a path relative to a folder (it ends exactly one tracked file), a folder (every tracked file under
+      it), a path through build output, a relative path that ends two tracked files, and a path that matches nothing.
+      Only the last two are promises never kept: the first three name files that exist or are not promises.
+    specs:
+      alpha/design.md: |
+        Tests: `tests/test_match.py`. Code folder: `src/core/`. Output: `web/dist/app.js`.
+        Two readings: `util/helpers.py`. Stale: `lib/gone.py`.
+    tracked:
+      - skeleton/tests/test_match.py
+      - src/core/a.py
+      - src/core/b.py
+      - src/other.py
+      - a/util/helpers.py
+      - b/util/helpers.py
+    kiro:
+      - {file: skeleton/tests/test_match.py, session: s1, credit_share: "1.0"}
+      - {file: src/core/a.py, session: s1, credit_share: "1.0"}
+    expect:
+      promised: [lib/gone.py, tests/test_match.py, util/helpers.py, web/dist/app.js]
+      regions:
+        skeleton/tests/test_match.py: IOB
+        src/core/a.py: IOB
+        src/core/b.py: IO
+        src/other.py: O
+        a/util/helpers.py: O
+        b/util/helpers.py: O
+        util/helpers.py: I
+        lib/gone.py: I
+      findings: 5
+      informational: 1
+      billed_total: "2.0"
+
 parser:
   # Spans that must be read as files, and spans that must not. Every case is a whole markdown text.
   - id: ps-01-files-with-directories
@@ -188,3 +229,92 @@ parser:
   - id: ps-09-a-span-is-the-whole-path
     text: "`a/b.py` is fine; `see a/c.py` is prose; ` a/d.py ` has spaces round it"
     expect: [a/b.py]
+
+folders:
+  # Spans that must be read as folders, and spans that must not. Every case is a whole markdown text.
+  - id: fs-01-folders-end-in-a-slash
+    text: "`apps/ghosts/`, `.kiro/specs/`, `skeleton/web/src/render/`, `src/`, `.github/workflows/`"
+    expect: [.github/workflows/, .kiro/specs/, apps/ghosts/, skeleton/web/src/render/, src/]
+  - id: fs-02-files-globs-and-templates-are-not-folders
+    text: "`apps/ghosts`, `src/a.py`, `apps/*/controls/`, `runs/<id>/`, `data/{a,b}/`, `/etc/`, `/api/runs/`"
+    expect: []
+  - id: fs-03-up-paths-and-empty-segments-are-refused
+    text: "`../a/`, `a/../b/`, `a//b/`, `a/./b/`, `./`, `/`, `//`"
+    expect: []
+  - id: fs-04-a-leading-dot-slash-is-dropped
+    text: "`./apps/vampires/`"
+    expect: [apps/vampires/]
+  - id: fs-05-fenced-blocks-and-spans-with-spaces-are-skipped
+    text: "```text\n`a/in-fence/`\n```\n`see a/prose/` ` a/padded/ ` `a/kept/`"
+    expect: [a/kept/]
+  - id: fs-06-one-folder-twice-is-one-folder
+    text: "`a/b/` and `a/b/` and `./a/b/` and `a/B/`"
+    expect: [a/B/, a/b/]
+
+resolve:
+  # What a spec text promises, given the files git tracks. `spec` is the spec folder name under .kiro/specs.
+  - id: rs-01-a-tracked-path-is-itself-even-when-it-also-ends-another
+    spec: alpha
+    text: "`src/a.py`"
+    tracked: [src/a.py, x/src/a.py]
+    expect: [src/a.py]
+  - id: rs-02-a-relative-path-names-the-one-tracked-file-it-ends
+    spec: alpha
+    text: "`tests/t.py`"
+    tracked: [skeleton/tests/t.py, other/x.py]
+    expect: [skeleton/tests/t.py]
+  - id: rs-03-a-suffix-must-start-at-a-folder-boundary
+    spec: alpha
+    text: "`sts/t.py`"
+    tracked: [skeleton/tests/t.py]
+    expect: [sts/t.py]
+  - id: rs-04-a-path-that-ends-two-files-stays-as-written
+    spec: alpha
+    text: "`util/h.py`"
+    tracked: [a/util/h.py, b/util/h.py]
+    expect: [util/h.py]
+  - id: rs-05-a-path-that-matches-nothing-stays-as-written
+    spec: alpha
+    text: "`lib/gone.py`"
+    tracked: [src/a.py]
+    expect: [lib/gone.py]
+  - id: rs-06-a-folder-is-every-tracked-file-under-it
+    spec: alpha
+    text: "`docs/`"
+    tracked: [docs/a.md, docs/sub/b.md, mydocs/c.md, docs.md, x/docs/d.md]
+    expect: [docs/a.md, docs/sub/b.md]
+  - id: rs-07-a-folder-with-no-tracked-file-intends-nothing
+    spec: alpha
+    text: "`gone/`"
+    tracked: [src/a.py]
+    expect: []
+  - id: rs-08-a-folder-is-read-from-the-root-only
+    spec: alpha
+    text: "`core/`"
+    tracked: [src/core/a.py]
+    expect: []
+  - id: rs-09-build-output-is-not-a-promise
+    spec: alpha
+    text: "`skeleton/web/dist/index.html`, `web/node_modules/x/y.js`, `web/dist/`, `dist/`"
+    tracked: [skeleton/web/dist/index.html, web/node_modules/x/y.js, web/dist/app.js, dist/b.js, src/a.py]
+    expect: []
+  - id: rs-10-a-file-named-twice-is-promised-once
+    spec: alpha
+    text: "`src/a.py` is in `src/` and `lib/src/a.py`"
+    tracked: [src/a.py, src/b.py]
+    expect: [lib/src/a.py, src/a.py, src/b.py]
+  - id: rs-11-files-a-tool-writes-into-another-project-are-not-promises-of-this-one
+    spec: night-shift
+    text: "`tests/test_contracts.py`, `tests/test_casebook.py`, `assets/contract_tests.py`"
+    tracked: [tests/test_contracts.py, power/skills/add-control/assets/contract_tests.py]
+    expect: [power/skills/add-control/assets/contract_tests.py]
+  - id: rs-12-the-same-text-in-another-spec-is-read-as-it-is
+    spec: alpha
+    text: "`tests/test_contracts.py`"
+    tracked: [tests/test_contracts.py]
+    expect: [tests/test_contracts.py]
+  - id: rs-13-a-fenced-block-promises-nothing
+    spec: alpha
+    text: "```text\n`src/a.py` and `src/`\n```\n"
+    tracked: [src/a.py]
+    expect: []

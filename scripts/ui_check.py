@@ -19,7 +19,6 @@ TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
 
 
 def scan(page: Page, label: str) -> list[dict[str, object]]:
-    page.add_script_tag(path=str(AXE))
     result = page.evaluate("async (tags) => await axe.run(document, {runOnly: {type: 'tag', values: tags}})", TAGS)
     violations = result["violations"]
     print(f"{label:<28} violations={len(violations)} passes={len(result['passes'])}")
@@ -34,7 +33,10 @@ def main() -> int:
     failures: list[str] = []
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        page = browser.new_page(viewport={"width": 1440, "height": 900})
+        # axe-core is injected before the page loads: the page's Content-Security-Policy refuses an inline script tag.
+        context = browser.new_context(viewport={"width": 1440, "height": 900})
+        context.add_init_script(path=str(AXE))
+        page = context.new_page()
         errors: list[str] = []
         dialogs: list[str] = []
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
@@ -77,7 +79,7 @@ def main() -> int:
         page.focus('.legend-item[data-region="OB"]')
         page.keyboard.press("Enter")
         page.wait_for_timeout(150)
-        title = page.inner_text("#findings-title")
+        title = page.inner_text("#rows-title")
         print("after Enter on Vampire:", json.dumps(title))
         if not title.upper().startswith("VAMPIRE"):
             failures.append("keyboard filter")

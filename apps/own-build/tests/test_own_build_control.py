@@ -138,7 +138,7 @@ def test_the_notes_name_the_stopped_sessions_and_the_credits_no_file_carries(nig
     texts = [n.text for n in night.notes]
     assert any(t.startswith("Some Kiro sessions were stopped before they reported credits") for t in texts)
     assert any(t.startswith("Some credits were spent in sessions that touched no file") for t in texts)
-    assert any("relative to another folder is not resolved" in t for t in texts)
+    assert any("kept as written" in t for t in texts)
     assert all(n.numbers == [] for n in night.notes)
 
 

@@ -106,8 +106,8 @@ references are in brackets. Do not start implementation until this checklist is 
       argparse. [all]
 
 - [x] **17. UI kit.** Create `skeleton/web/` with Vite + TypeScript (no UI framework): `index.html`,
-      `src/main.ts` (fetches `/api/runs/{id}`), `src/venn.ts` (three-circle SVG Venn with key counts,
-      click-to-filter), `src/findings.ts` (green-bar rows with monster name in words, key, nights,
+      `src/main.ts` (fetches `/api/runs/{id}`), `src/render/venn.ts` (three-circle SVG Venn with key counts,
+      click-to-filter), `src/render/rows.ts` (green-bar rows with monster name in words, key, nights,
       amount, explanation), `styles.css` (palette from ui-identity: ink, ink-2, phosphor, bone,
       amber, moon, blood), self-hosted IBM Plex Mono + IBM Plex Sans fonts. Keyboard-accessible with
       visible phosphor focus rings, `prefers-reduced-motion` respected. [Req 8.2–8.4, ui-identity]

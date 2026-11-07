@@ -3,8 +3,10 @@
     uv run python apps/own-build/snapshot.py [--repo .] [--commit HEAD] [--out apps/own-build/data]
 
 ``tracked-files.csv`` has one row per tracked file, ``file,commit``. ``spec-files.csv`` has one row per file, spec and
-document that names it, ``file,spec,doc,commit``; the spec documents are read from the same commit with the rule in
-``own_build.paths``. Rows are sorted and the files hold no time, so the same commit always gives the same bytes.
+document that names it, ``file,spec,doc,commit``; the spec documents are read from the same commit with the rules in
+``own_build.paths``, which resolve a relative path to the one tracked file it ends, let a folder name every tracked
+file under it, and drop build output. Rows are sorted and the files hold no time, so the same commit always gives the
+same bytes.
 
 The tracked list is ``git ls-tree -r`` at the commit: the files ``git ls-files`` lists in a clean checkout of it. Reading
 the commit and not the index keeps both snapshots to one commit even while other work is staged. Only the read
@@ -24,7 +26,7 @@ from pathlib import Path
 
 from nightaudit.textfile import write_text_exact
 
-from .paths import spec_paths
+from .paths import promised_files
 
 #: Every git subcommand this module may run. A write command is a defect.
 READ_ONLY_GIT: frozenset[str] = frozenset({"rev-parse", "ls-tree", "cat-file"})
@@ -58,14 +60,18 @@ def tracked_files(git: GitRunner, commit: str) -> list[str]:
 
 
 def spec_rows(git: GitRunner, commit: str, tracked: list[str]) -> list[tuple[str, str, str]]:
-    """``(file, spec, doc)`` for every file path a spec document at the commit names."""
+    """``(file, spec, doc)`` for every tracked file, or path as written, that a spec document at the commit promises.
+
+    The spans are resolved against *tracked* with the rules in ``own_build.paths``.
+    """
+    tracked_set = frozenset(tracked)
     rows: set[tuple[str, str, str]] = set()
     for path in tracked:
         found = SPEC_DOC.match(path)
         if found is None:
             continue
         text = git(["cat-file", "blob", f"{commit}:{path}"]).decode("utf-8")
-        for file in spec_paths(text):
+        for file in promised_files(text, found.group(1), tracked_set):
             rows.add((file, found.group(1), f"{found.group(2)}.md"))
     return sorted(rows)
 

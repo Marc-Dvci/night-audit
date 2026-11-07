@@ -12,7 +12,7 @@ Billing data arrives late, so the control runs at 02:00 UTC on yesterday's bill 
 ## Glossary
 
 - **Declared stack**: a CloudFormation stack tagged `night-audit:intended=true`.
-- **Approved change**: an entry in `apps/vampires/approved-changes.yaml` naming a resource id, the approver, a reason and
+- **Approved change**: an entry in `apps/vampires/controls/approved-changes.yaml` naming a resource id, the approver, a reason and
   an expiry date.
 - **Exclusion file**: a local, untracked YAML list of resource ids that belong to workloads outside the audited scope.
 - **CUR 2.0**: the AWS Cost and Usage Report 2.0 data export delivered as Parquet to S3.

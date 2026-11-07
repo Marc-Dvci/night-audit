@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <title>Night Audit architecture</title>
+<!-- Source of docs/figures/architecture.png. Render: uv run python scripts/render_figure.py docs/figures/architecture.html -->
 <style>
   @font-face { font-family: "Plex"; src: url("../../skeleton/web/node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
   @font-face { font-family: "Plex"; src: url("../../skeleton/web/node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
@@ -16,13 +17,14 @@
   .lab { font-family: Plex, sans-serif; font-size: 13px; letter-spacing: 0.14em; fill: #7a8496; font-weight: 600; }
   .node { fill: #fff; stroke: #c9cfdb; stroke-width: 1.4; }
   .core { fill: #f4fbf7; stroke: #2e9e6a; stroke-width: 1.6; }
-  .model { fill: #f6f7ff; stroke: #6b78c9; stroke-width: 1.4; }
+  .model { fill: #f6f7ff; stroke: #6b78c9; stroke-width: 1.6; stroke-dasharray: 7 5; }
   .arrow { stroke: #8a93a5; stroke-width: 1.6; fill: none; marker-end: url(#a); }
   .boundary { stroke: #c2410c; stroke-width: 1.6; stroke-dasharray: 6 5; }
+  .warn { font-family: Plex, sans-serif; font-size: 13px; fill: #c2410c; font-weight: 600; letter-spacing: .08em; }
 </style>
 </head>
 <body>
-<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+<svg id="figure" width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Night Audit architecture: three read-only ledgers feed a deterministic skeleton that decides every region; a model only explains a decided finding, and a guard checks every number in its text">
   <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a93a5"/></marker></defs>
 
   <!-- Column labels -->
@@ -33,21 +35,21 @@
   <!-- Ledgers -->
   <rect class="node" x="40" y="80" width="330" height="118" rx="10"/>
   <text class="t h" x="62" y="114">Intended</text>
-  <text class="t s" x="62" y="142">CloudFormation stacks tagged</text>
-  <text class="t m" x="62" y="164">night-audit:intended=true</text>
-  <text class="t s" x="62" y="186">+ approved-changes.yaml (approver, expiry)</text>
+  <text class="t s" x="62" y="142">What we approved: CloudFormation,</text>
+  <text class="t s" x="62" y="164">approved changes, an HR roster,</text>
+  <text class="t s" x="62" y="186">the specs of a repository</text>
 
   <rect class="node" x="40" y="222" width="330" height="118" rx="10"/>
   <text class="t h" x="62" y="256">Observed</text>
-  <text class="t s" x="62" y="284">EC2, EBS, snapshots, EIPs, NAT, RDS,</text>
-  <text class="t s" x="62" y="306">Lambda in every enabled region;</text>
-  <text class="t s" x="62" y="328">S3, IAM users and keys, CloudTrail</text>
+  <text class="t s" x="62" y="284">What exists: live AWS inventory,</text>
+  <text class="t s" x="62" y="306">identity and SaaS user lists,</text>
+  <text class="t s" x="62" y="328">the files git tracks</text>
 
   <rect class="node" x="40" y="364" width="330" height="118" rx="10"/>
   <text class="t h" x="62" y="398">Billed</text>
-  <text class="t s" x="62" y="426">Cost and Usage Report 2.0, Parquet,</text>
-  <text class="t s" x="62" y="448">hourly with resource ids, summed</text>
-  <text class="t s" x="62" y="470">per resource and usage type</text>
+  <text class="t s" x="62" y="426">What we pay for: Cost and Usage</text>
+  <text class="t s" x="62" y="448">Report 2.0, SaaS licence seats,</text>
+  <text class="t s" x="62" y="470">the work Kiro was credited for</text>
 
   <!-- Arrows into core -->
   <path class="arrow" d="M372 139 C 400 139, 400 230, 428 230"/>
@@ -61,23 +63,30 @@
   <text class="t s" x="454" y="180">2  Drop out-of-scope keys, count them</text>
   <text class="t s" x="454" y="210">3  Three-way match: every key in exactly</text>
   <text class="t s" x="476" y="232">one of 7 regions (Vampire, Phantom, ...)</text>
-  <text class="t s" x="454" y="262">4  Grace window for late billing (36 h)</text>
+  <text class="t s" x="454" y="262">4  Grace window for late billing</text>
   <text class="t s" x="454" y="292">5  New tonight / haunting N nights</text>
   <text class="t s" x="454" y="322">6  Read-only context: who created it</text>
   <text class="t s" x="476" y="344">(CloudTrail LookupEvents)</text>
   <text class="t s" x="454" y="374">7  Evidence pack: every row and finding</text>
   <text class="t s" x="476" y="396">in a SHA-256 chain, byte-exact verify</text>
-  <text class="t m" x="454" y="440">casebook 18/18 · held-out 6/6</text>
-  <text class="t m" x="454" y="462">298,000 records in 1.49 s</text>
+  <text class="t m" x="454" y="440">regions, amounts, counts, dates: code</text>
+  <text class="t m" x="454" y="462">no model call anywhere above this line</text>
 
   <!-- Boundary -->
-  <line class="boundary" x1="430" y1="512" x2="830" y2="512"/>
-  <text class="t" x="430" y="534" style="font-size:13px;fill:#c2410c;font-weight:600;letter-spacing:.08em">CODE DECIDES ABOVE · THE MODEL ONLY EXPLAINS BELOW</text>
+  <line class="boundary" x1="430" y1="508" x2="830" y2="508"/>
+  <text class="warn" x="430" y="530">CODE DECIDES ABOVE · THE MODEL ONLY EXPLAINS BELOW</text>
 
-  <rect class="model" x="430" y="552" width="400" height="104" rx="10"/>
-  <text class="t h" x="454" y="586">Explanation</text>
-  <text class="t s" x="454" y="614">Bedrock Converse, or a fixed template.</text>
-  <text class="t s" x="454" y="638">Any number not in the evidence → template.</text>
+  <rect class="model" x="430" y="548" width="400" height="92" rx="10"/>
+  <text class="t h" x="454" y="580">Explanation (prose only)</text>
+  <text class="t s" x="454" y="606">Bedrock Converse reads one decided finding.</text>
+  <text class="t s" x="454" y="628">Ledger text goes in quoted, cut to 200 characters.</text>
+
+  <path class="arrow" d="M630 642 L 630 668"/>
+
+  <rect class="core" x="430" y="670" width="400" height="92" rx="10"/>
+  <text class="t h" x="454" y="702">Explanation guard (code)</text>
+  <text class="t s" x="454" y="728">Every number must be in the finding's evidence.</text>
+  <text class="t s" x="454" y="750">Otherwise a fixed template is shown instead.</text>
 
   <!-- Outputs -->
   <rect class="node" x="900" y="80" width="260" height="128" rx="10"/>
@@ -92,19 +101,31 @@
   <text class="t m" x="922" y="316">nightaudit verify &lt;pack&gt;</text>
 
   <rect class="node" x="900" y="360" width="260" height="122" rx="10"/>
-  <text class="t h" x="922" y="394">Same skeleton,</text>
-  <text class="t h" x="922" y="418">other ledgers</text>
-  <text class="t s" x="922" y="446">A control file + connectors</text>
-  <text class="t s" x="922" y="468">make a new app</text>
+  <text class="t h" x="922" y="394">Three apps, one</text>
+  <text class="t h" x="922" y="418">skeleton</text>
+  <text class="t s" x="922" y="446">vampires · ghosts · own-build</text>
+  <text class="t s" x="922" y="468">each is a control file + connectors</text>
 
   <path class="arrow" d="M832 160 L 898 150"/>
   <path class="arrow" d="M832 290 L 898 286"/>
   <path class="arrow" d="M832 420 L 898 420"/>
+  <path class="arrow" d="M832 716 C 870 716, 870 540, 898 540"/>
 
-  <!-- Deployment strip -->
-  <text class="lab" x="40" y="712">DEPLOYED ON AWS</text>
-  <text class="t s" x="40" y="742">EventBridge Scheduler 02:00 UTC  →  Lambda (read-only role)  →  private S3 runs bucket  →  Lambda function URL, no login</text>
-  <text class="t s" x="40" y="768">The stack is tagged night-audit:intended=true, so the audit declares its own resources.</text>
+  <rect class="node" x="900" y="520" width="260" height="104" rx="10"/>
+  <text class="t h" x="922" y="554">Explained finding</text>
+  <text class="t s" x="922" y="582">prose that passed the guard,</text>
+  <text class="t s" x="922" y="604">or the template</text>
+
+  <!-- Deployment -->
+  <text class="lab" x="40" y="532">DEPLOYED ON AWS</text>
+  <rect class="node" x="40" y="548" width="330" height="214" rx="10"/>
+  <text class="t s" x="62" y="580">EventBridge Scheduler, 02:00 UTC</text>
+  <text class="t s" x="62" y="606">→ Lambda, read-only role</text>
+  <text class="t s" x="62" y="632">→ private S3 bucket of runs</text>
+  <text class="t s" x="62" y="658">→ function URL, no login</text>
+  <text class="t s" x="62" y="694">Connectors make no write call.</text>
+  <text class="t s" x="62" y="716">The role writes only its own runs</text>
+  <text class="t s" x="62" y="738">and its own logs.</text>
 </svg>
 </body>
 </html>

@@ -113,6 +113,31 @@ def real_repo(tmp_path: Path) -> tuple[Path, GitRunner]:
     return repo, git_runner(repo)
 
 
+def test_a_relative_path_a_folder_and_build_output_are_resolved_against_the_commit_they_are_read_from(
+    tmp_path: Path,
+) -> None:
+    tree = {
+        ".kiro/specs/beta/design.md": (
+            "Tests in `tests/test_x.py`. Folder `lib/`. Output `web/dist/app.js`. Stale `old/gone.py`. Twice `u/h.py`.\n"
+        ),
+        "skeleton/tests/test_x.py": "",
+        "lib/a.py": "",
+        "lib/sub/b.py": "",
+        "web/dist/app.js": "",
+        "p/u/h.py": "",
+        "q/u/h.py": "",
+    }
+    record(FakeGit(tree), "HEAD", tmp_path)
+    assert (tmp_path / "spec-files.csv").read_text(encoding="utf-8").splitlines() == [
+        "file,spec,doc,commit",
+        f"lib/a.py,beta,design.md,{COMMIT}",
+        f"lib/sub/b.py,beta,design.md,{COMMIT}",
+        f"old/gone.py,beta,design.md,{COMMIT}",
+        f"skeleton/tests/test_x.py,beta,design.md,{COMMIT}",
+        f"u/h.py,beta,design.md,{COMMIT}",
+    ]
+
+
 def test_the_real_git_lists_the_same_files_as_the_tree_it_committed(tmp_path: Path) -> None:
     repo, git = real_repo(tmp_path)
     commit = resolve_commit(git, "HEAD")

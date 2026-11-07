@@ -1,14 +1,14 @@
 [
   {
-    "run_id": "24b44bf4aecc992a",
+    "run_id": "c656ba3d7478be2a",
     "control_id": "own-build",
     "control_title": "Night Audit",
     "app": "own-build",
     "run_time": "2026-11-08T02:00:00+00:00",
-    "control_hash": "2c2c2d7d6860dc67ae32867a7f5c729f402895e69aa885715f22d52567a8d600",
+    "control_hash": "1f84ab4afaa3bacabab57b48d5a42b87a796c6c563bb09e72d256be4d0a5eb3d",
     "complete": true,
-    "findings": 322,
-    "new_findings": 322,
-    "informational": 12
+    "findings": 90,
+    "new_findings": 90,
+    "informational": 118
   }
 ]

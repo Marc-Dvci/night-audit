@@ -88,7 +88,7 @@ ui:
   ledgers:
     intended:
       label: Specs
-      source: "The file paths written in backticks in .kiro/specs design, tasks and requirements files, read from a recorded snapshot. A path is read as written: a directory, a glob, a bare file name and a path relative to another folder are not resolved, so a file named that way can show as promised and never built."
+      source: "The file paths and folders written in backticks in .kiro/specs design, tasks and requirements files, read from a recorded snapshot. A relative path names the one tracked file it ends, a folder names every tracked file under it, and build output is left out. A path that ends no tracked file, or more than one, is kept as written and shows as promised and never built."
     observed:
       label: Repository
       source: The files git tracks at one recorded commit.

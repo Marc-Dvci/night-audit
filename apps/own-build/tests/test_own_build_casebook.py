@@ -13,6 +13,7 @@ from typing import Any
 import pytest
 import yaml
 from nightaudit.report import CALM_HEADLINE, headline
+from own_build.paths import spec_paths
 from own_build_testkit import CASEBOOK, run_in, write_repository
 
 CASES: list[dict[str, Any]] = yaml.safe_load(CASEBOOK.read_text(encoding="utf-8"))["regions"]
@@ -24,6 +25,12 @@ def test_the_casebook_has_at_least_five_labelled_cases_and_a_healthy_one() -> No
     assert any(c["expect"]["findings"] == 0 and c["expect"]["informational"] == 0 for c in CASES)
     regions = {code for c in CASES for code in c["expect"]["regions"].values()}
     assert regions == {"IOB", "OB", "O", "I", "IB", "B", "IO"}, "every region has a case"
+
+
+@pytest.mark.parametrize("case", CASES, ids=[c["id"] for c in CASES])
+def test_each_casebook_repository_promises_the_files_its_specs_name_as_written(case: dict[str, Any]) -> None:
+    written = sorted({path for text in case["specs"].values() for path in spec_paths(text)})
+    assert written == sorted(case["expect"]["promised"])
 
 
 @pytest.mark.parametrize("case", CASES, ids=[c["id"] for c in CASES])

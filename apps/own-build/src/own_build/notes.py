@@ -24,8 +24,9 @@ UNREPORTED = (
 )
 UNALLOCATED = "Some credits were spent in sessions that touched no file, so no file carries them."
 RELATIVE = (
-    "A spec's file path is read as written. A path written relative to another folder is not resolved, "
-    "so it can show as promised and never built."
+    "A path in a spec is resolved against the files git tracks: the one tracked file it ends, or every tracked file "
+    "under a folder. A path that ends no tracked file, or more than one, is kept as written, "
+    "so it shows as promised and never built."
 )
 
 

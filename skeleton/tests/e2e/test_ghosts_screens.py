@@ -47,10 +47,12 @@ def test_the_ghosts_overview_speaks_about_people(page: Any, base_url: str) -> No
     assert_axe_clean(page)
 
 
-def test_the_app_switch_offers_vampires_live_vampires_demo_and_ghosts_demo(page: Any, base_url: str) -> None:
+def test_the_app_switch_offers_vampires_live_vampires_demo_ghosts_demo_and_own_build_demo(
+    page: Any, base_url: str
+) -> None:
     open_page(page, base_url, "?app=ghosts-demo")
     options = page.locator("#app-select option").all_inner_texts()
-    assert options == ["Vampires", "Vampires demo account", "Ghosts demo company"]
+    assert options == ["Vampires", "Vampires demo account", "Ghosts demo company", "Night Audit's own build"]
     assert page.locator("#app-select").input_value() == "ghosts-demo"
 
 

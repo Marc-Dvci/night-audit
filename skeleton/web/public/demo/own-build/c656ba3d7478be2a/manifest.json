@@ -1,8 +1,8 @@
 {
   "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
-  "control_hash": "2c2c2d7d6860dc67ae32867a7f5c729f402895e69aa885715f22d52567a8d600",
-  "final_chain_hash": "60e76f586ce18fc5b5887bc02a873368b5296d4a34c9506482672132688ba653",
-  "finding_count": 334,
+  "control_hash": "1f84ab4afaa3bacabab57b48d5a42b87a796c6c563bb09e72d256be4d0a5eb3d",
+  "final_chain_hash": "542bc15be5dae1d98209a9e99896887a4dc730138b67fca22f56efdf4b6f454e",
+  "finding_count": 208,
   "ledgers": {
     "billed": {
       "count": 200,
@@ -10,17 +10,17 @@
       "source": "kiro:../data/kiro-files.csv"
     },
     "intended": {
-      "count": 82,
-      "hash": "a0b981e2edc59d7af4959ca4d8eed51f74293dd05429d3c5dc2656b5555997ec",
+      "count": 296,
+      "hash": "dccd1d8c6c97387eb03f1737d07c8f29d811cfc274da1a9df39bc98f651b3080",
       "source": "specs:../data/spec-files.csv"
     },
     "observed": {
-      "count": 335,
-      "hash": "ef05b6dd29bdbceaa0d67a30df3995ca60b4ab74dca9c10342cb0b67c5e5716c",
+      "count": 369,
+      "hash": "80837db39fdb9c77ddccf569dcdd0341db7d8ecde24eee7000852488338bca74",
       "source": "git:../data/tracked-files.csv"
     }
   },
-  "row_count": 956,
-  "run_id": "24b44bf4aecc992a",
+  "row_count": 1078,
+  "run_id": "c656ba3d7478be2a",
   "run_time": "2026-11-08T02:00:00Z"
 }
