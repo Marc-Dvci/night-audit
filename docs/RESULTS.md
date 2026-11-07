@@ -7,10 +7,10 @@ commit `2035d42` plus the working changes that follow it.
 
 | Figure | Value | Command |
 |---|---|---|
-| All tests | 1059 collected: 1056 passed, 3 skipped | `uv run pytest -q` |
+| All tests | 1069 collected: 1066 passed, 3 skipped | `uv run pytest -q` |
 | Skipped | 3, all `-m lean` differential tests, which need the Lean toolchain (`lake`); the `lean` CI job runs them with `NIGHTAUDIT_REQUIRE_LEAN=1` | `uv run pytest -q -ra` |
-| Property-based, integration, browser | 41, 263 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
-| TypeScript | 261 tests in 4 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
+| Property-based, integration, browser | 41, 264 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
+| TypeScript | 271 tests in 5 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
 | Decision core coverage | 96.86 % of lines and branches over `matcher`, `normalisers`, `grace`, `scope`, `state`, `evidence`, `explain`, `control`, `report` (floor 90 %) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Lint, format, types | ruff, ruff format and `mypy --strict` clean | `uv run ruff check . && uv run ruff format --check . && uv run mypy` |
 

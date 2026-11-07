@@ -3,7 +3,7 @@
 [![CI](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml)
 [![Licence: Apache 2.0](https://img.shields.io/badge/licence-Apache%202.0-blue.svg)](LICENSE)
-![Tests: 1059](https://img.shields.io/badge/tests-1059-brightgreen)
+![Tests: 1069](https://img.shields.io/badge/tests-1069-brightgreen)
 ![Decision core coverage: 96.86%](https://img.shields.io/badge/decision%20core%20coverage-96.86%25-brightgreen)
 ![Casebook: 18 of 18](https://img.shields.io/badge/casebook-18%20of%2018-brightgreen)
 
@@ -176,8 +176,8 @@ Every figure comes from a command in this repository. More in [`docs/RESULTS.md`
 
 | Figure | Command |
 |---|---|
-| 1059 tests: 1056 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
-| 41 property-based tests, 263 integration tests, 46 browser tests, 261 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
+| 1069 tests: 1066 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
+| 41 property-based tests, 264 integration tests, 46 browser tests, 271 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
 | Decision core coverage 96.86 % (lines and branches, nine modules) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Development casebook 18 of 18 | `uv run python scripts/score_casebook.py --set dev` |
 | Held-out casebook 6 of 6, scored once at tag `v0.1.0` | `uv run python scripts/score_heldout.py` |
