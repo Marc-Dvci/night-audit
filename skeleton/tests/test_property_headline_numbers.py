@@ -11,7 +11,7 @@ from hypothesis import strategies as st
 from nightaudit.control import ControlConfig
 from nightaudit.matcher import match
 from nightaudit.models import FINDING_REGIONS, HeadlineUi, LedgerName, LedgerSnapshot, NounUi, RunResult, UiConfig
-from nightaudit.report import CALM_HEADLINE, headline, report_html, run_numbers
+from nightaudit.report import CALM_HEADLINE, headline, headline_numbers, report_html, run_numbers
 
 WORDED = UiConfig(
     noun=NounUi(singular="resource", plural="resources"),
@@ -29,17 +29,19 @@ class _Cells(HTMLParser):
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
-        self.texts: list[str] = []
+        self.texts: list[tuple[str, str]] = []
         self._open: str | None = None
+        self._kind = ""
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         cls = dict(attrs).get("class") or ""
         if (tag == "td" and cls != "key") or (tag == "p" and cls == "headline"):
             self._open = ""
+            self._kind = "headline" if tag == "p" else "cell"
 
     def handle_endtag(self, tag: str) -> None:
         if tag in ("td", "p") and self._open is not None:
-            self.texts.append(self._open)
+            self.texts.append((self._kind, self._open))
             self._open = None
 
     def handle_data(self, data: str) -> None:
@@ -65,7 +67,7 @@ def test_property_headline_numbers_come_from_the_run(
 ) -> None:
     result = _run(snapshots, control, worded, missing)
     text = headline(result)
-    assert display_numbers(text) <= run_numbers(result)
+    assert display_numbers(text) <= headline_numbers(result)
 
     findings = [f for f in result.findings if not f.informational]
     if result.complete and not findings:
@@ -87,6 +89,7 @@ def test_property_report_numbers_come_from_the_run(
     result = _run(snapshots, control, worded, missing)
     cells = _Cells()
     cells.feed(report_html(result))
-    numbers = run_numbers(result)
-    for text in cells.texts:
-        assert display_numbers(text) <= numbers, text
+    numbers, headline_ok = run_numbers(result), headline_numbers(result)
+    for kind, text in cells.texts:
+        # Only the headline may round, and only its amounts; every table cell shows the exact value.
+        assert display_numbers(text) <= (headline_ok if kind == "headline" else numbers), text

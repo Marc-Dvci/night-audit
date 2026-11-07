@@ -134,6 +134,13 @@ Status: every task but 28 is ticked. Task 28 waits on `uv run ruff check .`, whi
 
 - [x] **27. Verify parity property.** `test_property_verify_parity.py`: hostile packs, untouched or with one changed
       character, compared between `assets/verify.js` in Chromium and `verify_evidence_pack`. [Req 6.4, P15]
+- [x] **29. Completeness from the chain.** `test_regression_a_page_that_says_incomplete_to_hide_the_bill_fails_verification`
+      in Python and its twin in `verify.test.ts`; the header and manifest carry `complete`; packs without it still verify
+      (`test_packs_written_before_completeness_was_recorded_still_verify_against_their_pages`); parity cases in
+      `parity.json` under `completeness`. [Req 6.6]
+- [x] **30. Headline rounding.** `headline_money_text` and `headlineMoneyText`, half-even to four figures, boundary
+      `0.71725`; `test_regression_a_headline_that_rounds_its_amount_wrongly_fails_verification`,
+      `test_a_page_that_rounds_any_amount_but_the_headline_fails_verification`, P11 with `headline_numbers`. [Req 2.7, 6.7]
 
 ## Verification
 

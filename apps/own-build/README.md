@@ -20,7 +20,7 @@ an hour. Read the credit column as "how much of the credit of the sessions that 
 "what this file cost".
 
 - The amount is **Kiro credits, not money**. The page prints every amount with a dollar sign because the skeleton's money
-  format has no other unit; read `$679.1619` as 679.1619 credits.
+  format has no other unit; read `$929.1727` as 929.1727 credits.
 - A session stopped before it reported credits has a blank share. A blank share counts as zero and the line is kept, so
   the file is still on the billed ledger.
 - Credits spent in a session that touched no file belong to no file, so the file totals are lower than the sessions' total.
@@ -54,9 +54,9 @@ directory to resolve, so the files a spec names only that way are not promised.
 
 **Why the rules are in two steps.** The first recorded night read paths as written and reported 32 files promised and
 never built. Reading those 32 showed that 26 were relative paths, folders or build output. The rules above resolve
-them, and the same night recorded again gives 6. Three of the 6 are paths that no longer exist (the spec text has been
-corrected since the recorded commit); three are not resolved: `assets/verify.js` is a path inside the build output,
-`demo/build.py` ends three tracked files and `references/region-table.md` ends two.
+them, and the same night recorded again at `a58b88b` gives 6. Three of the 6 were paths that no longer existed; the spec
+text was corrected, and the night recorded at `05f013d` gives 3. Those three are not resolved: `assets/verify.js` is a path
+inside the build output, `demo/build.py` ends three tracked files and `references/region-table.md` ends two.
 
 ## Regions
 
@@ -84,6 +84,10 @@ The snapshot is `git ls-tree -r` at the commit, which is the list `git ls-files`
 documents are read from the same commit and resolved against that list. It runs only `rev-parse`, `ls-tree` and `cat-file`.
 Untracked and staged work is not in it: a file or a spec edit written after the recorded commit is not audited until the
 snapshot is taken again. The recorded commit is named in both files (`commit` column).
+
+The night recorded at `05f013d` reads 376 tracked files, 298 promised and 229 that Kiro worked on in 21 sessions. Its
+region counts, beside those of `a58b88b`, are in
+[`docs/RESULTS.md`](../../docs/RESULTS.md#the-third-control-night-audit-audits-its-own-build).
 
 Kiro's two files come from Kiro's own session store and are not produced by this repository.
 

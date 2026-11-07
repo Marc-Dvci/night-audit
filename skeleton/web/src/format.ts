@@ -42,6 +42,34 @@ export function moneyText(amount: string | null | undefined): string {
   return `${m[1] === "-" ? "\u2212" : ""}$${grouped}.${fraction.padEnd(2, "0")}`;
 }
 
+/** The headline shows an amount to this many significant figures (HEADLINE_FIGURES in report.py). */
+const HEADLINE_FIGURES = 4;
+
+/**
+ * An amount as the headline prints it, by the same rule as headline_money_text in report.py: rounded half-even to four
+ * significant figures, never coarser than a cent. `0.7172358001` is `$0.7172`, `0.71725` is `$0.7172`. BigInt only.
+ */
+export function headlineMoneyText(amount: string): string {
+  const m = DECIMAL.exec(amount.trim());
+  if (!m || (m[2] === "" && (m[3] ?? "") === "")) return moneyText(amount);
+  const negative = m[1] === "-";
+  let coef = BigInt((m[2] + (m[3] ?? "")).replace(/^0+(?=\d)/, "") || "0");
+  let exp = Number(m[4] ?? "0") - (m[3] ?? "").length;
+  if (coef !== 0n) {
+    const adjusted = exp + coef.toString().length - 1;
+    const target = Math.min(adjusted - (HEADLINE_FIGURES - 1), -2);
+    if (exp < target) {
+      const p = 10n ** BigInt(target - exp);
+      let q = coef / p;
+      const twice = (coef % p) * 2n;
+      if (twice > p || (twice === p && q % 2n === 1n)) q += 1n;
+      coef = q;
+      exp = target;
+    }
+  }
+  return moneyText(`${negative ? "-" : ""}${coef}E${exp}`);
+}
+
 /** True when a decimal string is below zero, without converting it to a number. */
 export function isNegative(amount: string | null | undefined): boolean {
   return moneyText(amount).startsWith("\u2212");

@@ -13,6 +13,8 @@ from nightaudit.models import HeadlineUi, LedgerName, LedgerSnapshot, LedgerUi, 
 from nightaudit.report import (
     CALM_HEADLINE,
     headline,
+    headline_money_text,
+    headline_numbers,
     ledger_key_counts,
     money_text,
     report_csp,
@@ -179,9 +181,11 @@ def test_two_missing_ledgers_are_both_named() -> None:
     assert headline(result) == "The Declared and Billed ledgers could not be read, so tonight has no findings."
 
 
-def test_amounts_with_many_decimals_are_not_rounded_in_the_headline() -> None:
+def test_an_amount_with_many_decimals_is_rounded_in_the_headline_and_exact_in_the_money_lines() -> None:
+    """Was: the headline printed $0.100000001. The headline now rounds to four figures; the money lines do not."""
     result = run_of(rec(O, "o1", "v"), rec(B, "b1", "v", "0.000000001"), rec(B, "b2", "v", "0.1"), ui=VAMPIRES)
-    assert headline(result) == "1 Vampire is running and on the bill with no approval: $0.100000001 so far."
+    assert headline(result) == "1 Vampire is running and on the bill with no approval: $0.10 so far."
+    assert "$0.100000001" in {line.value for line in run_view(result).lines}
     assert display_numbers(headline(result)) <= run_numbers(result)
 
 
@@ -345,3 +349,47 @@ def test_the_headline_splits_into_a_lead_and_one_sentence_per_region() -> None:
     ]
     assert " ".join(sentences) == headline(result)
     assert run_view(run_of(*matched("a"))).headline_sentences == [CALM_HEADLINE]
+
+
+# --- The headline's amount: four significant figures, the rest exact ---------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("value", "text"),
+    [
+        ("0.7172358001", "$0.7172"),
+        ("0.71725", "$0.7172"),  # half-even: the tie goes to the even digit
+        ("0.71735", "$0.7174"),
+        ("0.717249999", "$0.7172"),
+        ("0.71725000001", "$0.7173"),
+        ("0.000000001", "$0.000000001"),
+        ("0.0000000012345", "$0.000000001234"),
+        ("41.20", "$41.20"),
+        ("6683.00", "$6,683.00"),
+        ("123.456", "$123.46"),  # never coarser than a cent
+        ("12345.675", "$12,345.68"),
+        ("-3.10501", "\u2212$3.105"),
+        ("0", "$0.00"),
+    ],
+)
+def test_the_headline_rounds_an_amount_half_even_to_four_significant_figures(value: str, text: str) -> None:
+    assert headline_money_text(Decimal(value)) == text
+
+
+def test_the_headline_rounds_its_amount_and_the_money_lines_and_report_table_keep_it_exact() -> None:
+    run = run_of(rec(O, "o-v", "i-0vamp"), rec(B, "b-v", "i-0vamp", "0.7172358001"), ui=VAMPIRES)
+    assert headline(run) == "1 Vampire is running and on the bill with no approval: $0.7172 so far."
+    view = run_view(run)
+    assert view.billed_total == Decimal("0.7172358001")
+    assert "$0.7172358001" in {line.value for line in view.lines}
+    html = report_html(run)
+    assert "$0.7172 so far." in html  # the headline paragraph
+    assert html.count("$0.7172358001") >= 1  # the table keeps the exact amount
+
+
+def test_a_number_the_headline_rounded_wrongly_is_not_a_headline_number() -> None:
+    run = run_of(rec(O, "o-v", "i-0vamp"), rec(B, "b-v", "i-0vamp", "0.71725"), ui=VAMPIRES)
+    allowed = headline_numbers(run)
+    assert Decimal("0.7172") in allowed and Decimal("0.71725") in allowed
+    assert Decimal("0.7173") not in allowed  # half-up would print this; the headline must not
+    assert Decimal("0.7172") not in run_numbers(run)  # nothing else on the page may show the rounded figure

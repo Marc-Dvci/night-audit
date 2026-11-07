@@ -1,10 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { dateText, esc, isNegative, isZero, moneyText, stampText } from "../src/format";
+import { dateText, esc, headlineMoneyText, isNegative, isZero, moneyText, stampText } from "../src/format";
 import fixture from "./fixture";
 
 describe("moneyText matches Python money_text on the API's decimal strings", () => {
   it.each(fixture.money.map((m) => [m.amount, m.text] as const))("%s", (amount, text) => {
     expect(moneyText(amount)).toBe(text);
+  });
+
+  it.each(fixture.money.map((m) => [m.amount, m.headline] as const))("headline %s", (amount, text) => {
+    expect(headlineMoneyText(amount)).toBe(text);
+  });
+
+  it("rounds the headline half-even to four figures: 0.71725 is $0.7172, 0.71735 is $0.7174", () => {
+    expect(headlineMoneyText("0.7172358001")).toBe("$0.7172");
+    expect(headlineMoneyText("0.71725")).toBe("$0.7172");
+    expect(headlineMoneyText("0.71735")).toBe("$0.7174");
+    expect(headlineMoneyText("0.71725000001")).toBe("$0.7173");
+    expect(headlineMoneyText("123.456")).toBe("$123.46");
   });
 
   it("knows the sign and zero without a float", () => {

@@ -9,7 +9,12 @@
 # so git must never rewrite a line ending in it (review.csv is CRLF on purpose).
 skeleton/web/public/demo/** -text
 skeleton/web/public/apps.json -text
-skeleton/web/public/demo/*.json linguist-generated
+# Generated: GitHub leaves these out of the language bar and folds them in diffs.
+skeleton/web/public/demo/** linguist-generated
+skeleton/web/public/apps.json linguist-generated
+apps/*/demo/out/** linguist-generated
+# examples/ copies one demo night byte for byte (scripts/build_examples.py); its README is written by hand.
+examples/vampires-night/** -text linguist-generated
 skeleton/web/package-lock.json linguist-generated
 uv.lock linguist-generated
 docs/figures/*.html linguist-documentation

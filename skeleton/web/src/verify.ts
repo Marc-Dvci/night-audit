@@ -3,12 +3,14 @@
 // (ui-kit Req 6.1, 6.4). This module is built as the stable chunk assets/verify.js.
 
 import { byCodePoint, canonical, pyStr } from "./canonical";
-import { moneyText } from "./format";
+import { headlineMoneyText, moneyText } from "./format";
 
 export const CHAIN_SEED = "0".repeat(64);
 const CONTENT_FIELDS = ["ledger", "row_id", "raw_key", "key", "attrs", "amount", "timestamp"] as const;
 /** The manifest fields the header row repeats (HEADER_FIELDS in evidence.py). */
-const HEADER_FIELDS = ["run_id", "run_time", "control_hash", "row_count", "finding_count"] as const;
+const HEADER_FIELDS = ["run_id", "run_time", "control_hash", "row_count", "finding_count", "complete"] as const;
+/** The three ledgers. A night that could not read one of them writes no record row for it. */
+const LEDGERS = ["intended", "observed", "billed"] as const;
 /** Regions whose findings are informational (INFORMATIONAL_REGIONS in models.py). */
 const INFORMATIONAL = new Set(["IO"]);
 const MAX_PROBLEMS = 8;
@@ -174,7 +176,26 @@ function checkHeader(rows: Row[], manifest: Row, findingRows: number): VerifyRes
   if (canonical(get(header, "finding_count")) !== canonical(findingRows)) {
     return fail(`chain header says ${canonical(get(header, "finding_count"))} findings, the chain has ${findingRows}`);
   }
+  if (has(header, "complete") && typeof header.complete !== "boolean") {
+    return fail(`chain header says the night was complete ${canonical(header.complete)}, which is not true or false`);
+  }
   return null;
+}
+
+/** Whether the night was complete, as the chain's header row records it (chain_completeness in evidence.py). */
+export function chainCompleteness(rows: Row[]): boolean | null {
+  if (rows.length && get(rows[0], "type") === "header") {
+    const value = get(rows[0], "complete");
+    if (typeof value === "boolean") return value;
+  }
+  return null;
+}
+
+/** Whether a chain that does not record completeness could come from an incomplete night (could_be_incomplete). */
+export function couldBeIncomplete(rows: Row[]): boolean {
+  if (rows.some((r) => get(r, "type") === "finding")) return false;
+  const read = new Set(rows.filter((r) => get(r, "type") === "record").map((r) => get(r, "ledger")));
+  return LEDGERS.some((ledger) => !read.has(ledger));
 }
 
 // --- What the page displays, against what the chain holds (compare_displayed in evidence.py, sentence for sentence) ---
@@ -342,7 +363,25 @@ export function compareDisplayed(displayed: Row, manifest: Row, rows: Row[], fin
     total = add(total, amount);
     if (get(row, "key") === null) unkeyed = add(unkeyed, amount);
   }
-  if (get(displayed, "complete") === false) {
+  // Completeness comes from the chain. Only a pack that does not record it falls back to the page's flag, and then only
+  // when the chain could come from an incomplete night.
+  const shownComplete = get(displayed, "complete");
+  const chainComplete = chainCompleteness(rows);
+  let incomplete: boolean;
+  if (chainComplete !== null) {
+    if (q(shownComplete) !== q(chainComplete)) {
+      problems.push(`complete: the page shows ${q(shownComplete)}, the evidence has ${q(chainComplete)}`);
+    }
+    incomplete = chainComplete === false;
+  } else {
+    incomplete = shownComplete === false && couldBeIncomplete(rows);
+    if (shownComplete === false && !incomplete) {
+      problems.push(
+        "complete: the page shows false, the evidence records no completeness and holds what only a complete night writes (a finding, or records in every ledger)",
+      );
+    }
+  }
+  if (incomplete) {
     // An incomplete run matches nothing and states no amount (Req 9.4): the page must show zero.
     total = ZERO;
     unkeyed = ZERO;
@@ -377,8 +416,33 @@ export function compareDisplayed(displayed: Row, manifest: Row, rows: Row[], fin
         problems.push(`${label}: the page shows ${q(get(view, field))}, the evidence has ${expected}`);
       }
     }
+    problems.push(...headlineProblems(view, amounts));
   }
   return problems;
+}
+
+/** Headline order (HEADLINE_ORDER in report.py): the regions whose amount the headline may print. */
+const HEADLINE_REGIONS = new Set(["OB", "B", "IB", "O", "I"]);
+/** An amount as the page prints it in prose (_MONEY_TOKEN in evidence.py). */
+const MONEY_TOKEN = /[\u2212-]?\$[0-9][0-9,]*(?:\.[0-9]+)?/g;
+
+/** Each amount the headline text prints must be a headline region's amount, exact or rounded the headline's way. */
+function headlineProblems(view: Row, amounts: Map<string, Dec>): string[] {
+  const allowed = new Set<string>();
+  for (const [code, amount] of amounts) {
+    if (!HEADLINE_REGIONS.has(code)) continue;
+    const text = `${amount.coef}E${amount.exp}`;
+    allowed.add(moneyText(text));
+    allowed.add(headlineMoneyText(text));
+  }
+  const sentences = get(view, "headline_sentences");
+  const texts = Array.isArray(sentences) ? sentences.filter((s): s is string => typeof s === "string") : [];
+  const lead = get(view, "headline");
+  if (typeof lead === "string") texts.push(lead);
+  const tokens = new Set(texts.flatMap((text) => text.match(MONEY_TOKEN) ?? []));
+  return [...tokens]
+    .filter((t) => !allowed.has(t))
+    .map((t) => `headline: the page shows ${t}, which is no region's amount in the evidence`);
 }
 
 function displayFailure(problems: string[]): string {

@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import Finding, Record, RunResult
-from .report import money_text
+from .report import HEADLINE_ORDER, headline_money_text, money_text
 from .textfile import write_text_exact
 
 CHAIN_SEED = "0" * 64
@@ -106,11 +106,18 @@ def _finding_row(finding: Finding) -> dict[str, object]:
 
 
 #: The manifest fields that the header row repeats. A verifier requires each to be equal in both.
-HEADER_FIELDS: tuple[str, ...] = ("run_id", "run_time", "control_hash", "row_count", "finding_count")
+HEADER_FIELDS: tuple[str, ...] = ("run_id", "run_time", "control_hash", "row_count", "finding_count", "complete")
+
+#: The three ledgers. A night that could not read one of them writes no record row for it.
+_LEDGERS: tuple[str, ...] = ("intended", "observed", "billed")
 
 
 def _header_row(result: RunResult, row_count: int) -> dict[str, object]:
-    """The first chain row: which run this pack is. ``row_count`` counts every row of the chain, this one included."""
+    """The first chain row: which run this pack is. ``row_count`` counts every row of the chain, this one included.
+
+    ``complete`` says whether every ledger was read. A page takes its billed figures from it (Req 9.4), so it is hashed
+    with the rest of the chain rather than read from the page.
+    """
     return {
         "type": "header",
         "run_id": result.run_id,
@@ -118,6 +125,7 @@ def _header_row(result: RunResult, row_count: int) -> dict[str, object]:
         "control_hash": result.control_hash,
         "row_count": row_count,
         "finding_count": len(result.findings),
+        "complete": result.complete,
     }
 
 
@@ -205,6 +213,7 @@ def write_evidence_pack(result: RunResult, pack_dir: Path) -> str:
         "finding_count": len(result.findings),
         "run_id": result.run_id,
         "run_time": _to_utc_iso(result.run_time),
+        "complete": result.complete,
     }
     write_text_exact(pack_dir / "manifest.json", json.dumps(manifest, indent=2, sort_keys=True))
 
@@ -371,7 +380,21 @@ def compare_displayed(
             total = _EXACT.add(total, amount)
             if row.get("key") is None:
                 unkeyed = _EXACT.add(unkeyed, amount)
-    if displayed.get("complete") is False:
+    # Completeness comes from the chain. Only a pack that does not record it falls back to the page's flag, and then only
+    # when the chain could come from an incomplete night.
+    shown_complete, chain_complete = displayed.get("complete"), chain_completeness(rows)
+    if chain_complete is not None:
+        if q(shown_complete) != q(chain_complete):
+            problems.append(f"complete: the page shows {q(shown_complete)}, the evidence has {q(chain_complete)}")
+        incomplete = chain_complete is False
+    else:
+        incomplete = shown_complete is False and could_be_incomplete(rows)
+        if shown_complete is False and not incomplete:
+            problems.append(
+                "complete: the page shows false, the evidence records no completeness and holds what only a complete "
+                "night writes (a finding, or records in every ledger)"
+            )
+    if incomplete:
         # An incomplete run matches nothing and states no amount (Req 9.4): the page must show zero, whatever the
         # ledgers that were read hold.
         total, unkeyed = Decimal(0), Decimal(0)
@@ -403,7 +426,29 @@ def compare_displayed(
         ):
             if _count(view.get(field)) != expected_count:
                 problems.append(f"{label}: the page shows {q(view.get(field))}, the evidence has {expected_count}")
+        problems.extend(_headline_problems(view, amounts))
     return problems
+
+
+#: An amount as the page prints it in prose: ``$0.7172``, ``−$3.10``, ``$1,234.50``.
+_MONEY_TOKEN = re.compile("[\u2212-]?\\$[0-9][0-9,]*(?:\\.[0-9]+)?")
+
+
+def _headline_problems(view: dict[str, Any], amounts: dict[str, Decimal]) -> list[str]:
+    """Each amount the headline text prints must be a headline region's amount in the chain, written exactly or rounded
+    the one way the headline rounds (``headline_money_text``)."""
+    allowed: set[str] = set()
+    for code, amount in amounts.items():
+        if code in HEADLINE_ORDER:
+            allowed.update((money_text(amount), headline_money_text(amount)))
+    sentences = view.get("headline_sentences")
+    texts = [s for s in sentences if isinstance(s, str)] if isinstance(sentences, list) else []
+    if isinstance(view.get("headline"), str):
+        texts.append(view["headline"])
+    tokens = dict.fromkeys(token for text in texts for token in _MONEY_TOKEN.findall(text))
+    return [
+        f"headline: the page shows {t}, which is no region's amount in the evidence" for t in tokens if t not in allowed
+    ]
 
 
 def _display_failure(problems: list[str]) -> str:
@@ -435,7 +480,37 @@ def _header_failure(rows: list[dict[str, object]], manifest: dict[str, Any], fin
             False,
             f"chain header says {canonical_json(header.get('finding_count'))} findings, the chain has {finding_rows}",
         )
+    if "complete" in header and not isinstance(header["complete"], bool):
+        return VerifyResult(
+            False,
+            f"chain header says the night was complete {canonical_json(header['complete'])}, which is not true or false",
+        )
     return None
+
+
+def chain_completeness(rows: list[dict[str, object]]) -> bool | None:
+    """Whether the night was complete, as the chain's header row records it; ``None`` when the chain does not say.
+
+    Packs written before the header carried ``complete`` do not say. The manifest is not read here: in a pack without a
+    header row, nothing binds the manifest to the chain.
+    """
+    if rows and rows[0].get("type") == "header":
+        value = rows[0].get("complete")
+        if isinstance(value, bool):
+            return value
+    return None
+
+
+def could_be_incomplete(rows: list[dict[str, object]]) -> bool:
+    """Whether a chain that does not record completeness could come from an incomplete night.
+
+    An incomplete night writes no finding row (the matcher decides nothing, Req 9.4) and no record row for the ledger it
+    could not read. A chain with a finding, or with a record in every ledger, came from a complete night.
+    """
+    if any(row.get("type") == "finding" for row in rows):
+        return False
+    read = {row.get("ledger") for row in rows if row.get("type") == "record"}
+    return any(ledger not in read for ledger in _LEDGERS)
 
 
 def verify_evidence_pack(pack_dir: Path, displayed: dict[str, Any] | None = None) -> VerifyResult:

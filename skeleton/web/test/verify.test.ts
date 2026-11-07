@@ -68,5 +68,24 @@ describe("the page against the chain gives Python's verdict", () => {
     expect(result.ok).toBe(false);
     expect(result.detail).toContain("is shown but is not in the evidence");
   });
+
+  it("fails on a page that says incomplete to hide the bill, its findings still shown", async () => {
+    const served = fixture.pack.displayed.find((d) => d.name === "served as it is")?.document;
+    const page = JSON.parse(JSON.stringify(served)) as Record<string, unknown>;
+    const view = page.view as Record<string, unknown>;
+    page.complete = false;
+    page.billed_total = page.billed_unkeyed = "0";
+    view.billed_total = view.unkeyed_total = view.keyed_total = "0";
+    expect((page.findings as unknown[]).length).toBeGreaterThan(0);
+    const result = await verifyPack(untouched, manifest, undefined, page);
+    expect(result.ok).toBe(false);
+    expect(result.detail).toContain("complete: the page shows false, the evidence has true");
+  });
+
+  it.each(fixture.pack.completeness.map((c) => [c.name, c] as const))("%s", async (_name, c) => {
+    const result = await verifyPack(c.jsonl, c.manifest, undefined, c.document);
+    expect(result.ok).toBe(c.verdict.ok);
+    expect(result.detail).toBe(c.verdict.detail);
+  });
 });
 

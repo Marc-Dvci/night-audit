@@ -3,7 +3,7 @@
 [![CI](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml)
 [![Licence: Apache 2.0](https://img.shields.io/badge/licence-Apache%202.0-blue.svg)](LICENSE)
-![Tests: 963](https://img.shields.io/badge/tests-963-brightgreen)
+![Tests: 996](https://img.shields.io/badge/tests-996-brightgreen)
 ![Decision core coverage: 96.8%](https://img.shields.io/badge/decision%20core%20coverage-96.8%25-brightgreen)
 ![Casebook: 18 of 18](https://img.shields.io/badge/casebook-18%20of%2018-brightgreen)
 
@@ -34,7 +34,7 @@ Code links point at lines in the release tag `v1.0.0`.
 | Criterion | Where to look |
 |---|---|
 | Potential Impact | [The problem](#the-problem). The real lab night: [`lab/expected.yaml`](lab/expected.yaml) was written before any audit; the findings are in [Evidence](#evidence). Region rules a reader learns once: [`_region_code`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/matcher.py#L35-L44) |
-| Technological Implementation | [How Kiro is used](#how-kiro-is-used) and [`.kiro/`](.kiro). The matcher: [`_match`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/matcher.py#L110-L315). The number guard: [`numbers_are_safe`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L162-L167) and [`explain_finding`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L339-L375). The evidence chain: [`write_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L140-L211) and [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L437-L554). The partition theorem: [`Partition.lean`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/lean/NightAudit/Partition.lean#L166-L173) |
+| Technological Implementation | [How Kiro is used](#how-kiro-is-used) and [`.kiro/`](.kiro). The matcher: [`_match`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/matcher.py#L110-L315). The number guard: [`numbers_are_safe`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L162-L167) and [`explain_finding`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L339-L375). The evidence chain: [`write_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L148-L220) and [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L516-L633). The partition theorem: [`Partition.lean`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/lean/NightAudit/Partition.lean#L166-L173) |
 | Design | [See it work](#see-it-work). The identity: [`ui-identity.md`](.kiro/steering/ui-identity.md). The Venn diagram: [`vennSvg`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/web/src/render/venn.ts#L68-L119). Accessibility: [Evidence](#evidence) |
 | Innovation / Idea | [How it works](#how-it-works). One skeleton, three controls: [vampires](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/vampires/controls/aws-account.yaml#L1-L95), [ghosts](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/ghosts/controls/staff-access.yaml#L1-L72) and [this repository's own build](apps/own-build/README.md) |
 | Presentation | The three GIFs and the figures in [See it work](#see-it-work), the [architecture](#how-it-works), the [claims table](#claims-and-the-tests-that-pin-them) |
@@ -128,9 +128,9 @@ The build used Kiro CLI, in headless mode (`kiro-cli chat --no-interactive`), wi
 | Power | [`power/night-audit`](power/night-audit): the `add-control` and `read-a-night` skills and a pinned read-only MCP server |
 | Crew | [`crew/night-shift`](crew/night-shift): a Kiro Crew app with two daily script crons (the audit at 02:00 UTC, checked notes at 02:30), an investigator agent with two pinned read-only MCP servers, and a skill. Installed on Kiro Crew 0.13.0 on Windows 11 and run once from Crew against the lab account; what was checked and what was not is in [`crew/README.md`](crew/README.md) |
 
-What Kiro did in this repository, from its own session export (the own-build demo page lists it file by file): 17 sessions
-worked on 200 files, 195 of the 369 files tracked at the recorded commit. The credits reported for those files add up
-to 679.1619 (an allocation, see [the third control](#two-apps-and-a-third-control)).
+What Kiro did in this repository, from its own session export (the own-build demo page lists it file by file): 21 sessions
+worked on 229 files, 221 of the 376 files tracked at the recorded commit. The credits reported for those files add up
+to 929.1727 (an allocation, see [the third control](#two-apps-and-a-third-control)).
 
 ## What it will not do
 
@@ -139,6 +139,8 @@ to 679.1619 (an allocation, see [the third control](#two-apps-and-a-third-contro
   A Kiro hook refuses write calls during development.
 - Accuse anyone. Findings state a condition and its evidence.
 - Report billing it cannot see yet. Resources younger than the grace window (36 hours) are pending.
+
+What the deployed roles can and cannot do, and how to report a security problem: [`SECURITY.md`](SECURITY.md).
 
 ## Claims and the tests that pin them
 
@@ -152,7 +154,7 @@ to 679.1619 (an allocation, see [the third control](#two-apps-and-a-third-contro
 | Ledger text enters a prompt quoted and cut | [`build_prompt`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L89-L109) | `test_injected_text_is_quoted_and_truncated_in_the_prompt` |
 | A number outside the evidence is replaced by the template | [`numbers_are_safe`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/explain.py#L162-L167) | `test_property_a_response_citing_a_number_outside_the_evidence_is_replaced_by_the_template` |
 | A minus sign counts: a charge cannot read as a refund | `numbers_are_safe` | `test_regression_a_response_that_negates_an_evidence_number_is_rejected` |
-| One changed byte in any evidence row fails verification | [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L437-L554) | `test_property_flipping_any_byte_of_any_evidence_row_fails_verification` |
+| One changed byte in any evidence row fails verification | [`verify_evidence_pack`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/src/nightaudit/evidence.py#L516-L633) | `test_property_flipping_any_byte_of_any_evidence_row_fails_verification` |
 | Region amounts plus unkeyed lines equal the billed total | `_match` | `test_property_region_billed_amounts_plus_unkeyed_equal_the_billed_total` |
 | The same inputs give the same findings and evidence hash | `write_evidence_pack` | `test_property_repeating_a_run_with_identical_inputs_gives_identical_findings_and_evidence_hash` |
 | Connectors make no write call; the role writes only its own runs and logs | [`stack.yaml`](deploy/stack.yaml) | `test_a_connector_module_calls_no_aws_operation_that_is_not_a_read`, `test_a_role_can_write_only_what_the_claim_names` |
@@ -171,8 +173,8 @@ Every figure comes from a command in this repository. Synthetic data is labelled
 
 | Figure | Command |
 |---|---|
-| 963 tests: 960 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
-| 41 property-based tests, 250 integration tests, 46 browser tests, 138 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
+| 996 tests: 993 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
+| 41 property-based tests, 251 integration tests, 46 browser tests, 247 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
 | Decision core coverage 96.8 % (lines and branches, nine modules) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Development casebook 18 of 18 | `uv run python scripts/score_casebook.py --set dev` |
 | Held-out casebook 6 of 6, scored once at tag `v0.1.0` | `uv run python scripts/score_heldout.py` |
@@ -188,6 +190,10 @@ demos, both casebooks and the benchmark are synthetic; the third control reads t
 
 ## Quickstart (no credentials)
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Marc-Dvci/night-audit?quickstart=1)
+builds the same three demos and serves them on the forwarded port 8000: add `?app=vampires-demo`, `?app=ghosts-demo`
+or `?app=own-build-demo`.
+
 Python 3.12 with [`uv`](https://docs.astral.sh/uv/), and Node 22 for the web build.
 
 ```bash
@@ -199,6 +205,9 @@ uv run nightaudit serve --app vampires --runs runs/demo
 ```
 
 Or with Docker: `docker build -t night-audit . && docker run --rm -p 8000:8000 night-audit`.
+
+To read a finished night without running anything, open [`examples/`](examples/README.md): one Vampires demo night's
+report, its evidence pack and the three ledgers it read.
 
 Run it on your own account with a read-only profile: edit `apps/vampires/controls/aws-account.yaml`, then
 `uv run nightaudit run apps/vampires/controls/aws-account.yaml --runs runs/live`.
@@ -215,24 +224,27 @@ The third control, [`apps/own-build`](apps/own-build/README.md), audits this rep
 specs promise. Observed is the files git tracks. Billed is the files Kiro worked on, in Kiro credits. It was written in
 one control file through the `new-control-scaffold` hook, and no skeleton source file changed.
 
-At the recorded commit `a58b88b` it reads 369 tracked files:
+It reads the files git tracks at one commit. Recorded first at `a58b88b`, then again at `05f013d` after the later Kiro
+sessions, the Crew session among them, were added to Kiro's export:
 
-| Region | Files |
-|---|---|
-| Spec'd and built with Kiro (`IOB`) | 172 |
-| Spec'd, no Kiro session (`IO`, informational) | 118 |
-| Written by hand or generated (`O`) | 56 |
-| Built with Kiro, no spec names it or a folder holding it (`OB`) | 23 |
-| Promised by a spec, never built (`I`) | 6 |
-| Kiro worked on it, no spec, it is gone (`B`) | 5 |
+| Region | `a58b88b` | `05f013d` |
+|---|---|---|
+| Spec'd and built with Kiro (`IOB`) | 172 | 176 |
+| Spec'd, no Kiro session (`IO`, informational) | 118 | 119 |
+| Written by hand or generated (`O`) | 56 | 36 |
+| Built with Kiro, no spec names it or a folder holding it (`OB`) | 23 | 45 |
+| Promised by a spec, never built (`I`) | 6 | 3 |
+| Kiro worked on it, no spec, it is gone (`B`) | 5 | 8 |
+| Tracked files | 369 | 376 |
 
 The first run reported 32 files promised and never built. Reading them showed that 26 were the control's own parser
 mistakes: a path written relative to a folder, a folder, or build output. The parser now resolves a relative path to the
 one tracked file it ends, reads a folder as every tracked file under it, and drops `dist` and `node_modules` paths and
-the files a spec says the power writes into a user's own project. The 6 that remain are the real findings: three paths in
-the spec text that no longer exist (`apps/vampires/approved-changes.yaml`, `src/findings.ts`, `src/venn.ts`, corrected in
-the spec text since the recorded commit), and three that name no single file (`demo/build.py` ends three tracked files,
-`references/region-table.md` ends two, `assets/verify.js` is a path inside build output).
+the files a spec says the power writes into a user's own project. At `a58b88b` that left 6 real findings. Three were
+paths in the spec text that no longer existed (`apps/vampires/approved-changes.yaml`, `src/findings.ts`, `src/venn.ts`);
+the spec text was corrected, and at `05f013d` they are gone. Three remain because they name no single file:
+`demo/build.py` ends three tracked files, `references/region-table.md` ends two, `assets/verify.js` is a path inside
+build output. Between the two, 21 files moved from `O` to `OB`: Kiro sessions in the newer export touched them.
 
 The snapshot is one commit: `uv run python apps/own-build/snapshot.py` records the files git tracks at `HEAD` and the
 paths its specs promise, and a change after that commit enters at the next snapshot. The credits are an allocation: a

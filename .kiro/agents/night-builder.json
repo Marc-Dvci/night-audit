@@ -55,7 +55,10 @@
           ".dockerignore",
           ".env.example",
           ".gitignore",
-          ".gitattributes"
+          ".gitattributes",
+          "examples/**",
+          "SECURITY.md",
+          "build/**"
         ],
         "exclude": [
           "scripts/hooks/**"

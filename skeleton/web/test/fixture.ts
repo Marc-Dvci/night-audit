@@ -13,12 +13,19 @@ interface Verdict {
 
 export interface Parity {
   canonical: { value: unknown; canonical: string }[];
-  money: { amount: string; text: string }[];
+  money: { amount: string; text: string; headline: string }[];
   pack: {
     manifest: Record<string, unknown>;
     legacy: { jsonl: string; manifest: Record<string, unknown>; verdict: Verdict };
     variants: { name: string; jsonl: string; verdict: Verdict }[];
     displayed: { name: string; document: Record<string, unknown>; verdict: Verdict }[];
+    completeness: {
+      name: string;
+      jsonl: string;
+      manifest: Record<string, unknown>;
+      document: Record<string, unknown>;
+      verdict: Verdict;
+    }[];
   };
 }
 

@@ -98,16 +98,16 @@ def test_the_page_reads_in_files_and_states_the_allocation(page: Any, url: str) 
     open_page(page, url, f"?app=own-build-demo&run={night()}")
     sentences = page.locator(".headline-lead, .headline-line").all_inner_texts()
     assert sentences == [
-        "23 files were built with Kiro and no spec names them.",
-        "5 files were worked on by Kiro, named by no spec, and are gone.",
-        "56 files were written by hand or generated: no spec names them and no Kiro session touched them.",
-        "6 files were promised by a spec and never built.",
+        "45 files were built with Kiro and no spec names them.",
+        "8 files were worked on by Kiro, named by no spec, and are gone.",
+        "36 files were written by hand or generated: no spec names them and no Kiro session touched them.",
+        "3 files were promised by a spec and never built.",
     ]
     notes = page.locator(".notes li").all_inner_texts()
     assert notes[0].startswith("Credits per file are an allocation:") and "not a measurement" in notes[0]
     assert page.text_content("#venn-title") == "Files by region across the three ledgers"
     ledgers = page.inner_text(".ledgers")
-    assert "SPECS" in ledgers.upper() and "369 files" in ledgers and "200 files" in ledgers
+    assert "SPECS" in ledgers.upper() and "376 files" in ledgers and "229 files" in ledgers
     assert "allocation chosen for this audit, not a measurement" in ledgers
     text = (page.inner_text(".lede") + " " + ledgers).lower()
     assert not [w for w in FOREIGN if w in text], [w for w in FOREIGN if w in text]
@@ -130,7 +130,7 @@ def test_the_venn_names_the_regions_in_words_and_counts_them(page: Any, url: str
     for words in ("PROMISED BY A", "SPEC'D, NO KIRO", "BUILT, SPEC'D, GONE", "WRITTEN BY HAND"):
         assert words in joined, words
     counts = page.locator("svg.venn .venn-count").evaluate_all(TEXT_OF_ALL)
-    assert sorted(counts, key=int) == ["0", "5", "6", "23", "56", "118", "172"]
+    assert sorted(counts, key=int) == ["0", "3", "8", "36", "45", "119", "176"]
 
 
 @in_chromium()
@@ -138,7 +138,7 @@ def test_an_opened_file_states_its_condition_and_shows_its_evidence(page: Any, u
     open_page(page, url, f"?app=own-build-demo&run={night()}")
     row = page.locator(".row", has=page.locator('.row-head[data-key=".devcontainer/devcontainer.json"]'))
     assert row.locator(".row-explain").inner_text() == (
-        "Tracked by git. Kiro sessions that touched it: 1. No spec names this file."
+        "Tracked by git. Kiro sessions that touched it: 2. No spec names this file."
     )
     row.locator(".row-head").click()
     page.wait_for_selector("table.evidence")
@@ -149,9 +149,9 @@ def test_an_opened_file_states_its_condition_and_shows_its_evidence(page: Any, u
 @in_chromium()
 def test_a_promise_never_built_shows_the_spec_that_made_it(page: Any, url: str) -> None:
     open_page(page, url, f"?app=own-build-demo&run={night()}")
-    row = page.locator(".row", has=page.locator('.row-head[data-key="apps/vampires/approved-changes.yaml"]'))
+    row = page.locator(".row", has=page.locator('.row-head[data-key="demo/build.py"]'))
     assert row.locator(".row-explain").inner_text() == (
-        "Named by vampires-app. Git does not track it at the recorded commit "
+        "Named by three-way-match. Git does not track it at the recorded commit "
         "and no Kiro session in the export touched it."
     )
 

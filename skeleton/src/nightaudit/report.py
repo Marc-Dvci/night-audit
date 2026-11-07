@@ -57,6 +57,36 @@ def money_text(value: Decimal) -> str:
     return f"{sign}${int(whole):,}.{fraction}"
 
 
+#: The headline shows an amount to this many significant figures (the table and the evidence keep it exact).
+HEADLINE_FIGURES = 4
+#: The one rounding the page does: the headline's amount. Inexact is expected here, so it is not trapped.
+_ROUNDING = decimal.Context(
+    prec=decimal.MAX_PREC,
+    Emax=decimal.MAX_EMAX,
+    Emin=decimal.MIN_EMIN,
+    traps=[decimal.InvalidOperation, decimal.Overflow],
+)
+
+
+def headline_rounded(value: Decimal) -> Decimal:
+    """*value* rounded half-even to four significant figures, never coarser than a cent: ``0.7172358001`` is
+    ``0.7172``, ``0.71725`` is ``0.7172``, ``123.456`` is ``123.46``. The browser verifier rounds the same way."""
+    if not value.is_finite():
+        raise ValueError(f"amount {value} is not a finite number")
+    if value.is_zero():
+        return value
+    exponent = min(value.adjusted() - (HEADLINE_FIGURES - 1), -2)
+    own = value.as_tuple().exponent
+    if isinstance(own, int) and own >= exponent:
+        return value  # nothing beyond the fourth figure: unchanged
+    return value.quantize(Decimal(1).scaleb(exponent), rounding=decimal.ROUND_HALF_EVEN, context=_ROUNDING)
+
+
+def headline_money_text(value: Decimal) -> str:
+    """An amount as the headline prints it: ``$0.7172`` for ``0.7172358001``. Everywhere else uses ``money_text``."""
+    return money_text(headline_rounded(value))
+
+
 # --- Counts -------------------------------------------------------------------------------------------------------
 
 
@@ -110,7 +140,7 @@ def headline_sentences(run: RunResult) -> list[str]:
         sentences.append(
             (template.one if one else template.other).format(
                 count=summary.key_count,
-                amount=money_text(summary.billed_amount),
+                amount=headline_money_text(summary.billed_amount),
                 noun=run.ui.noun.singular if one else run.ui.noun.plural,
             )
         )
@@ -252,6 +282,14 @@ def run_numbers(run: RunResult) -> set[Decimal]:
         nums.update(r.amount for r in finding.records if r.amount is not None)
     # Notes cite only evidence numbers, checked when the run was made (Req 10.2).
     nums.update(Decimal(n) for note in run.notes for n in note.numbers)
+    return nums
+
+
+def headline_numbers(run: RunResult) -> set[Decimal]:
+    """The numbers the headline may print: the run's numbers, and each headline region's amount rounded the one way
+    the headline rounds it (``headline_rounded``). Nothing else on the page may show a rounded amount."""
+    nums = run_numbers(run)
+    nums.update(headline_rounded(s.billed_amount) for c, s in run.region_summaries.items() if c in HEADLINE_ORDER)
     return nums
 
 

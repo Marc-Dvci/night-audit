@@ -30,7 +30,7 @@ from nightaudit.control import ControlConfig
 from nightaudit.evidence import canonical_json, verify_evidence_pack, write_evidence_pack
 from nightaudit.matcher import match
 from nightaudit.models import LedgerName, LedgerSnapshot, Record, RegionSummary
-from nightaudit.report import money_text
+from nightaudit.report import headline_money_text, headline_rounded, money_text
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "skeleton" / "web" / "test" / "fixtures" / "parity.json"
@@ -82,6 +82,15 @@ def _money_cases() -> list[dict[str, str]]:
         "100000000000000000000000000001",
         "0.59",
         "12.3456789012345678901234",
+        "0.7172358001",
+        "0.71725",
+        "0.71735",
+        "-0.71725",
+        "0.0000000012345",
+        "123.456",
+        "12345.675",
+        "9999.995",
+        "0.99995",
     ]
     rnd = Random(20261106)
     generated = [
@@ -91,7 +100,9 @@ def _money_cases() -> list[dict[str, str]]:
     for text in fixed + generated:
         value = Decimal(text)
         wire = _wire(value)
-        cases.append({"amount": wire, "text": money_text(Decimal(wire))})
+        cases.append(
+            {"amount": wire, "text": money_text(Decimal(wire)), "headline": headline_money_text(Decimal(wire))}
+        )
     return cases
 
 
@@ -139,6 +150,7 @@ def _hostile_snapshots() -> list[LedgerSnapshot]:
                 ("k1", "0.000000001", HOSTILE[8]),
                 ("k9", "41.20", HOSTILE[4]),
                 ("phantom-\u00e9", "6.40", HOSTILE[2]),
+                ("phantom-two", "0.7172358001", HOSTILE[0]),
                 ("", "-3.10", "credit"),
             ]
         )
@@ -267,6 +279,103 @@ def _displayed_variants(shown: dict[str, Any]) -> list[tuple[str, dict[str, Any]
         edit("no findings list", lambda d: d.pop("findings")),
         edit("the same run time written with an offset", run_time_offset),
         edit("marked incomplete while it states amounts", lambda d: d.update(complete=False)),
+        edit("marked incomplete with no bill, findings still shown", hide_the_bill),
+        edit("no completeness flag", lambda d: d.pop("complete")),
+        edit("a headline amount rounded wrongly", lambda d: _headline_amount(d, "B", lambda a: _off_by_one(a))),
+        edit("a headline amount written exactly", lambda d: _headline_amount(d, "B", money_text)),
+        edit("a finding amount rounded like the headline", lambda d: _round_finding(d, "phantom-two")),
+    ]
+
+
+def _off_by_one(amount: Decimal) -> str:
+    """The headline's text for *amount* with its last digit one higher: a rounding no rule gives."""
+    rounded = headline_money_text(amount)
+    return rounded[:-1] + str((int(rounded[-1]) + 1) % 10)
+
+
+def _headline_amount(d: dict[str, Any], code: str, text: Callable[[Decimal], str]) -> None:
+    amount = Decimal(d["region_summaries"][code]["billed_amount"])
+    printed = headline_money_text(amount)
+    assert any(printed in s for s in d["view"]["headline_sentences"]), printed
+    d["view"]["headline_sentences"] = [s.replace(printed, text(amount)) for s in d["view"]["headline_sentences"]]
+    d["view"]["headline"] = d["view"]["headline"].replace(printed, text(amount))
+
+
+def _round_finding(d: dict[str, Any], key: str) -> None:
+    finding = next(f for f in d["findings"] if f["key"] == key)
+    finding["billed_amount"] = str(headline_rounded(Decimal(finding["billed_amount"])))
+
+
+def hide_the_bill(d: dict[str, Any]) -> None:
+    """A complete night's page edited to say it was incomplete and billed nothing, its findings still on it."""
+    d.update(complete=False, billed_total="0", billed_unkeyed="0")
+    d["view"].update(billed_total="0", unkeyed_total="0", keyed_total="0")
+
+
+def _without_completeness(jsonl: str, manifest: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """The same pack as written before the header recorded ``complete``: the field gone, the chain rehashed."""
+    prev, lines = "0" * 64, []
+    for line in jsonl.split("\n")[:-1]:
+        row = json.loads(line)
+        row.pop("complete", None)
+        row.pop("row_hash")
+        row["prev_hash"] = prev
+        row["row_hash"] = hashlib.sha256((prev + canonical_json(row)).encode()).hexdigest()
+        prev = row["row_hash"]
+        lines.append(canonical_json(row))
+    rest = {k: v for k, v in manifest.items() if k != "complete"}
+    return "\n".join(lines) + "\n", {**rest, "final_chain_hash": prev}
+
+
+def _incomplete_snapshots() -> list[LedgerSnapshot]:
+    """The hostile night with its observed ledger unread: the chain keeps the intended and billed rows."""
+    return [
+        s.model_copy(update={"records": [], "missing": True}) if s.name is LedgerName.observed else s
+        for s in _hostile_snapshots()
+    ]
+
+
+def _page(result: Any, final_hash: str) -> dict[str, Any]:
+    page = result.model_copy(
+        update={"snapshots": [], "findings": [f.model_copy(update={"records": []}) for f in result.findings]}
+    )
+    shown: dict[str, Any] = json.loads(json.dumps(run_document(page)))
+    shown["evidence_chain_hash"] = final_hash
+    return shown
+
+
+def _completeness_cases(jsonl: str, manifest: dict[str, Any], shown: dict[str, Any]) -> list[dict[str, Any]]:
+    """Completeness against the chain: an incomplete night, and packs written before the chain recorded it."""
+    result = match(_incomplete_snapshots(), ControlConfig(), RUN_TIME)
+    with tempfile.TemporaryDirectory() as tmp:
+        pack = Path(tmp)
+        write_evidence_pack(result, pack)
+        inc_jsonl = (pack / "evidence.jsonl").read_text(encoding="utf-8")
+        inc_manifest = json.loads((pack / "manifest.json").read_text(encoding="utf-8"))
+    inc_shown = _page(result, inc_manifest["final_chain_hash"])
+    old_jsonl, old_manifest = _without_completeness(jsonl, manifest)
+    old_inc_jsonl, old_inc_manifest = _without_completeness(inc_jsonl, inc_manifest)
+    old_shown = {**shown, "evidence_chain_hash": old_manifest["final_chain_hash"]}
+    old_inc_shown = {**inc_shown, "evidence_chain_hash": old_inc_manifest["final_chain_hash"]}
+    hidden = json.loads(json.dumps(old_shown))
+    hide_the_bill(hidden)
+    marked_complete = {**inc_shown, "complete": True}
+    pre_jsonl, pre_manifest = _legacy_pack(jsonl, {k: v for k, v in manifest.items() if k != "complete"})
+    pre_shown = {**shown, "evidence_chain_hash": pre_manifest["final_chain_hash"]}
+    pre_hidden = json.loads(json.dumps(pre_shown))
+    hide_the_bill(pre_hidden)
+    cases = [
+        ("an incomplete night served as it is", inc_jsonl, inc_manifest, inc_shown),
+        ("an incomplete night marked complete", inc_jsonl, inc_manifest, marked_complete),
+        ("before completeness: a complete night", old_jsonl, old_manifest, old_shown),
+        ("before completeness: an incomplete night", old_inc_jsonl, old_inc_manifest, old_inc_shown),
+        ("before completeness: a complete night marked incomplete with no bill", old_jsonl, old_manifest, hidden),
+        ("before the header (the lab night's shape): a complete night", pre_jsonl, pre_manifest, pre_shown),
+        ("before the header: a complete night marked incomplete with no bill", pre_jsonl, pre_manifest, pre_hidden),
+    ]
+    return [
+        {"name": name, "jsonl": text, "manifest": m, "document": doc, "verdict": _verdict(text, json.dumps(m), doc)}
+        for name, text, m, doc in cases
     ]
 
 
@@ -310,6 +419,7 @@ def _pack_case() -> dict[str, Any]:
             {"name": name, "document": document, "verdict": _verdict(jsonl, manifest, document)}
             for name, document in _displayed_variants(shown)
         ],
+        "completeness": _completeness_cases(jsonl, json.loads(manifest), shown),
     }
 
 

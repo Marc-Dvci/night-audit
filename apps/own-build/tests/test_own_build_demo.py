@@ -53,10 +53,10 @@ def test_a_fresh_build_has_one_night_that_verifies_and_speaks_about_files(tmp_pa
     assert verdict.final_hash == run.evidence_chain_hash
     assert run.ui.title == "Own build" and run.ui.noun.plural == "files"
     assert view["headline_sentences"] == [
-        "23 files were built with Kiro and no spec names them.",
-        "5 files were worked on by Kiro, named by no spec, and are gone.",
-        "56 files were written by hand or generated: no spec names them and no Kiro session touched them.",
-        "6 files were promised by a spec and never built.",
+        "45 files were built with Kiro and no spec names them.",
+        "8 files were worked on by Kiro, named by no spec, and are gone.",
+        "36 files were written by hand or generated: no spec names them and no Kiro session touched them.",
+        "3 files were promised by a spec and never built.",
     ]
     assert run_numbers(run)
     assert build.APP_ENTRIES == [
@@ -70,8 +70,8 @@ def test_the_recorded_night_holds_these_region_counts(tmp_path: Path) -> None:
     [folder] = [p for p in (tmp_path / "out").iterdir() if p.is_dir()]
     run, _ = document(folder)
     counts = {code: summary.key_count for code, summary in sorted(run.region_summaries.items())}
-    assert counts == {"B": 5, "I": 6, "IO": 118, "IOB": 172, "O": 56, "OB": 23}
-    assert str(run.billed_total) == "679.1619"
+    assert counts == {"B": 8, "I": 3, "IO": 119, "IOB": 176, "O": 36, "OB": 45}
+    assert str(run.billed_total) == "929.1727"
     assert run.pending_keys == [] and run.unkeyed == [] and run.ledger_errors == {}
 
 
@@ -94,7 +94,7 @@ def test_the_recorded_files_load_through_the_connectors() -> None:
     specs = SpecFiles(ledger=LedgerName.intended, path="spec-files.csv", **kwargs).fetch()
     tracked = TrackedFiles(ledger=LedgerName.observed, path="tracked-files.csv", **kwargs).fetch()
     kiro = KiroFiles(ledger=LedgerName.billed, files="kiro-files.csv", sessions="kiro-sessions.csv", **kwargs).fetch()
-    assert (len(specs), len(tracked), len(kiro)) == (296, 369, 200)
+    assert (len(specs), len(tracked), len(kiro)) == (298, 376, 229)
 
 
 def test_the_export_holds_no_prompt_and_no_reply() -> None:

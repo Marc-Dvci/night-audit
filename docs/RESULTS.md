@@ -1,16 +1,16 @@
 # Results
 
 Every figure here comes from a command in this repository. Synthetic data is labelled as synthetic. Figures were
-measured on 7 Nov 2026 at commit `a58b88b` plus the working changes that follow it.
+measured on 7 Nov 2026 at commit `05f013d` plus the working changes that follow it.
 
 ## Tests
 
 | Figure | Value | Command |
 |---|---|---|
-| All tests | 963 collected: 960 passed, 3 skipped | `uv run pytest -q` |
+| All tests | 996 collected: 993 passed, 3 skipped | `uv run pytest -q` |
 | Skipped | 3, all `-m lean` differential tests, which need the Lean toolchain (`lake`); the `lean` CI job runs them with `NIGHTAUDIT_REQUIRE_LEAN=1` | `uv run pytest -q -ra` |
-| Property-based, integration, browser | 41, 250 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
-| TypeScript | 138 tests in 4 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
+| Property-based, integration, browser | 41, 251 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
+| TypeScript | 247 tests in 4 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
 | Decision core coverage | 96.8 % of lines and branches over `matcher`, `normalisers`, `grace`, `scope`, `state`, `evidence`, `explain`, `control`, `report` (floor 90 %) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Lint, format, types | ruff, ruff format and `mypy --strict` clean | `uv run ruff check . && uv run ruff format --check . && uv run mypy` |
 
@@ -37,7 +37,11 @@ after planting and before any audit ran.
 | 7 Nov 2026, 02:00 UTC, live account | 4 | 4 | 0 | 0 | $0.7172 (the instance $0.4191, its volume $0.0455, its network interface $0.2526) |
 
 The audit ran with the read-only profile: `uv run nightaudit run apps/vampires/controls/aws-account.yaml --runs runs/live`.
-The evidence of that night verifies (`uv run nightaudit verify <run>/evidence`: 224 rows, 8 findings).
+The evidence of that night verifies (`uv run nightaudit verify <run>/evidence`: 224 rows, 8 findings). Its pack was written
+before the chain had a header row, and both verifiers still accept it against its page; the same page edited to say the
+night was incomplete with no bill fails in both (checked on 7 Nov with the local pack of run `55e91b128f42ee31`; the
+shape is pinned by `test_packs_written_before_completeness_was_recorded_still_verify_against_their_pages`). The headline
+prints the Vampires' amount as $0.7172; the table, the page data and the evidence keep $0.7172358001.
 
 The first bill taught three things, found by the read-only investigator through the AWS MCP server and written down as
 Requirement 10 of the [vampires spec](../.kiro/specs/vampires-app/requirements.md): a public IPv4 address is billed on the
@@ -76,6 +80,14 @@ Usage Report rounding below 1e-7, a pack's `run_id` that could change without fa
 (`test_changing_the_run_id_in_the_manifest_fails_verification`), a fake finding on the page beside a passing verify (the page is
 now compared with the chain), and attribute names reaching the prompt unquoted
 (`test_a_hostile_attribute_name_is_quoted_and_cannot_forge_a_prompt_line`).
+
+The release review found two more holes in the page check, both fixed in Python and TypeScript with the same verdicts
+(`skeleton/web/test/fixtures/parity.json`):
+
+| Hole | Test |
+|---|---|
+| Completeness came from the page: a complete night's page edited to `complete: false` with a billed total of 0, its findings still shown, verified. The header row and the manifest now record `complete`; a pack without it counts as incomplete only when it holds no finding and a ledger with no record, which is all an incomplete night can write | `test_regression_a_page_that_says_incomplete_to_hide_the_bill_fails_verification` |
+| The headline text was not compared with the chain, so it could print any amount. Each amount in it must now be a headline region's amount, exact or rounded half-even to four significant figures (`0.71725` prints `$0.7172`); every other figure must be exact | `test_regression_a_headline_that_rounds_its_amount_wrongly_fails_verification`, `test_a_page_that_rounds_any_amount_but_the_headline_fails_verification` |
 
 ## Self-attack
 
@@ -138,7 +150,7 @@ Kiro Crew 0.13.0 from a source checkout on Windows 11; gateway started with `AWS
 | Step | Command | Result |
 |---|---|---|
 | Apply the app | `kirocrew app disable`, `uninstall`, `install`, `enable` (`app update` printed "No running gateway answered" on Windows) | `Agents registered: 1`, `Skills registered: 1`, `registered 2 cron job(s) with scheduler`; no new gateway log line |
-| Audit | `kirocrew cron trigger e7757f1f` | Crew: `last_status: ok`, 4 runs. `nightaudit verify` OK on `c518e7f39e95c08e`, `910948837feacfbc`, `1e9e38e57a33f5c4`; on `41178d37bd0da182` (incomplete, observed ledger missing) after the verifier fix for incomplete runs |
+| Audit | `kirocrew cron trigger e7757f1f` | Crew: `last_status: ok`, 4 runs. `nightaudit verify` OK on `c518e7f39e95c08e`, `910948837feacfbc`, `1e9e38e57a33f5c4`; on `41178d37bd0da182` (incomplete, observed ledger missing) after the verifier fix for incomplete runs, and again after completeness was recorded in the chain (`OK  verified 545 rows, 0 findings`) |
 | Notes | `kirocrew cron trigger 771fc3b9` | Crew: `last_status: ok`, `run 1e9e38e57a33f5c4: 5 accepted, 0 rejected, 0 unavailable, 0 skipped`. `nightaudit verify-notes`: `5 notes verify (5 accepted)` |
 | Afterwards | `kirocrew cron pause e7757f1f`, `kirocrew cron pause 771fc3b9` | `Paused job: e7757f1f`, `Paused job: 771fc3b9` |
 
@@ -153,34 +165,37 @@ differential test of the Lean model against the Python matcher
 ## The third control: Night Audit audits its own build
 
 `uv run python apps/own-build/snapshot.py` records the files git tracks at `HEAD` and the paths the specs promise;
-`uv run python scripts/build_demos.py own-build` runs the night. Recorded commit `a58b88b`:
+`uv run python scripts/build_demos.py own-build` runs the night. Recorded first at commit `a58b88b`, then at `05f013d`
+after `export_build_ledger.py` refreshed Kiro's export with the later sessions, the Crew session among them:
 
-| Region | Files |
-|---|---|
-| `IOB` Spec'd and built with Kiro | 172 |
-| `IO` Spec'd, no Kiro session | 118 |
-| `O` Written by hand or generated | 56 |
-| `OB` Built with Kiro, no spec names it or a folder holding it | 23 |
-| `I` Promised by a spec, never built | 6 |
-| `B` Kiro worked on it, no spec, it is gone | 5 |
+| Region | `a58b88b` | `05f013d` |
+|---|---|---|
+| `IOB` Spec'd and built with Kiro | 172 | 176 |
+| `IO` Spec'd, no Kiro session | 118 | 119 |
+| `O` Written by hand or generated | 56 | 36 |
+| `OB` Built with Kiro, no spec names it or a folder holding it | 23 | 45 |
+| `I` Promised by a spec, never built | 6 | 3 |
+| `B` Kiro worked on it, no spec, it is gone | 5 | 8 |
+| Tracked / promised / worked on by Kiro | 369 / 296 / 200 | 376 / 298 / 229 |
+| Sessions that touched a file / credits allocated to files | 17 / 679.1619 | 21 / 929.1727 |
 
-369 files are tracked, 296 are promised, and Kiro worked on 200 in 17 sessions, for 679.1619 credits allocated across
-files. The credits are an allocation chosen for this audit, not a measurement of what one file cost.
+21 files moved from `O` to `OB` between the two: Kiro sessions in the newer export touched them. The credits are an
+allocation chosen for this audit, not a measurement of what one file cost.
 
 Before and after on the same night. The first run read a spec path as written and reported 32 files promised and never
 built. 26 of those were the parser's mistakes: relative paths (`tests/test_x.py` for `skeleton/tests/test_x.py`), folders
 (`apps/ghosts/`), build output (`skeleton/web/dist/**`, `node_modules/**`) and the files the power's design says it writes
-into a user's own project. With the resolution rules in `apps/own-build/src/own_build/paths.py` the same night reports 6:
+into a user's own project. With the resolution rules in `apps/own-build/src/own_build/paths.py` the `a58b88b` night
+reports 6, and the `05f013d` night 3:
 
-| Still promised and never built | Why |
-|---|---|
-| `apps/vampires/approved-changes.yaml` | The file is `apps/vampires/controls/approved-changes.yaml`. Spec text corrected |
-| `src/findings.ts` | The file is `skeleton/web/src/render/rows.ts`. Spec text corrected |
-| `src/venn.ts` | The file is `skeleton/web/src/render/venn.ts`. Spec text corrected |
-| `demo/build.py` | Ends three tracked files, so it names none of them |
-| `references/region-table.md` | Ends two tracked files |
-| `assets/verify.js` | A path inside build output |
+| Promised and never built at `a58b88b` | Why | At `05f013d` |
+|---|---|---|
+| `apps/vampires/approved-changes.yaml` | The file is `apps/vampires/controls/approved-changes.yaml` | Spec text corrected, gone |
+| `src/findings.ts` | The file is `skeleton/web/src/render/rows.ts` | Spec text corrected, gone |
+| `src/venn.ts` | The file is `skeleton/web/src/render/venn.ts` | Spec text corrected, gone |
+| `demo/build.py` | Ends three tracked files, so it names none of them | Remains |
+| `references/region-table.md` | Ends two tracked files | Remains |
+| `assets/verify.js` | A path inside build output | Remains |
 
-The three corrections were made in the spec text after the recorded commit, so the recorded night still shows them. The
-resolution has 13 casebook cases (`apps/own-build/casebook/cases.yaml`, section `resolve`), six for folders and three
+The resolution has 13 casebook cases (`apps/own-build/casebook/cases.yaml`, section `resolve`), six for folders and three
 properties, run by `uv run pytest apps/own-build -q`.

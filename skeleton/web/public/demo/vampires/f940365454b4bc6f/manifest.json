@@ -1,7 +1,8 @@
 {
   "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+  "complete": true,
   "control_hash": "71b44a372d7a91dcb7ddbf67a1ed103cf941b33ff3d9a522f9fc681e068e239d",
-  "final_chain_hash": "d89388304b2e12ea2fa0249faf6ffa86c789cb6c1ec4a9e4d1a55eb0cc4e4d71",
+  "final_chain_hash": "dc9f686621f740ab7d1c4006bb810a544078c9af3296aaee375be6f4323f3f08",
   "finding_count": 6,
   "ledgers": {
     "billed": {

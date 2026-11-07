@@ -5,12 +5,12 @@
     "ghcr.io/devcontainers/features/node:1": { "version": "22" },
     "ghcr.io/va-h/devcontainers-features/uv:1": {}
   },
-  "postCreateCommand": "uv sync && (cd skeleton/web && npm ci && npm run build) && uv run python apps/vampires/demo/build.py",
+  "postCreateCommand": "uv sync && uv run python scripts/build_demos.py && (cd skeleton/web && npm ci && npm run build)",
   "postStartCommand": "nohup bash -c 'uv run nightaudit serve --app vampires --runs runs/demo --host 0.0.0.0 --port 8000 > /tmp/demo.log 2>&1 &'",
   "forwardPorts": [8000],
   "portsAttributes": {
     "8000": {
-      "label": "Night Audit demo",
+      "label": "Night Audit demo: add ?app=vampires-demo, ?app=ghosts-demo or ?app=own-build-demo",
       "onAutoForward": "openBrowser"
     }
   },

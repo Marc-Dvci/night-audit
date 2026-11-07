@@ -39,6 +39,9 @@ review that an auditor will test.
    diagram, so a visitor sees what is being compared.
 5. THE SYSTEM SHALL count keys, not rows, in the Venn labels. Rows with no key are never counted there.
 6. WHEN a region filter is active THE SYSTEM SHALL show that region's name and meaning above the rows.
+7. THE SYSTEM SHALL print an amount in the headline rounded half-even to four significant figures, never coarser than a
+   cent (`$0.7172` for `0.7172358001`, `$0.7172` for `0.71725`), in Python and TypeScript alike. The table, the money lines,
+   the page data and the evidence SHALL keep the exact amount.
 
 ## Requirement 3: money that reads true
 
@@ -76,6 +79,11 @@ review that an auditor will test.
    astral-plane characters and quotes.
 5. THE API SHALL serve `GET /api/runs/{id}/evidence.jsonl` and `GET /api/runs/{id}/manifest.json`, and demo mode SHALL ship
    the same files statically.
+6. WHEN the page is verified THE SYSTEM SHALL compare what the page shows with the chain, and take whether the night was
+   complete from the chain's header row, never from the page. A pack written before the header recorded completeness
+   SHALL count as incomplete only when it holds no finding row and a ledger with no record row.
+7. THE SYSTEM SHALL accept an amount in the headline text only when it is a headline region's amount in the chain, written
+   exactly or rounded as Requirement 2.7 rounds it. Every other figure on the page SHALL equal the chain exactly.
 
 ## Requirement 7: the morning report
 
