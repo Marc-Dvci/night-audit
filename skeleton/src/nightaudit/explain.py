@@ -148,12 +148,17 @@ def evidence_numbers(finding: Finding) -> set[Decimal]:
     return nums
 
 
+def number_literals(text: str) -> list[str]:
+    """Every number in *text* as written, in order, its minus sign (ASCII or U+2212) written ``-``."""
+    return [match.replace("\u2212", "-") for match in _NUM_RE.findall(text)]
+
+
 def extract_numbers(text: str) -> set[Decimal]:
     """Extract all integers and decimals from *text*, with their sign."""
     nums: set[Decimal] = set()
-    for match in _NUM_RE.findall(text):
+    for match in number_literals(text):
         try:
-            nums.add(Decimal(match.replace("\u2212", "-")))
+            nums.add(Decimal(match))
         except InvalidOperation:
             pass
     return nums

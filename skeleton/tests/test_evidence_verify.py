@@ -434,41 +434,136 @@ def test_a_completeness_that_is_not_true_or_false_fails_verification(tmp_path: P
     assert verdict.detail == 'chain header says the night was complete "no", which is not true or false'
 
 
+TAKEN_AS_COMPLETE = (
+    "complete: the page shows false, the evidence records no completeness, so the night is taken as complete"
+)
+
+
+def _old_shape(pack: Path, header: bool) -> None:
+    _as_written_before_completeness(pack)
+    if not header:
+        _legacy(pack)
+
+
 @pytest.mark.parametrize("header", [True, False], ids=["with-header", "before-the-header"])
-def test_packs_written_before_completeness_was_recorded_still_verify_against_their_pages(
+def test_a_complete_pack_written_before_completeness_was_recorded_still_verifies_against_its_page(
     tmp_path: Path, header: bool
 ) -> None:
-    """Such packs exist: the lab night (a complete night with a header) and the Crew night ``41178d37bd0da182`` (an
-    incomplete night whose billed ledger was read)."""
-    complete, complete_run = _run(tmp_path / "complete")
-    incomplete, incomplete_run = _incomplete_run(tmp_path / "incomplete")
-    for pack in (complete, incomplete):
-        _as_written_before_completeness(pack)
-        if not header:
-            _legacy(pack)
-    for pack, run in ((complete, complete_run), (incomplete, incomplete_run)):
-        shown = _shown(run)
-        shown["evidence_chain_hash"] = verify_evidence_pack(pack).final_hash
-        verdict = verify_evidence_pack(pack, shown)
-        assert verdict.ok, verdict.detail
+    """Such a pack exists: the lab night, a complete night with a header row."""
+    pack, run = _run(tmp_path)
+    _old_shape(pack, header)
+    shown = _shown(run)
+    shown["evidence_chain_hash"] = verify_evidence_pack(pack).final_hash
+    verdict = verify_evidence_pack(pack, shown)
+    assert verdict.ok, verdict.detail
+
+
+@pytest.mark.parametrize("header", [True, False], ids=["with-header", "before-the-header"])
+def test_a_pack_that_records_no_completeness_is_taken_as_complete_so_an_incomplete_page_fails(
+    tmp_path: Path, header: bool
+) -> None:
+    """Nothing in such a pack can prove the night was incomplete, so it is held to a complete night's figures. An
+    incomplete night written that way (the Crew night ``41178d37bd0da182``) fails and must be run again."""
+    pack, run = _incomplete_run(tmp_path)
+    _old_shape(pack, header)
+    shown = _shown(run)
+    shown["evidence_chain_hash"] = verify_evidence_pack(pack).final_hash
+    verdict = verify_evidence_pack(pack, shown)
+    assert not verdict.ok
+    assert TAKEN_AS_COMPLETE in verdict.detail
+    assert "billed total: the page shows $0.00, the evidence has $41.20" in verdict.detail
 
 
 @pytest.mark.parametrize("header", [True, False], ids=["with-header", "before-the-header"])
 def test_a_pack_written_before_completeness_was_recorded_cannot_hide_its_bill_either(
     tmp_path: Path, header: bool
 ) -> None:
-    """Without the field, an incomplete night is recognised by what only it can hold: no finding rows and a ledger of
-    no rows. A page that says incomplete beside a chain with findings fails."""
     pack, result = _run(tmp_path)
-    _as_written_before_completeness(pack)
-    if not header:
-        _legacy(pack)
+    _old_shape(pack, header)
     shown = _shown(result)
     shown["evidence_chain_hash"] = verify_evidence_pack(pack).final_hash
     _hide_the_bill(shown)
     verdict = verify_evidence_pack(pack, shown)
     assert not verdict.ok
-    assert "complete: the page shows false, the evidence records no completeness and holds" in verdict.detail
+    assert TAKEN_AS_COMPLETE in verdict.detail
+
+
+def _unkeyed_bill_only(tmp: Path) -> tuple[Path, RunResult]:
+    """A complete night with empty intended and observed ledgers and one unkeyed billed row of 41.20: no finding."""
+    snapshots = [
+        LedgerSnapshot(name=LedgerName.intended, source="i", records=[]),
+        LedgerSnapshot(name=LedgerName.observed, source="o", records=[]),
+        LedgerSnapshot(
+            name=LedgerName.billed,
+            source="b",
+            records=[Record(ledger=LedgerName.billed, source="b", row_id="b1", raw_key="", amount=Decimal("41.20"))],
+        ),
+    ]
+    result = match(snapshots, CLOUD, RUN_TIME)
+    assert result.complete and not result.findings and result.billed_unkeyed == Decimal("41.20")
+    write_evidence_pack(result, tmp / "evidence")
+    return tmp / "evidence", result
+
+
+@pytest.mark.parametrize("header", [True, False], ids=["with-header", "before-the-header"])
+def test_regression_an_old_pack_cannot_hide_an_unkeyed_bill_behind_a_page_that_says_incomplete(
+    tmp_path: Path, header: bool
+) -> None:
+    """Bug: a pack without completeness was taken as incomplete when it held no finding and a ledger of no rows. A
+    complete night with only an unkeyed bill of $41.20, rewritten to the old shape, verified beside a page that said
+    ``complete: false`` with every total 0."""
+    pack, result = _unkeyed_bill_only(tmp_path)
+    _old_shape(pack, header)
+    shown = _shown(result)
+    shown["evidence_chain_hash"] = verify_evidence_pack(pack).final_hash
+    assert verify_evidence_pack(pack, shown).ok
+    _hide_the_bill(shown)
+    verdict = verify_evidence_pack(pack, shown)
+    assert not verdict.ok
+    assert TAKEN_AS_COMPLETE in verdict.detail
+    assert "unkeyed billed amount: the page shows $0.00, the evidence has $41.20" in verdict.detail
+
+
+# --- The manifest names exactly the three ledgers (Req 6.3) ---------------------------------------------------------
+
+
+def test_regression_a_manifest_that_omits_a_ledger_fails_verification(tmp_path: Path) -> None:
+    """Bug: both verifiers checked only the ledgers the manifest named, so a manifest without ``billed`` verified."""
+    pack, _ = _run(tmp_path)
+    manifest = json.loads((pack / "manifest.json").read_text("utf-8"))
+    del manifest["ledgers"]["billed"]
+    (pack / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    verdict = verify_evidence_pack(pack)
+    assert not verdict.ok
+    assert verdict.detail == "manifest ledgers are billed, intended, observed: it names intended, observed"
+
+
+def test_a_manifest_that_names_a_fourth_ledger_fails_verification(tmp_path: Path) -> None:
+    pack, _ = _run(tmp_path)
+    manifest = json.loads((pack / "manifest.json").read_text("utf-8"))
+    manifest["ledgers"]["extra"] = manifest["ledgers"]["billed"]
+    (pack / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    verdict = verify_evidence_pack(pack)
+    assert not verdict.ok
+    assert verdict.detail.startswith("manifest ledgers are billed, intended, observed: it names billed, extra,")
+
+
+def test_a_record_row_of_another_ledger_fails_verification_at_its_row(tmp_path: Path) -> None:
+    pack, _ = _run(tmp_path)
+    moved = {"done": False}
+
+    def move(row: dict[str, Any]) -> None:
+        if row["type"] == "record" and row["ledger"] == "billed" and not moved["done"]:
+            row["ledger"] = "elsewhere"
+            moved["done"] = True
+
+    _rechain(pack, move)
+    rows = [json.loads(line) for line in _lines(pack)]
+    at = next(i for i, r in enumerate(rows) if r.get("ledger") == "elsewhere")
+    verdict = verify_evidence_pack(pack)
+    assert not verdict.ok
+    assert verdict.failed_row == at
+    assert verdict.detail == f'row {at}: record of ledger "elsewhere", which is not intended, observed or billed'
 
 
 # --- The headline's rounded amount (ui-kit Req 2.2) -------------------------------------------------------------------
@@ -520,6 +615,53 @@ def test_regression_a_headline_that_rounds_its_amount_wrongly_fails_verification
     verdict = verify_evidence_pack(pack, shown)
     assert not verdict.ok
     assert "headline: the page shows $0.7173, which is no region's amount in the evidence" in verdict.detail
+
+
+def _set_headline(shown: dict[str, Any], old: str, new: str) -> None:
+    view = shown["view"]
+    view["headline_sentences"] = [s.replace(old, new) for s in view["headline_sentences"]]
+    view["headline"] = view["headline"].replace(old, new)
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "number"),
+    [
+        ("$0.7172", "0.7173 dollars", "0.7173"),
+        ("$0.7172", "USD 0.7173", "0.7173"),
+        ("1 Vampire", "2 Vampire", "2"),
+        (": $0.7172.", ": $0.7172, for 3 nights.", "3"),
+        ("$0.7172", "$0.7172 (0.7172358001 exactly)", ""),
+    ],
+    ids=["amount-in-words", "amount-after-a-code", "count", "extra-number", "exact-amount-beside-the-rounded-one"],
+)
+def test_regression_every_number_in_the_headline_must_be_its_own_count_or_amount(
+    tmp_path: Path, old: str, new: str, number: str
+) -> None:
+    """Bug: the headline check read only amounts written ``$0.7172``, so ``0.7173 dollars`` verified. Every numeric
+    literal is now scanned with the explanation guard's scanner (``explain.extract_numbers``)."""
+    pack, result = _vampire_night(tmp_path)
+    shown = _shown(result)
+    assert old in shown["view"]["headline"], shown["view"]["headline"]
+    _set_headline(shown, old, new)
+    verdict = verify_evidence_pack(pack, shown)
+    if not number:
+        assert verdict.ok, verdict.detail
+        return
+    assert not verdict.ok
+    assert f"headline: the page shows the number {number}, which is not one of the headline's counts or amounts" in (
+        verdict.detail
+    )
+
+
+def test_a_headline_with_a_digit_that_is_not_ascii_fails_verification(tmp_path: Path) -> None:
+    """``\u0661`` (ARABIC-INDIC DIGIT ONE) reads as 1 to Python's scanner and as no digit to the browser's, so the two
+    could disagree; both refuse it instead."""
+    pack, result = _vampire_night(tmp_path)
+    shown = _shown(result)
+    _set_headline(shown, "1 Vampire", "\u0661 Vampire")
+    verdict = verify_evidence_pack(pack, shown)
+    assert not verdict.ok
+    assert "headline: the page shows a digit that is not 0 to 9" in verdict.detail
 
 
 @pytest.mark.parametrize("where", ["finding", "region", "billed total", "headline billed total"])

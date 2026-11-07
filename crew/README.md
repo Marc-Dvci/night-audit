@@ -39,7 +39,8 @@ The 02:30 job used to be an agent cron. Its reply stayed in Crew, and nothing ch
 02:30 job is a script cron that runs `scripts/night_shift.py`, which already does the checking:
 
 * It launches `kiro-cli chat --v3 ... --agent night-investigator` for each new `OB` and `O` finding, from the
-  checkout. The agent it starts is the checkout's `.kiro/agents/night-investigator.json`.
+  checkout. The agent it starts is the checkout's `.kiro/agents/night-investigator.json`, with the servers of
+  `.kiro/settings/mcp.json` (`includeMcpJson`), not the Crew app's agent.
 * It checks each note's numbers against the finding's evidence and appends the verdict to
   `runs/<run_id>/evidence/notes.jsonl`, a hash chain bound to the run. `uv run nightaudit verify-notes
   runs/<run_id>/evidence` checks it. The page shows only accepted notes from that chain.
@@ -57,6 +58,17 @@ would be registered as `night-shift:<server>` in Crew's own agent config instead
 |---|---|---|
 | `aws-api` | `awslabs.aws-api-mcp-server@1.6.0` | `READ_OPERATIONS_ONLY=true` |
 | `aws-cloudtrail` | `awslabs.cloudtrail-mcp-server@0.1.1` | `lake_query` disabled: it calls `StartQuery`; the other tools are `LookupEvents`, `List*`, `Get*` and `Describe*` calls |
+
+**The two investigators.** Both mount `aws-api` with `READ_OPERATIONS_ONLY=true` and `aws-cloudtrail` with
+`lake_query` disabled; the checkout's agent also denies `aws-cloudtrail/lake_query` in its permissions. The checkout's
+agent, the one the notes job runs, also mounts `aws-billing` (`awslabs.billing-cost-management-mcp-server@0.0.44`).
+Three of that server's tools can start work in the account, read from its source: `storage-lens` (Athena
+`StartQueryExecution`, after `CREATE DATABASE` and `CREATE EXTERNAL TABLE`), `sp-purchase-analyzer`
+(`StartCommitmentPurchaseAnalysis`) and `sp-recommendation` (`StartSavingsPlansPurchaseRecommendationGeneration`).
+So the two are **not yet read-only in the same way**. `skeleton/tests/test_investigator_read_only.py` reads each agent
+with its settings and fails while any tool that is not a read can be called;
+`test_the_checkout_investigator_can_call_no_tool_that_is_not_a_read` fails on those three tools today. The notes job
+was not run again for that reason.
 
 Neither server names a profile. They inherit `AWS_PROFILE` from the process that starts them; the gateway was started
 with `AWS_PROFILE=night-audit`. The power writes `"${AWS_PROFILE}"`, but Crew reads `{AWS_PROFILE}` inside it as a host
@@ -93,7 +105,7 @@ WARNING kiro_crew.apps.bridges: App night-shift: agent 'night-investigator' gran
 WARNING kiro_crew.apps.bridges: App night-shift: cron 'night-shift/night-audit' command rejected: Error: No POSIX shell available to run this command cron. ...
 ```
 
-**`app update` cannot run from the CLI on Windows.** `kirocrew app update night-shift --source "D:\...\crew\night-shift"`
+**`app update` cannot run from the CLI on Windows.** `kirocrew app update night-shift --source "<checkout>\crew\night-shift"`
 printed `No running gateway answered, so nothing was updated` and exited 1, while the gateway answered `/api/health`
 with 200. The CLI's lifecycle requests use the gateway's owner-only Unix socket (`app_lifecycle_client.py`), which this
 Windows gateway does not serve; `cron trigger` uses loopback HTTP and works. What worked: `kirocrew app disable`,
@@ -124,8 +136,8 @@ start at 10:49:58, so no new warning about this app.
 **`kirocrew cron list`** after setting the checkout in both messages:
 
 ```
-  ⏸ e7757f1f  night-shift/night-audit  (At 2:00 AM UTC)  {"checkout": "D:/Devpost/Kiroween 2026/night-audit"}
-  ⏸ 771fc3b9  night-shift/night-notes  (At 2:30 AM UTC)  {"checkout": "D:/Devpost/Kiroween 2026/night-audit"}
+  ⏸ e7757f1f  night-shift/night-audit  (At 2:00 AM UTC)  {"checkout": "<checkout>"}
+  ⏸ 771fc3b9  night-shift/night-notes  (At 2:30 AM UTC)  {"checkout": "<checkout>"}
 ```
 
 **The audit job**, `kirocrew cron trigger e7757f1f` at 11:02:37 (local time), against the lab account through the
@@ -148,7 +160,7 @@ The verifier was wrong, not the run: an incomplete run matches nothing and state
 with this `last_result`:
 
 ```
-night_shift.py finished in D:\Devpost\Kiroween 2026\night-audit:
+night_shift.py finished in <checkout>:
 accepted     akiawcfihw3qdcdeagee
 accepted     lab-debug
 accepted     eni-085d97a8b514d1ce7
@@ -163,12 +175,44 @@ run 1e9e38e57a33f5c4: 5 accepted, 0 rejected, 0 unavailable, 0 skipped; notes in
 After both runs both jobs show `enabled: false, user_paused: true` (a trigger does not resume a job), and
 `kirocrew cron pause` was run on both again so nothing fires at 02:00 until the owner resumes them.
 
+## Run again with the final code, 7 November 2026, 12:52 to 12:56 local time
+
+`crew/night-shift/crons/night_jobs.py` changed (its docstring example became `<checkout>`), so the bundle was
+reinstalled: `kirocrew app disable night-shift`, `uninstall`, `install <checkout>\crew\night-shift`, then
+`agent.apps_trusted` and `agent.apps_trusted_local` set back to exactly `["night-shift"]` (both read back as that),
+then `enable`, which printed `Agents registered: 1`, `Skills registered: 1`, `registered 2 cron job(s) with
+scheduler`. The new job ids are `0af6390d` (night-audit) and `9d342b56` (night-notes); the ids above are gone.
+
+**A failed run, observed.** The first trigger of `0af6390d` ran before the message was set (PowerShell 5.1 had dropped
+the quotes from the JSON). Crew recorded `last_status: error` and `last_error: "checkout
+'REPLACE_WITH_NIGHT_AUDIT_CHECKOUT' is not an absolute path"`; no run was written.
+
+**The audit job**, `kirocrew cron trigger 0af6390d` at 12:53:53 after `kirocrew cron update 0af6390d --message
+'{"checkout": "<checkout>"}'`. Crew recorded `last_status: ok`, `last_error: null`. Its `last_result` names four runs:
+
+| Run | Control | Result | `uv run nightaudit verify runs/<run>/evidence` |
+|---|---|---|---|
+| `847b2b2514c14574` | `staff-access-github.yaml` | incomplete, `missing ledgers: observed`, 0 findings | `OK  verified 545 rows, 0 findings, header matches the manifest; the page matches the evidence` |
+| `ebd45fd5644e4159` | `staff-access.yaml` | complete, 8 findings, 4 informational | `OK  verified 742 rows, 12 findings, header matches the manifest; the page matches the evidence` |
+| `4c3e32bf3ef8c9ab` | `own-build.yaml` | complete, 92 findings, 119 informational | `OK  verified 1119 rows, 211 findings, header matches the manifest; the page matches the evidence` |
+| `6ad680fc05a50128` | `aws-account.yaml` | complete, 6 findings, 2 informational | `OK  verified 226 rows, 8 findings, header matches the manifest; the page matches the evidence` |
+
+`847b2b2514c14574` records `complete: false` in its chain header, so it replaces `41178d37bd0da182` as the documented
+incomplete Crew night. `41178d37bd0da182` was written before the chain recorded completeness, is now taken as complete,
+and fails (`complete: the page shows false, the evidence records no completeness, so the night is taken as complete;
+billed total: the page shows $0.00, the evidence has $6,683.00; ...`). That is the intended verdict: it should go.
+
+**The notes job was not triggered.** The checkout's investigator can still call three `aws-billing` tools that start
+work in the account (see "The two investigators" above). Both jobs were paused again: `Paused job: 0af6390d`,
+`Paused job: 9d342b56`; Crew's store shows `enabled: false, user_paused: true` for both.
+
 ## Still not checked
 
 * That the Crew-registered `night-investigator` agent mounts its two servers in a Crew chat: no chat was opened. The
   notes job runs the checkout's own agent through kiro-cli, which reads `.kiro/settings/mcp.json`.
 * A run that fires on its schedule at 02:00 or 02:30; both were started with `cron trigger`.
-* A failed run inside Crew: the missing-checkout, non-zero-exit and timeout paths are unit-tested only.
+* A failed run inside Crew: only the missing-checkout path has failed inside Crew (above); the non-zero-exit and
+  timeout paths are unit-tested only.
 * That a timed-out `uv` subprocess on Windows also ends the Python process it started.
 * `kirocrew app update` on a gateway that serves its Unix socket (Linux or macOS).
 * The store icon (`iconPath`) and screenshots, which the manifest does not set.

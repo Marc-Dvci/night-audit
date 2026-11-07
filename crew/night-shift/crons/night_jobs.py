@@ -3,7 +3,7 @@
 Crew imports this file in a subprocess and calls one function with a ``ctx``. ``ctx.job.message`` is the job's
 message, and here it holds the operator's settings as JSON:
 
-    {"checkout": "D:\\path\\to\\night-audit"}
+    {"checkout": "<absolute path of the checkout>"}
 
 The operator changes it without editing the bundle: ``kirocrew cron update <job-id> --message '<json>'``.
 

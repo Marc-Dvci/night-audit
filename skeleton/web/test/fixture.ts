@@ -26,6 +26,7 @@ export interface Parity {
       document: Record<string, unknown>;
       verdict: Verdict;
     }[];
+    ledgers: { name: string; jsonl: string; manifest: Record<string, unknown>; verdict: Verdict }[];
   };
 }
 

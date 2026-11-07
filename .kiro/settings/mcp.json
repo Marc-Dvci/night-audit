@@ -2,7 +2,9 @@
   "mcpServers": {
     "aws-api": {
       "command": "uvx",
-      "args": ["awslabs.aws-api-mcp-server@1.6.0"],
+      "args": [
+        "awslabs.aws-api-mcp-server@1.6.0"
+      ],
       "env": {
         "AWS_PROFILE": "night-audit",
         "AWS_REGION": "us-east-1",
@@ -13,15 +15,35 @@
     },
     "aws-billing": {
       "command": "uvx",
-      "args": ["awslabs.billing-cost-management-mcp-server@0.0.44"],
-      "env": { "AWS_PROFILE": "night-audit", "AWS_REGION": "us-east-1", "FASTMCP_LOG_LEVEL": "ERROR" },
-      "disabled": false
+      "args": [
+        "awslabs.billing-cost-management-mcp-server@0.0.44"
+      ],
+      "env": {
+        "AWS_PROFILE": "night-audit",
+        "AWS_REGION": "us-east-1",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "disabledTools": [
+        "storage-lens",
+        "sp-purchase-analyzer",
+        "sp-recommendation"
+      ]
     },
     "aws-cloudtrail": {
       "command": "uvx",
-      "args": ["awslabs.cloudtrail-mcp-server@0.1.1"],
-      "env": { "AWS_PROFILE": "night-audit", "AWS_REGION": "us-east-1", "FASTMCP_LOG_LEVEL": "ERROR" },
-      "disabled": false
+      "args": [
+        "awslabs.cloudtrail-mcp-server@0.1.1"
+      ],
+      "env": {
+        "AWS_PROFILE": "night-audit",
+        "AWS_REGION": "us-east-1",
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "disabledTools": [
+        "lake_query"
+      ]
     }
   }
 }

@@ -106,7 +106,10 @@ The release review found two more holes in the page check, both fixed in Python 
 
 `uv run python scripts/ui_check.py <url>` drives the demo UI in headless Chromium through eight states (overview and each
 region filter, with a finding opened) and runs axe-core with the WCAG 2.0, 2.1 and 2.2 A and AA rules: 0 violations in all
-eight on 7 Nov 2026, on the local build of this commit. The 46 browser tests (`uv run pytest -m e2e`) run the same axe
+eight on 7 Nov 2026, on the local build of this commit. That run did not record its URL; it is not repeated here as a
+measured figure until it is run again. `ui_check.py` now prints `measured on: <url>` as its first line, and reports the
+script-payload check as `xss: not applicable, no payload on this night` on a night that plants none (the live lab
+night) instead of failing. The 46 browser tests (`uv run pytest -m e2e`) run the same axe
 check on the screens of the apps, including a 390 px phone width.
 
 ## Throughput
@@ -153,6 +156,20 @@ Kiro Crew 0.13.0 from a source checkout on Windows 11; gateway started with `AWS
 | Audit | `kirocrew cron trigger e7757f1f` | Crew: `last_status: ok`, 4 runs. `nightaudit verify` OK on `c518e7f39e95c08e`, `910948837feacfbc`, `1e9e38e57a33f5c4`; on `41178d37bd0da182` (incomplete, observed ledger missing) after the verifier fix for incomplete runs, and again after completeness was recorded in the chain (`OK  verified 545 rows, 0 findings`) |
 | Notes | `kirocrew cron trigger 771fc3b9` | Crew: `last_status: ok`, `run 1e9e38e57a33f5c4: 5 accepted, 0 rejected, 0 unavailable, 0 skipped`. `nightaudit verify-notes`: `5 notes verify (5 accepted)` |
 | Afterwards | `kirocrew cron pause e7757f1f`, `kirocrew cron pause 771fc3b9` | `Paused job: e7757f1f`, `Paused job: 771fc3b9` |
+
+`41178d37bd0da182` no longer verifies: it was written before the chain recorded completeness, and such a pack is now
+taken as complete (`complete: the page shows false, the evidence records no completeness, so the night is taken as
+complete; billed total: the page shows $0.00, the evidence has $6,683.00; ...`). It should be removed.
+
+### The Crew run again, with the final code, 7 Nov 2026
+
+| Step | Command | Result |
+|---|---|---|
+| Apply the app | `kirocrew app disable night-shift`, `uninstall`, `install <checkout>\crew\night-shift`; trust set back to `["night-shift"]` in `agent.apps_trusted` and `agent.apps_trusted_local`; `enable` | `Agents registered: 1`, `Skills registered: 1`, `registered 2 cron job(s) with scheduler`; new ids `0af6390d` (audit), `9d342b56` (notes) |
+| Audit, before the message was set | `kirocrew cron trigger 0af6390d` | Crew: `last_status: error`, `checkout 'REPLACE_WITH_NIGHT_AUDIT_CHECKOUT' is not an absolute path`; nothing run |
+| Audit | `kirocrew cron update 0af6390d --message '{"checkout": "<checkout>"}'`, `kirocrew cron trigger 0af6390d` | Crew: `last_status: ok`, 4 runs. `nightaudit verify`: `847b2b2514c14574` (incomplete, observed missing) `OK  verified 545 rows, 0 findings`; `ebd45fd5644e4159` `OK  verified 742 rows, 12 findings`; `4c3e32bf3ef8c9ab` `OK  verified 1119 rows, 211 findings`; `6ad680fc05a50128` `OK  verified 226 rows, 8 findings`; each `header matches the manifest; the page matches the evidence` |
+| Notes | not triggered | the checkout's investigator can still call three `aws-billing` tools that are not reads (`test_the_checkout_investigator_can_call_no_tool_that_is_not_a_read` fails); see [`crew/README.md`](../crew/README.md) |
+| Afterwards | `kirocrew cron pause 0af6390d`, `kirocrew cron pause 9d342b56` | `Paused job: 0af6390d`, `Paused job: 9d342b56` |
 
 ## Lean
 

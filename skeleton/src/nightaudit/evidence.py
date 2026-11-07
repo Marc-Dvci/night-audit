@@ -23,6 +23,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+from .explain import extract_numbers, number_literals
 from .models import Finding, Record, RunResult
 from .report import HEADLINE_ORDER, headline_money_text, money_text
 from .textfile import write_text_exact
@@ -380,19 +381,19 @@ def compare_displayed(
             total = _EXACT.add(total, amount)
             if row.get("key") is None:
                 unkeyed = _EXACT.add(unkeyed, amount)
-    # Completeness comes from the chain. Only a pack that does not record it falls back to the page's flag, and then only
-    # when the chain could come from an incomplete night.
+    # Completeness comes from the chain. A pack that does not record it is taken as complete: nothing in it can prove
+    # that a ledger went unread, and an empty ledger is what a complete night with nothing in that ledger writes too.
     shown_complete, chain_complete = displayed.get("complete"), chain_completeness(rows)
     if chain_complete is not None:
         if q(shown_complete) != q(chain_complete):
             problems.append(f"complete: the page shows {q(shown_complete)}, the evidence has {q(chain_complete)}")
         incomplete = chain_complete is False
     else:
-        incomplete = shown_complete is False and could_be_incomplete(rows)
-        if shown_complete is False and not incomplete:
+        incomplete = False
+        if shown_complete is not True:
             problems.append(
-                "complete: the page shows false, the evidence records no completeness and holds what only a complete "
-                "night writes (a finding, or records in every ledger)"
+                f"complete: the page shows {q(shown_complete)}, the evidence records no completeness, so the night is "
+                "taken as complete"
             )
     if incomplete:
         # An incomplete run matches nothing and states no amount (Req 9.4): the page must show zero, whatever the
@@ -426,29 +427,52 @@ def compare_displayed(
         ):
             if _count(view.get(field)) != expected_count:
                 problems.append(f"{label}: the page shows {q(view.get(field))}, the evidence has {expected_count}")
-        problems.extend(_headline_problems(view, amounts))
+        problems.extend(_headline_problems(view, counts, amounts))
     return problems
 
 
-#: An amount as the page prints it in prose: ``$0.7172``, ``−$3.10``, ``$1,234.50``.
+#: An amount as the page prints it in prose: ``$0.7172``, ``âˆ’$3.10``, ``$1,234.50``.
 _MONEY_TOKEN = re.compile("[\u2212-]?\\$[0-9][0-9,]*(?:\\.[0-9]+)?")
 
 
-def _headline_problems(view: dict[str, Any], amounts: dict[str, Decimal]) -> list[str]:
-    """Each amount the headline text prints must be a headline region's amount in the chain, written exactly or rounded
-    the one way the headline rounds (``headline_money_text``)."""
+def _headline_problems(view: dict[str, Any], counts: dict[str, int], amounts: dict[str, Decimal]) -> list[str]:
+    """Each number the headline text prints must be one of its own: a headline region's count, or its amount in the
+    chain written exactly or rounded the one way the headline rounds (``headline_money_text``).
+
+    Two checks. Every amount written as money must be one of those amounts as text. Every numeric literal, found by the
+    explanation guard's own scanner (``explain.extract_numbers``), must be one of the numbers in those counts and texts,
+    so ``0.7173 dollars`` is refused as surely as ``$0.7173``.
+    """
     allowed: set[str] = set()
-    for code, amount in amounts.items():
-        if code in HEADLINE_ORDER:
-            allowed.update((money_text(amount), headline_money_text(amount)))
+    allowed_numbers: set[Decimal] = set()
+    for code in HEADLINE_ORDER:
+        if code in counts:
+            allowed_numbers.add(Decimal(counts[code]))
+        if code in amounts:
+            texts_of_amount = (money_text(amounts[code]), headline_money_text(amounts[code]))
+            allowed.update(texts_of_amount)
+            for text in texts_of_amount:
+                allowed_numbers.update(extract_numbers(text))
     sentences = view.get("headline_sentences")
     texts = [s for s in sentences if isinstance(s, str)] if isinstance(sentences, list) else []
     if isinstance(view.get("headline"), str):
         texts.append(view["headline"])
+    problems: list[str] = []
+    if any(ch.isdecimal() and not "0" <= ch <= "9" for text in texts for ch in text):
+        problems.append("headline: the page shows a digit that is not 0 to 9")
     tokens = dict.fromkeys(token for text in texts for token in _MONEY_TOKEN.findall(text))
-    return [
+    problems += [
         f"headline: the page shows {t}, which is no region's amount in the evidence" for t in tokens if t not in allowed
     ]
+    refused: list[str] = []
+    for literal in (lit for text in texts for lit in number_literals(text)):
+        if Decimal(literal) not in allowed_numbers and literal not in refused:
+            refused.append(literal)
+    problems += [
+        f"headline: the page shows the number {n}, which is not one of the headline's counts or amounts"
+        for n in refused
+    ]
+    return problems
 
 
 def _display_failure(problems: list[str]) -> str:
@@ -491,26 +515,14 @@ def _header_failure(rows: list[dict[str, object]], manifest: dict[str, Any], fin
 def chain_completeness(rows: list[dict[str, object]]) -> bool | None:
     """Whether the night was complete, as the chain's header row records it; ``None`` when the chain does not say.
 
-    Packs written before the header carried ``complete`` do not say. The manifest is not read here: in a pack without a
-    header row, nothing binds the manifest to the chain.
+    Packs written before the header carried ``complete`` do not say, and are taken as complete. The manifest is not read
+    here: in a pack without a header row, nothing binds the manifest to the chain.
     """
     if rows and rows[0].get("type") == "header":
         value = rows[0].get("complete")
         if isinstance(value, bool):
             return value
     return None
-
-
-def could_be_incomplete(rows: list[dict[str, object]]) -> bool:
-    """Whether a chain that does not record completeness could come from an incomplete night.
-
-    An incomplete night writes no finding row (the matcher decides nothing, Req 9.4) and no record row for the ledger it
-    could not read. A chain with a finding, or with a record in every ledger, came from a complete night.
-    """
-    if any(row.get("type") == "finding" for row in rows):
-        return False
-    read = {row.get("ledger") for row in rows if row.get("type") == "record"}
-    return any(ledger not in read for ledger in _LEDGERS)
 
 
 def verify_evidence_pack(pack_dir: Path, displayed: dict[str, Any] | None = None) -> VerifyResult:
@@ -576,10 +588,22 @@ def verify_evidence_pack(pack_dir: Path, displayed: dict[str, Any] | None = None
             f"computed {prev_recomputed[:12]})",
         )
 
-    # Recompute each ledger hash from the rows.
+    # Recompute each ledger hash from the rows. The manifest names exactly the three ledgers, and every record row
+    # belongs to one of them: a verifier that looped only over the manifest's ledgers would pass a pack without one.
+    for i, row in enumerate(rows):
+        if row.get("type") == "record" and row.get("ledger") not in _LEDGERS:
+            return VerifyResult(
+                False,
+                f"row {i}: record of ledger {canonical_json(row.get('ledger'))}, which is not intended, observed or "
+                "billed",
+                failed_row=i,
+            )
     ledgers_manifest_raw = manifest_raw.get("ledgers", {})
     if not isinstance(ledgers_manifest_raw, dict):
         return VerifyResult(False, "manifest 'ledgers' is not an object")
+    if set(ledgers_manifest_raw) != set(_LEDGERS):
+        named = ", ".join(sorted(ledgers_manifest_raw)) or "none"
+        return VerifyResult(False, f"manifest ledgers are billed, intended, observed: it names {named}")
     by_ledger: dict[str, list[dict[str, object]]] = {}
     for row in rows:
         if row.get("type") != "record":

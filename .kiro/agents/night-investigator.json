@@ -5,8 +5,7 @@
   "tools": [
     "read",
     "@aws-api",
-    "@aws-cloudtrail",
-    "@aws-billing"
+    "@aws-cloudtrail"
   ],
   "includeMcpJson": true,
   "permissions": {
@@ -50,10 +49,16 @@
         "capability": "mcp",
         "match": [
           "aws-api/*",
-          "aws-cloudtrail/*",
-          "aws-billing/*"
+          "aws-cloudtrail/*"
         ],
         "effect": "allow"
+      },
+      {
+        "capability": "mcp",
+        "match": [
+          "aws-cloudtrail/lake_query"
+        ],
+        "effect": "deny"
       }
     ]
   },

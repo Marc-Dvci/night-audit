@@ -114,7 +114,18 @@ export async function verifyPack(
   }
 
   const ledgers = get(manifest, "ledgers", {});
+  // The manifest names exactly the three ledgers, and every record row belongs to one of them (evidence.py).
+  for (let i = 0; i < rows.length; i += 1) {
+    const ledger = get(rows[i], "ledger");
+    if (get(rows[i], "type") === "record" && !(LEDGERS as readonly unknown[]).includes(ledger)) {
+      return fail(`row ${i}: record of ledger ${canonical(ledger)}, which is not intended, observed or billed`, i);
+    }
+  }
   if (!isObject(ledgers)) return fail("manifest 'ledgers' is not an object");
+  const names = Object.keys(ledgers).sort(byCodePoint);
+  if (names.length !== LEDGERS.length || !LEDGERS.every((name) => has(ledgers, name))) {
+    return fail(`manifest ledgers are billed, intended, observed: it names ${names.join(", ") || "none"}`);
+  }
   const byLedger = new Map<string, Row[]>();
   for (const row of rows) {
     if (get(row, "type") !== "record") continue;
@@ -182,20 +193,14 @@ function checkHeader(rows: Row[], manifest: Row, findingRows: number): VerifyRes
   return null;
 }
 
-/** Whether the night was complete, as the chain's header row records it (chain_completeness in evidence.py). */
+/** Whether the night was complete, as the chain's header row records it (chain_completeness in evidence.py). A pack
+ * that does not record it is taken as complete. */
 export function chainCompleteness(rows: Row[]): boolean | null {
   if (rows.length && get(rows[0], "type") === "header") {
     const value = get(rows[0], "complete");
     if (typeof value === "boolean") return value;
   }
   return null;
-}
-
-/** Whether a chain that does not record completeness could come from an incomplete night (could_be_incomplete). */
-export function couldBeIncomplete(rows: Row[]): boolean {
-  if (rows.some((r) => get(r, "type") === "finding")) return false;
-  const read = new Set(rows.filter((r) => get(r, "type") === "record").map((r) => get(r, "ledger")));
-  return LEDGERS.some((ledger) => !read.has(ledger));
 }
 
 // --- What the page displays, against what the chain holds (compare_displayed in evidence.py, sentence for sentence) ---
@@ -363,23 +368,20 @@ export function compareDisplayed(displayed: Row, manifest: Row, rows: Row[], fin
     total = add(total, amount);
     if (get(row, "key") === null) unkeyed = add(unkeyed, amount);
   }
-  // Completeness comes from the chain. Only a pack that does not record it falls back to the page's flag, and then only
-  // when the chain could come from an incomplete night.
+  // Completeness comes from the chain. A pack that does not record it is taken as complete: nothing in it can prove that
+  // a ledger went unread.
   const shownComplete = get(displayed, "complete");
   const chainComplete = chainCompleteness(rows);
-  let incomplete: boolean;
+  let incomplete = false;
   if (chainComplete !== null) {
     if (q(shownComplete) !== q(chainComplete)) {
       problems.push(`complete: the page shows ${q(shownComplete)}, the evidence has ${q(chainComplete)}`);
     }
     incomplete = chainComplete === false;
-  } else {
-    incomplete = shownComplete === false && couldBeIncomplete(rows);
-    if (shownComplete === false && !incomplete) {
-      problems.push(
-        "complete: the page shows false, the evidence records no completeness and holds what only a complete night writes (a finding, or records in every ledger)",
-      );
-    }
+  } else if (shownComplete !== true) {
+    problems.push(
+      `complete: the page shows ${q(shownComplete)}, the evidence records no completeness, so the night is taken as complete`,
+    );
   }
   if (incomplete) {
     // An incomplete run matches nothing and states no amount (Req 9.4): the page must show zero.
@@ -416,33 +418,64 @@ export function compareDisplayed(displayed: Row, manifest: Row, rows: Row[], fin
         problems.push(`${label}: the page shows ${q(get(view, field))}, the evidence has ${expected}`);
       }
     }
-    problems.push(...headlineProblems(view, amounts));
+    problems.push(...headlineProblems(view, counts, amounts));
   }
   return problems;
 }
 
-/** Headline order (HEADLINE_ORDER in report.py): the regions whose amount the headline may print. */
-const HEADLINE_REGIONS = new Set(["OB", "B", "IB", "O", "I"]);
+/** Headline order (HEADLINE_ORDER in report.py): the regions whose count and amount the headline may print. */
+const HEADLINE_REGIONS = ["OB", "B", "IB", "O", "I"] as const;
 /** An amount as the page prints it in prose (_MONEY_TOKEN in evidence.py). */
 const MONEY_TOKEN = /[\u2212-]?\$[0-9][0-9,]*(?:\.[0-9]+)?/g;
+/**
+ * A number in text: the explanation guard's scanner (_NUM_RE in explain.py). Python's \w and \d are Unicode, so the
+ * lookbehind is written with Unicode classes; a digit that is not 0 to 9 is refused before this runs.
+ */
+const NUMBER = /(?:(?<![\p{L}\p{N}_.])[-\u2212])?[0-9]+(?:\.[0-9]+)?/gu;
+const OTHER_DIGIT = /(?![0-9])\p{Decimal_Number}/u;
 
-/** Each amount the headline text prints must be a headline region's amount, exact or rounded the headline's way. */
-function headlineProblems(view: Row, amounts: Map<string, Dec>): string[] {
+/** Every number in text as written, in order, its minus written "-" (number_literals in explain.py). */
+export function numberLiterals(text: string): string[] {
+  return (text.match(NUMBER) ?? []).map((n) => n.replace("\u2212", "-"));
+}
+
+/**
+ * Each number the headline prints must be one of its own: a headline region's count, or its amount written exactly or
+ * rounded the headline's way. Money tokens are compared as text, and every numeric literal as a number.
+ */
+function headlineProblems(view: Row, counts: Map<string, number>, amounts: Map<string, Dec>): string[] {
   const allowed = new Set<string>();
-  for (const [code, amount] of amounts) {
-    if (!HEADLINE_REGIONS.has(code)) continue;
+  const allowedNumbers: Dec[] = [];
+  for (const code of HEADLINE_REGIONS) {
+    const n = counts.get(code);
+    if (n !== undefined) allowedNumbers.push({ coef: BigInt(n), exp: 0 });
+    const amount = amounts.get(code);
+    if (!amount) continue;
     const text = `${amount.coef}E${amount.exp}`;
-    allowed.add(moneyText(text));
-    allowed.add(headlineMoneyText(text));
+    for (const printed of [moneyText(text), headlineMoneyText(text)]) {
+      allowed.add(printed);
+      for (const literal of numberLiterals(printed)) allowedNumbers.push(decimal(literal) as Dec);
+    }
   }
   const sentences = get(view, "headline_sentences");
   const texts = Array.isArray(sentences) ? sentences.filter((s): s is string => typeof s === "string") : [];
   const lead = get(view, "headline");
   if (typeof lead === "string") texts.push(lead);
+  const problems: string[] = [];
+  if (texts.some((t) => OTHER_DIGIT.test(t))) problems.push("headline: the page shows a digit that is not 0 to 9");
   const tokens = new Set(texts.flatMap((text) => text.match(MONEY_TOKEN) ?? []));
-  return [...tokens]
-    .filter((t) => !allowed.has(t))
-    .map((t) => `headline: the page shows ${t}, which is no region's amount in the evidence`);
+  for (const t of tokens) {
+    if (!allowed.has(t)) problems.push(`headline: the page shows ${t}, which is no region's amount in the evidence`);
+  }
+  const refused: string[] = [];
+  for (const literal of texts.flatMap(numberLiterals)) {
+    const n = decimal(literal) as Dec;
+    if (!allowedNumbers.some((a) => same(a, n)) && !refused.includes(literal)) refused.push(literal);
+  }
+  for (const n of refused) {
+    problems.push(`headline: the page shows the number ${n}, which is not one of the headline's counts or amounts`);
+  }
+  return problems;
 }
 
 function displayFailure(problems: string[]): string {

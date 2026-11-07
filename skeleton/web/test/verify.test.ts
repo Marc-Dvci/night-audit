@@ -89,3 +89,31 @@ describe("the page against the chain gives Python's verdict", () => {
   });
 });
 
+describe("the manifest names exactly the three ledgers, as in Python", () => {
+  it.each(fixture.pack.ledgers.map((c) => [c.name, c] as const))("%s", async (_name, c) => {
+    const result = await verifyPack(c.jsonl, c.manifest);
+    expect(result.ok).toBe(false);
+    expect(result.detail).toBe(c.verdict.detail);
+    expect(result.failedRow).toBe(c.verdict.failed_row);
+  });
+});
+
+describe("every number in the headline is checked, as in Python", () => {
+  const untouched = fixture.pack.variants[0].jsonl;
+  const named = (name: string) => fixture.pack.displayed.find((d) => d.name === name);
+
+  it("refuses a headline amount written without a dollar sign", async () => {
+    const shown = named("a headline amount written without a dollar sign");
+    const result = await verifyPack(untouched, manifest, undefined, shown?.document);
+    expect(result.ok).toBe(false);
+    expect(result.detail).toContain("which is not one of the headline's counts or amounts");
+  });
+
+  it("reads a minus after a letter as joining two words, like the explanation guard", async () => {
+    const shown = named("a headline number after a letter and a minus");
+    const result = await verifyPack(untouched, manifest, undefined, shown?.document);
+    expect(result.detail).toContain("the number 7,");
+    expect(result.detail).not.toContain("the number -7");
+  });
+});
+

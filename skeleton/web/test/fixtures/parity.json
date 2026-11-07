@@ -6325,7 +6325,7 @@
      "rows": 0,
      "findings": 0,
      "final_hash": null,
-     "detail": "the page differs from the evidence: headline: the page shows $7.118, which is no region's amount in the evidence"
+     "detail": "the page differs from the evidence: headline: the page shows $7.118, which is no region's amount in the evidence; headline: the page shows the number 7.118, which is not one of the headline's counts or amounts"
     }
    },
    {
@@ -6957,6 +6957,1896 @@
      "final_hash": null,
      "detail": "the page differs from the evidence: finding \"phantom-two\": the page shows billed amount $0.7172, the evidence has $0.7172358001"
     }
+   },
+   {
+    "name": "a headline amount written without a dollar sign",
+    "document": {
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "complete": true,
+     "control_id": "",
+     "control_title": "",
+     "app": "",
+     "region_names": {
+      "IOB": "Living",
+      "IO": "Familiar",
+      "IB": "Wraith",
+      "OB": "Vampire",
+      "I": "Skeleton",
+      "O": "Poltergeist",
+      "B": "Phantom"
+     },
+     "region_meanings": {},
+     "ledger_errors": {},
+     "excluded": {},
+     "missing_ledgers": [],
+     "snapshots": [],
+     "regions": {
+      "k0": "IOB",
+      "k1": "IOB",
+      "k2": "IO",
+      "k3": "I",
+      "k4": "I",
+      "k5": "I",
+      "ghost-\ud83d\udc7b": "O",
+      "k9": "OB",
+      "phantom-\u00e9": "B",
+      "phantom-two": "B"
+     },
+     "pending_keys": [],
+     "unkeyed": [
+      {
+       "row_id": "b5",
+       "ledger": "billed",
+       "source": "cur",
+       "amount": "-3.10"
+      }
+     ],
+     "findings": [
+      {
+       "key": "phantom-two",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0.7172358001",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "phantom-\u00e9",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "6.40",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k3",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k4",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k5",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k2",
+       "region_code": "IO",
+       "name": "Familiar",
+       "severity": "informational",
+       "meaning": "Approved and present, not billed. Informational.",
+       "informational": true,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "ghost-\ud83d\udc7b",
+       "region_code": "O",
+       "name": "Poltergeist",
+       "severity": "low",
+       "meaning": "Exists, unapproved, not billed.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k9",
+       "region_code": "OB",
+       "name": "Vampire",
+       "severity": "high",
+       "meaning": "Exists and is paid for, but nobody approved it.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "41.20",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      }
+     ],
+     "region_summaries": {
+      "B": {
+       "code": "B",
+       "key_count": 2,
+       "billed_amount": "7.1172358001"
+      },
+      "I": {
+       "code": "I",
+       "key_count": 3,
+       "billed_amount": "0"
+      },
+      "IO": {
+       "code": "IO",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "IOB": {
+       "code": "IOB",
+       "key_count": 2,
+       "billed_amount": "18.610000001"
+      },
+      "O": {
+       "code": "O",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "OB": {
+       "code": "OB",
+       "key_count": 1,
+       "billed_amount": "41.20"
+      }
+     },
+     "duplicates": {},
+     "billed_total": "63.8272358011",
+     "billed_unkeyed": "-3.10",
+     "dropped": {
+      "intended": 0,
+      "observed": 0,
+      "billed": 0
+     },
+     "resolved": [],
+     "evidence_chain_hash": "8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666",
+     "ui": {
+      "title": "Night Audit",
+      "tagline": "Three ledgers of the same reality, matched every night.",
+      "noun": {
+       "singular": "item",
+       "plural": "items"
+      },
+      "ledgers": {
+       "intended": {
+        "label": "Intended",
+        "source": "What was approved."
+       },
+       "observed": {
+        "label": "Observed",
+        "source": "What exists."
+       },
+       "billed": {
+        "label": "Billed",
+        "source": "What is paid for."
+       }
+      },
+      "columns": [
+       {
+        "label": "Key",
+        "from": "key"
+       },
+       {
+        "label": "Since",
+        "from": "status"
+       },
+       {
+        "label": "Billed",
+        "from": "amount"
+       }
+      ],
+      "headlines": {},
+      "unkeyed": {
+       "singular": "line with no resource id",
+       "plural": "lines with no resource id",
+       "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+      },
+      "downloads": []
+     },
+     "notes": [],
+     "view": {
+      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: 7.118 dollars. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline_sentences": [
+       "1 Vampire exists and is on the bill with no approval: $41.20.",
+       "2 Phantoms are on the bill for something nobody approved or can see: 7.118 dollars.",
+       "1 Poltergeist exists with no approval and costs nothing.",
+       "3 Skeletons are approved but gone and unbilled."
+      ],
+      "calm": false,
+      "ledger_keys": {
+       "intended": null,
+       "observed": null,
+       "billed": null
+      },
+      "keyed_total": "66.9272358011",
+      "unkeyed_total": "-3.10",
+      "billed_total": "63.8272358011",
+      "lines": [
+       {
+        "label": "On the bill for 0 items",
+        "value": "$66.9272358011",
+        "amount": "66.9272358011",
+        "note": ""
+       },
+       {
+        "label": "1 line with no resource id",
+        "value": "\u2212$3.10",
+        "amount": "-3.10",
+        "note": "Negative because credits are larger than tax and support. A credit is expected here."
+       },
+       {
+        "label": "Billed total",
+        "value": "$63.8272358011",
+        "amount": "63.8272358011",
+        "note": ""
+       }
+      ],
+      "finding_count": 7,
+      "new_count": 7,
+      "persisting_count": 0,
+      "pending_count": 0,
+      "resolved_count": 0
+     },
+     "downloads": []
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "the page differs from the evidence: headline: the page shows the number 7.118, which is not one of the headline's counts or amounts"
+    }
+   },
+   {
+    "name": "a headline count changed",
+    "document": {
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "complete": true,
+     "control_id": "",
+     "control_title": "",
+     "app": "",
+     "region_names": {
+      "IOB": "Living",
+      "IO": "Familiar",
+      "IB": "Wraith",
+      "OB": "Vampire",
+      "I": "Skeleton",
+      "O": "Poltergeist",
+      "B": "Phantom"
+     },
+     "region_meanings": {},
+     "ledger_errors": {},
+     "excluded": {},
+     "missing_ledgers": [],
+     "snapshots": [],
+     "regions": {
+      "k0": "IOB",
+      "k1": "IOB",
+      "k2": "IO",
+      "k3": "I",
+      "k4": "I",
+      "k5": "I",
+      "ghost-\ud83d\udc7b": "O",
+      "k9": "OB",
+      "phantom-\u00e9": "B",
+      "phantom-two": "B"
+     },
+     "pending_keys": [],
+     "unkeyed": [
+      {
+       "row_id": "b5",
+       "ledger": "billed",
+       "source": "cur",
+       "amount": "-3.10"
+      }
+     ],
+     "findings": [
+      {
+       "key": "phantom-two",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0.7172358001",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "phantom-\u00e9",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "6.40",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k3",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k4",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k5",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k2",
+       "region_code": "IO",
+       "name": "Familiar",
+       "severity": "informational",
+       "meaning": "Approved and present, not billed. Informational.",
+       "informational": true,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "ghost-\ud83d\udc7b",
+       "region_code": "O",
+       "name": "Poltergeist",
+       "severity": "low",
+       "meaning": "Exists, unapproved, not billed.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k9",
+       "region_code": "OB",
+       "name": "Vampire",
+       "severity": "high",
+       "meaning": "Exists and is paid for, but nobody approved it.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "41.20",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      }
+     ],
+     "region_summaries": {
+      "B": {
+       "code": "B",
+       "key_count": 2,
+       "billed_amount": "7.1172358001"
+      },
+      "I": {
+       "code": "I",
+       "key_count": 3,
+       "billed_amount": "0"
+      },
+      "IO": {
+       "code": "IO",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "IOB": {
+       "code": "IOB",
+       "key_count": 2,
+       "billed_amount": "18.610000001"
+      },
+      "O": {
+       "code": "O",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "OB": {
+       "code": "OB",
+       "key_count": 1,
+       "billed_amount": "41.20"
+      }
+     },
+     "duplicates": {},
+     "billed_total": "63.8272358011",
+     "billed_unkeyed": "-3.10",
+     "dropped": {
+      "intended": 0,
+      "observed": 0,
+      "billed": 0
+     },
+     "resolved": [],
+     "evidence_chain_hash": "8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666",
+     "ui": {
+      "title": "Night Audit",
+      "tagline": "Three ledgers of the same reality, matched every night.",
+      "noun": {
+       "singular": "item",
+       "plural": "items"
+      },
+      "ledgers": {
+       "intended": {
+        "label": "Intended",
+        "source": "What was approved."
+       },
+       "observed": {
+        "label": "Observed",
+        "source": "What exists."
+       },
+       "billed": {
+        "label": "Billed",
+        "source": "What is paid for."
+       }
+      },
+      "columns": [
+       {
+        "label": "Key",
+        "from": "key"
+       },
+       {
+        "label": "Since",
+        "from": "status"
+       },
+       {
+        "label": "Billed",
+        "from": "amount"
+       }
+      ],
+      "headlines": {},
+      "unkeyed": {
+       "singular": "line with no resource id",
+       "plural": "lines with no resource id",
+       "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+      },
+      "downloads": []
+     },
+     "notes": [],
+     "view": {
+      "headline": "11 Vampire exists and is on the bill with no approval: $41.20. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline_sentences": [
+       "11 Vampire exists and is on the bill with no approval: $41.20.",
+       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
+       "1 Poltergeist exists with no approval and costs nothing.",
+       "3 Skeletons are approved but gone and unbilled."
+      ],
+      "calm": false,
+      "ledger_keys": {
+       "intended": null,
+       "observed": null,
+       "billed": null
+      },
+      "keyed_total": "66.9272358011",
+      "unkeyed_total": "-3.10",
+      "billed_total": "63.8272358011",
+      "lines": [
+       {
+        "label": "On the bill for 0 items",
+        "value": "$66.9272358011",
+        "amount": "66.9272358011",
+        "note": ""
+       },
+       {
+        "label": "1 line with no resource id",
+        "value": "\u2212$3.10",
+        "amount": "-3.10",
+        "note": "Negative because credits are larger than tax and support. A credit is expected here."
+       },
+       {
+        "label": "Billed total",
+        "value": "$63.8272358011",
+        "amount": "63.8272358011",
+        "note": ""
+       }
+      ],
+      "finding_count": 7,
+      "new_count": 7,
+      "persisting_count": 0,
+      "pending_count": 0,
+      "resolved_count": 0
+     },
+     "downloads": []
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "the page differs from the evidence: headline: the page shows the number 11, which is not one of the headline's counts or amounts"
+    }
+   },
+   {
+    "name": "a headline with an extra number",
+    "document": {
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "complete": true,
+     "control_id": "",
+     "control_title": "",
+     "app": "",
+     "region_names": {
+      "IOB": "Living",
+      "IO": "Familiar",
+      "IB": "Wraith",
+      "OB": "Vampire",
+      "I": "Skeleton",
+      "O": "Poltergeist",
+      "B": "Phantom"
+     },
+     "region_meanings": {},
+     "ledger_errors": {},
+     "excluded": {},
+     "missing_ledgers": [],
+     "snapshots": [],
+     "regions": {
+      "k0": "IOB",
+      "k1": "IOB",
+      "k2": "IO",
+      "k3": "I",
+      "k4": "I",
+      "k5": "I",
+      "ghost-\ud83d\udc7b": "O",
+      "k9": "OB",
+      "phantom-\u00e9": "B",
+      "phantom-two": "B"
+     },
+     "pending_keys": [],
+     "unkeyed": [
+      {
+       "row_id": "b5",
+       "ledger": "billed",
+       "source": "cur",
+       "amount": "-3.10"
+      }
+     ],
+     "findings": [
+      {
+       "key": "phantom-two",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0.7172358001",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "phantom-\u00e9",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "6.40",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k3",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k4",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k5",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k2",
+       "region_code": "IO",
+       "name": "Familiar",
+       "severity": "informational",
+       "meaning": "Approved and present, not billed. Informational.",
+       "informational": true,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "ghost-\ud83d\udc7b",
+       "region_code": "O",
+       "name": "Poltergeist",
+       "severity": "low",
+       "meaning": "Exists, unapproved, not billed.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k9",
+       "region_code": "OB",
+       "name": "Vampire",
+       "severity": "high",
+       "meaning": "Exists and is paid for, but nobody approved it.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "41.20",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      }
+     ],
+     "region_summaries": {
+      "B": {
+       "code": "B",
+       "key_count": 2,
+       "billed_amount": "7.1172358001"
+      },
+      "I": {
+       "code": "I",
+       "key_count": 3,
+       "billed_amount": "0"
+      },
+      "IO": {
+       "code": "IO",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "IOB": {
+       "code": "IOB",
+       "key_count": 2,
+       "billed_amount": "18.610000001"
+      },
+      "O": {
+       "code": "O",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "OB": {
+       "code": "OB",
+       "key_count": 1,
+       "billed_amount": "41.20"
+      }
+     },
+     "duplicates": {},
+     "billed_total": "63.8272358011",
+     "billed_unkeyed": "-3.10",
+     "dropped": {
+      "intended": 0,
+      "observed": 0,
+      "billed": 0
+     },
+     "resolved": [],
+     "evidence_chain_hash": "8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666",
+     "ui": {
+      "title": "Night Audit",
+      "tagline": "Three ledgers of the same reality, matched every night.",
+      "noun": {
+       "singular": "item",
+       "plural": "items"
+      },
+      "ledgers": {
+       "intended": {
+        "label": "Intended",
+        "source": "What was approved."
+       },
+       "observed": {
+        "label": "Observed",
+        "source": "What exists."
+       },
+       "billed": {
+        "label": "Billed",
+        "source": "What is paid for."
+       }
+      },
+      "columns": [
+       {
+        "label": "Key",
+        "from": "key"
+       },
+       {
+        "label": "Since",
+        "from": "status"
+       },
+       {
+        "label": "Billed",
+        "from": "amount"
+       }
+      ],
+      "headlines": {},
+      "unkeyed": {
+       "singular": "line with no resource id",
+       "plural": "lines with no resource id",
+       "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+      },
+      "downloads": []
+     },
+     "notes": [],
+     "view": {
+      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. For 9 nights. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline_sentences": [
+       "1 Vampire exists and is on the bill with no approval: $41.20. For 9 nights.",
+       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
+       "1 Poltergeist exists with no approval and costs nothing.",
+       "3 Skeletons are approved but gone and unbilled."
+      ],
+      "calm": false,
+      "ledger_keys": {
+       "intended": null,
+       "observed": null,
+       "billed": null
+      },
+      "keyed_total": "66.9272358011",
+      "unkeyed_total": "-3.10",
+      "billed_total": "63.8272358011",
+      "lines": [
+       {
+        "label": "On the bill for 0 items",
+        "value": "$66.9272358011",
+        "amount": "66.9272358011",
+        "note": ""
+       },
+       {
+        "label": "1 line with no resource id",
+        "value": "\u2212$3.10",
+        "amount": "-3.10",
+        "note": "Negative because credits are larger than tax and support. A credit is expected here."
+       },
+       {
+        "label": "Billed total",
+        "value": "$63.8272358011",
+        "amount": "63.8272358011",
+        "note": ""
+       }
+      ],
+      "finding_count": 7,
+      "new_count": 7,
+      "persisting_count": 0,
+      "pending_count": 0,
+      "resolved_count": 0
+     },
+     "downloads": []
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "the page differs from the evidence: headline: the page shows the number 9, which is not one of the headline's counts or amounts"
+    }
+   },
+   {
+    "name": "a headline number after a letter and a minus",
+    "document": {
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "complete": true,
+     "control_id": "",
+     "control_title": "",
+     "app": "",
+     "region_names": {
+      "IOB": "Living",
+      "IO": "Familiar",
+      "IB": "Wraith",
+      "OB": "Vampire",
+      "I": "Skeleton",
+      "O": "Poltergeist",
+      "B": "Phantom"
+     },
+     "region_meanings": {},
+     "ledger_errors": {},
+     "excluded": {},
+     "missing_ledgers": [],
+     "snapshots": [],
+     "regions": {
+      "k0": "IOB",
+      "k1": "IOB",
+      "k2": "IO",
+      "k3": "I",
+      "k4": "I",
+      "k5": "I",
+      "ghost-\ud83d\udc7b": "O",
+      "k9": "OB",
+      "phantom-\u00e9": "B",
+      "phantom-two": "B"
+     },
+     "pending_keys": [],
+     "unkeyed": [
+      {
+       "row_id": "b5",
+       "ledger": "billed",
+       "source": "cur",
+       "amount": "-3.10"
+      }
+     ],
+     "findings": [
+      {
+       "key": "phantom-two",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0.7172358001",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "phantom-\u00e9",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "6.40",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k3",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k4",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k5",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k2",
+       "region_code": "IO",
+       "name": "Familiar",
+       "severity": "informational",
+       "meaning": "Approved and present, not billed. Informational.",
+       "informational": true,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "ghost-\ud83d\udc7b",
+       "region_code": "O",
+       "name": "Poltergeist",
+       "severity": "low",
+       "meaning": "Exists, unapproved, not billed.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k9",
+       "region_code": "OB",
+       "name": "Vampire",
+       "severity": "high",
+       "meaning": "Exists and is paid for, but nobody approved it.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "41.20",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      }
+     ],
+     "region_summaries": {
+      "B": {
+       "code": "B",
+       "key_count": 2,
+       "billed_amount": "7.1172358001"
+      },
+      "I": {
+       "code": "I",
+       "key_count": 3,
+       "billed_amount": "0"
+      },
+      "IO": {
+       "code": "IO",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "IOB": {
+       "code": "IOB",
+       "key_count": 2,
+       "billed_amount": "18.610000001"
+      },
+      "O": {
+       "code": "O",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "OB": {
+       "code": "OB",
+       "key_count": 1,
+       "billed_amount": "41.20"
+      }
+     },
+     "duplicates": {},
+     "billed_total": "63.8272358011",
+     "billed_unkeyed": "-3.10",
+     "dropped": {
+      "intended": 0,
+      "observed": 0,
+      "billed": 0
+     },
+     "resolved": [],
+     "evidence_chain_hash": "8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666",
+     "ui": {
+      "title": "Night Audit",
+      "tagline": "Three ledgers of the same reality, matched every night.",
+      "noun": {
+       "singular": "item",
+       "plural": "items"
+      },
+      "ledgers": {
+       "intended": {
+        "label": "Intended",
+        "source": "What was approved."
+       },
+       "observed": {
+        "label": "Observed",
+        "source": "What exists."
+       },
+       "billed": {
+        "label": "Billed",
+        "source": "What is paid for."
+       }
+      },
+      "columns": [
+       {
+        "label": "Key",
+        "from": "key"
+       },
+       {
+        "label": "Since",
+        "from": "status"
+       },
+       {
+        "label": "Billed",
+        "from": "amount"
+       }
+      ],
+      "headlines": {},
+      "unkeyed": {
+       "singular": "line with no resource id",
+       "plural": "lines with no resource id",
+       "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+      },
+      "downloads": []
+     },
+     "notes": [],
+     "view": {
+      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. x\u00e9-7. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline_sentences": [
+       "1 Vampire exists and is on the bill with no approval: $41.20. x\u00e9-7.",
+       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
+       "1 Poltergeist exists with no approval and costs nothing.",
+       "3 Skeletons are approved but gone and unbilled."
+      ],
+      "calm": false,
+      "ledger_keys": {
+       "intended": null,
+       "observed": null,
+       "billed": null
+      },
+      "keyed_total": "66.9272358011",
+      "unkeyed_total": "-3.10",
+      "billed_total": "63.8272358011",
+      "lines": [
+       {
+        "label": "On the bill for 0 items",
+        "value": "$66.9272358011",
+        "amount": "66.9272358011",
+        "note": ""
+       },
+       {
+        "label": "1 line with no resource id",
+        "value": "\u2212$3.10",
+        "amount": "-3.10",
+        "note": "Negative because credits are larger than tax and support. A credit is expected here."
+       },
+       {
+        "label": "Billed total",
+        "value": "$63.8272358011",
+        "amount": "63.8272358011",
+        "note": ""
+       }
+      ],
+      "finding_count": 7,
+      "new_count": 7,
+      "persisting_count": 0,
+      "pending_count": 0,
+      "resolved_count": 0
+     },
+     "downloads": []
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "the page differs from the evidence: headline: the page shows the number 7, which is not one of the headline's counts or amounts"
+    }
+   },
+   {
+    "name": "a headline number after a space and a minus",
+    "document": {
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "complete": true,
+     "control_id": "",
+     "control_title": "",
+     "app": "",
+     "region_names": {
+      "IOB": "Living",
+      "IO": "Familiar",
+      "IB": "Wraith",
+      "OB": "Vampire",
+      "I": "Skeleton",
+      "O": "Poltergeist",
+      "B": "Phantom"
+     },
+     "region_meanings": {},
+     "ledger_errors": {},
+     "excluded": {},
+     "missing_ledgers": [],
+     "snapshots": [],
+     "regions": {
+      "k0": "IOB",
+      "k1": "IOB",
+      "k2": "IO",
+      "k3": "I",
+      "k4": "I",
+      "k5": "I",
+      "ghost-\ud83d\udc7b": "O",
+      "k9": "OB",
+      "phantom-\u00e9": "B",
+      "phantom-two": "B"
+     },
+     "pending_keys": [],
+     "unkeyed": [
+      {
+       "row_id": "b5",
+       "ledger": "billed",
+       "source": "cur",
+       "amount": "-3.10"
+      }
+     ],
+     "findings": [
+      {
+       "key": "phantom-two",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0.7172358001",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "phantom-\u00e9",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "6.40",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k3",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k4",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k5",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k2",
+       "region_code": "IO",
+       "name": "Familiar",
+       "severity": "informational",
+       "meaning": "Approved and present, not billed. Informational.",
+       "informational": true,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "ghost-\ud83d\udc7b",
+       "region_code": "O",
+       "name": "Poltergeist",
+       "severity": "low",
+       "meaning": "Exists, unapproved, not billed.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k9",
+       "region_code": "OB",
+       "name": "Vampire",
+       "severity": "high",
+       "meaning": "Exists and is paid for, but nobody approved it.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "41.20",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      }
+     ],
+     "region_summaries": {
+      "B": {
+       "code": "B",
+       "key_count": 2,
+       "billed_amount": "7.1172358001"
+      },
+      "I": {
+       "code": "I",
+       "key_count": 3,
+       "billed_amount": "0"
+      },
+      "IO": {
+       "code": "IO",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "IOB": {
+       "code": "IOB",
+       "key_count": 2,
+       "billed_amount": "18.610000001"
+      },
+      "O": {
+       "code": "O",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "OB": {
+       "code": "OB",
+       "key_count": 1,
+       "billed_amount": "41.20"
+      }
+     },
+     "duplicates": {},
+     "billed_total": "63.8272358011",
+     "billed_unkeyed": "-3.10",
+     "dropped": {
+      "intended": 0,
+      "observed": 0,
+      "billed": 0
+     },
+     "resolved": [],
+     "evidence_chain_hash": "8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666",
+     "ui": {
+      "title": "Night Audit",
+      "tagline": "Three ledgers of the same reality, matched every night.",
+      "noun": {
+       "singular": "item",
+       "plural": "items"
+      },
+      "ledgers": {
+       "intended": {
+        "label": "Intended",
+        "source": "What was approved."
+       },
+       "observed": {
+        "label": "Observed",
+        "source": "What exists."
+       },
+       "billed": {
+        "label": "Billed",
+        "source": "What is paid for."
+       }
+      },
+      "columns": [
+       {
+        "label": "Key",
+        "from": "key"
+       },
+       {
+        "label": "Since",
+        "from": "status"
+       },
+       {
+        "label": "Billed",
+        "from": "amount"
+       }
+      ],
+      "headlines": {},
+      "unkeyed": {
+       "singular": "line with no resource id",
+       "plural": "lines with no resource id",
+       "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+      },
+      "downloads": []
+     },
+     "notes": [],
+     "view": {
+      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. \u22122. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline_sentences": [
+       "1 Vampire exists and is on the bill with no approval: $41.20. \u22122.",
+       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
+       "1 Poltergeist exists with no approval and costs nothing.",
+       "3 Skeletons are approved but gone and unbilled."
+      ],
+      "calm": false,
+      "ledger_keys": {
+       "intended": null,
+       "observed": null,
+       "billed": null
+      },
+      "keyed_total": "66.9272358011",
+      "unkeyed_total": "-3.10",
+      "billed_total": "63.8272358011",
+      "lines": [
+       {
+        "label": "On the bill for 0 items",
+        "value": "$66.9272358011",
+        "amount": "66.9272358011",
+        "note": ""
+       },
+       {
+        "label": "1 line with no resource id",
+        "value": "\u2212$3.10",
+        "amount": "-3.10",
+        "note": "Negative because credits are larger than tax and support. A credit is expected here."
+       },
+       {
+        "label": "Billed total",
+        "value": "$63.8272358011",
+        "amount": "63.8272358011",
+        "note": ""
+       }
+      ],
+      "finding_count": 7,
+      "new_count": 7,
+      "persisting_count": 0,
+      "pending_count": 0,
+      "resolved_count": 0
+     },
+     "downloads": []
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "the page differs from the evidence: headline: the page shows the number -2, which is not one of the headline's counts or amounts"
+    }
+   },
+   {
+    "name": "a headline with a digit that is not 0 to 9",
+    "document": {
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "complete": true,
+     "control_id": "",
+     "control_title": "",
+     "app": "",
+     "region_names": {
+      "IOB": "Living",
+      "IO": "Familiar",
+      "IB": "Wraith",
+      "OB": "Vampire",
+      "I": "Skeleton",
+      "O": "Poltergeist",
+      "B": "Phantom"
+     },
+     "region_meanings": {},
+     "ledger_errors": {},
+     "excluded": {},
+     "missing_ledgers": [],
+     "snapshots": [],
+     "regions": {
+      "k0": "IOB",
+      "k1": "IOB",
+      "k2": "IO",
+      "k3": "I",
+      "k4": "I",
+      "k5": "I",
+      "ghost-\ud83d\udc7b": "O",
+      "k9": "OB",
+      "phantom-\u00e9": "B",
+      "phantom-two": "B"
+     },
+     "pending_keys": [],
+     "unkeyed": [
+      {
+       "row_id": "b5",
+       "ledger": "billed",
+       "source": "cur",
+       "amount": "-3.10"
+      }
+     ],
+     "findings": [
+      {
+       "key": "phantom-two",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0.7172358001",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "phantom-\u00e9",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "6.40",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k3",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k4",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k5",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k2",
+       "region_code": "IO",
+       "name": "Familiar",
+       "severity": "informational",
+       "meaning": "Approved and present, not billed. Informational.",
+       "informational": true,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "ghost-\ud83d\udc7b",
+       "region_code": "O",
+       "name": "Poltergeist",
+       "severity": "low",
+       "meaning": "Exists, unapproved, not billed.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k9",
+       "region_code": "OB",
+       "name": "Vampire",
+       "severity": "high",
+       "meaning": "Exists and is paid for, but nobody approved it.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "41.20",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      }
+     ],
+     "region_summaries": {
+      "B": {
+       "code": "B",
+       "key_count": 2,
+       "billed_amount": "7.1172358001"
+      },
+      "I": {
+       "code": "I",
+       "key_count": 3,
+       "billed_amount": "0"
+      },
+      "IO": {
+       "code": "IO",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "IOB": {
+       "code": "IOB",
+       "key_count": 2,
+       "billed_amount": "18.610000001"
+      },
+      "O": {
+       "code": "O",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "OB": {
+       "code": "OB",
+       "key_count": 1,
+       "billed_amount": "41.20"
+      }
+     },
+     "duplicates": {},
+     "billed_total": "63.8272358011",
+     "billed_unkeyed": "-3.10",
+     "dropped": {
+      "intended": 0,
+      "observed": 0,
+      "billed": 0
+     },
+     "resolved": [],
+     "evidence_chain_hash": "8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666",
+     "ui": {
+      "title": "Night Audit",
+      "tagline": "Three ledgers of the same reality, matched every night.",
+      "noun": {
+       "singular": "item",
+       "plural": "items"
+      },
+      "ledgers": {
+       "intended": {
+        "label": "Intended",
+        "source": "What was approved."
+       },
+       "observed": {
+        "label": "Observed",
+        "source": "What exists."
+       },
+       "billed": {
+        "label": "Billed",
+        "source": "What is paid for."
+       }
+      },
+      "columns": [
+       {
+        "label": "Key",
+        "from": "key"
+       },
+       {
+        "label": "Since",
+        "from": "status"
+       },
+       {
+        "label": "Billed",
+        "from": "amount"
+       }
+      ],
+      "headlines": {},
+      "unkeyed": {
+       "singular": "line with no resource id",
+       "plural": "lines with no resource id",
+       "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+      },
+      "downloads": []
+     },
+     "notes": [],
+     "view": {
+      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. \u0662. 2 Phantoms are on the bill for something nobody approved or can see: $7.117. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline_sentences": [
+       "1 Vampire exists and is on the bill with no approval: $41.20. \u0662.",
+       "2 Phantoms are on the bill for something nobody approved or can see: $7.117.",
+       "1 Poltergeist exists with no approval and costs nothing.",
+       "3 Skeletons are approved but gone and unbilled."
+      ],
+      "calm": false,
+      "ledger_keys": {
+       "intended": null,
+       "observed": null,
+       "billed": null
+      },
+      "keyed_total": "66.9272358011",
+      "unkeyed_total": "-3.10",
+      "billed_total": "63.8272358011",
+      "lines": [
+       {
+        "label": "On the bill for 0 items",
+        "value": "$66.9272358011",
+        "amount": "66.9272358011",
+        "note": ""
+       },
+       {
+        "label": "1 line with no resource id",
+        "value": "\u2212$3.10",
+        "amount": "-3.10",
+        "note": "Negative because credits are larger than tax and support. A credit is expected here."
+       },
+       {
+        "label": "Billed total",
+        "value": "$63.8272358011",
+        "amount": "63.8272358011",
+        "note": ""
+       }
+      ],
+      "finding_count": 7,
+      "new_count": 7,
+      "persisting_count": 0,
+      "pending_count": 0,
+      "resolved_count": 0
+     },
+     "downloads": []
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "the page differs from the evidence: headline: the page shows a digit that is not 0 to 9"
+    }
    }
   ],
   "completeness": [
@@ -7577,7 +9467,7 @@
     }
    },
    {
-    "name": "before completeness: an incomplete night",
+    "name": "before completeness: an incomplete night is taken as complete",
     "jsonl": "{\"control_hash\":\"14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c\",\"finding_count\":0,\"index\":0,\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"row_count\":13,\"row_hash\":\"55bf17f2b2c4e9646f93a6b9953c1c0dd4e54d86315db89dd84715032579509e\",\"run_id\":\"ad25e22fb3a05034\",\"run_time\":\"2026-11-06T02:00:00Z\",\"type\":\"header\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"plain\",\"Z\":\"x\"},\"index\":1,\"key\":null,\"ledger\":\"intended\",\"prev_hash\":\"55bf17f2b2c4e9646f93a6b9953c1c0dd4e54d86315db89dd84715032579509e\",\"raw_key\":\"k0\",\"row_hash\":\"dfc7625208052ab2885dd2686e19666915969520bf78432c99c79aee02b87c7b\",\"row_id\":\"i0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"quote \\\" and backslash \\\\ and slash /\",\"a\":\"x\"},\"index\":2,\"key\":null,\"ledger\":\"intended\",\"prev_hash\":\"dfc7625208052ab2885dd2686e19666915969520bf78432c99c79aee02b87c7b\",\"raw_key\":\"k1\",\"row_hash\":\"4874bd98a309148c3893fc9cb81fcf1c03fecc4658aaba90e7a46a7b78fd4e2e\",\"row_id\":\"i1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\",\"\\u00e9\":\"x\"},\"index\":3,\"key\":null,\"ledger\":\"intended\",\"prev_hash\":\"4874bd98a309148c3893fc9cb81fcf1c03fecc4658aaba90e7a46a7b78fd4e2e\",\"raw_key\":\"k2\",\"row_hash\":\"dcbddc549b38162e36c4d4739f6c45c44bc54bc25c06eeae1db82b74ed5d1301\",\"row_id\":\"i2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"astral \\ud83e\\udddb \\ud83d\\udc7b \\ud800\\udc00\",\"\\uffff\":\"x\"},\"index\":4,\"key\":null,\"ledger\":\"intended\",\"prev_hash\":\"dcbddc549b38162e36c4d4739f6c45c44bc54bc25c06eeae1db82b74ed5d1301\",\"raw_key\":\"k3\",\"row_hash\":\"cff628e4cac0bd25b76dea66903a2d2a6ddb93412a81950111e369066d7a2a65\",\"row_id\":\"i3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"edge \\uffff\\ufffe\\ufeff\",\"\\ud800\\udc00\":\"x\"},\"index\":5,\"key\":null,\"ledger\":\"intended\",\"prev_hash\":\"cff628e4cac0bd25b76dea66903a2d2a6ddb93412a81950111e369066d7a2a65\",\"raw_key\":\"k4\",\"row_hash\":\"120e28ea083d734212fbb7995168dae766f4276b9882d25b8c89b6c5a8b4e73b\",\"row_id\":\"i4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"controls \\u0000\\u0001\\u0007\\b\\t\\n\\u000b\\f\\r\\u001b\\u001f\\u007f\\u0080\\u009f\",\"\\ud83d\\ude00\":\"x\"},\"index\":6,\"key\":null,\"ledger\":\"intended\",\"prev_hash\":\"120e28ea083d734212fbb7995168dae766f4276b9882d25b8c89b6c5a8b4e73b\",\"raw_key\":\"k5\",\"row_hash\":\"5cc44c97061527a2f13220857251f1af473e67b831a4c96f6eac3f1d3dfd1f14\",\"row_id\":\"i5\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"18.61\",\"attrs\":{\"usage\":\"accents caf\\u00e9 \\u00df \\u0130\"},\"index\":7,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"5cc44c97061527a2f13220857251f1af473e67b831a4c96f6eac3f1d3dfd1f14\",\"raw_key\":\"k0\",\"row_hash\":\"c3e14d784ee238080bb54190a09181876215c72078dfd7e12a27461a0f039ea5\",\"row_id\":\"b0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"1E-9\",\"attrs\":{\"usage\":\"<script>alert(1)</script>\"},\"index\":8,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"c3e14d784ee238080bb54190a09181876215c72078dfd7e12a27461a0f039ea5\",\"raw_key\":\"k1\",\"row_hash\":\"62bc0c9822a426e0384f64c521a3d51d80d2b779065ab2af0dfde70908e13d7c\",\"row_id\":\"b1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"41.20\",\"attrs\":{\"usage\":\"edge \\uffff\\ufffe\\ufeff\"},\"index\":9,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"62bc0c9822a426e0384f64c521a3d51d80d2b779065ab2af0dfde70908e13d7c\",\"raw_key\":\"k9\",\"row_hash\":\"f274a93d96313b658915b9de41acc41bb190e8e254522ed3ed36fe7a92fa3f54\",\"row_id\":\"b2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"6.40\",\"attrs\":{\"usage\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\"},\"index\":10,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"f274a93d96313b658915b9de41acc41bb190e8e254522ed3ed36fe7a92fa3f54\",\"raw_key\":\"phantom-\\u00e9\",\"row_hash\":\"b14d34bd5eb5570c73d36d6d629b4af2936f3ee257344740062c545757437638\",\"row_id\":\"b3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"0.7172358001\",\"attrs\":{\"usage\":\"plain\"},\"index\":11,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"b14d34bd5eb5570c73d36d6d629b4af2936f3ee257344740062c545757437638\",\"raw_key\":\"phantom-two\",\"row_hash\":\"637780fe69f627b6924a8fca9f3565b60c8c5000b51a904b19ee2c0d017d709e\",\"row_id\":\"b4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"-3.10\",\"attrs\":{\"usage\":\"credit\"},\"index\":12,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"637780fe69f627b6924a8fca9f3565b60c8c5000b51a904b19ee2c0d017d709e\",\"raw_key\":\"\",\"row_hash\":\"f8a779eb4323f0cf974188e3c98b2d07a3e156dd66a56b6195d0740402c1966b\",\"row_id\":\"b5\",\"timestamp\":null,\"type\":\"record\"}\n",
     "manifest": {
      "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -7704,12 +9594,12 @@
      "downloads": []
     },
     "verdict": {
-     "ok": true,
+     "ok": false,
      "failed_row": null,
-     "rows": 13,
+     "rows": 0,
      "findings": 0,
-     "final_hash": "f8a779eb4323f0cf974188e3c98b2d07a3e156dd66a56b6195d0740402c1966b",
-     "detail": "verified 13 rows, 0 findings, header matches the manifest; the page matches the evidence"
+     "final_hash": null,
+     "detail": "the page differs from the evidence: complete: the page shows false, the evidence records no completeness, so the night is taken as complete; billed total: the page shows $0.00, the evidence has $63.8272358011; unkeyed billed amount: the page shows $0.00, the evidence has $63.8272358011; headline billed total: the page shows $0.00, the evidence has $63.8272358011; headline unkeyed amount: the page shows $0.00, the evidence has $63.8272358011"
     }
    },
    {
@@ -8051,7 +9941,343 @@
      "rows": 0,
      "findings": 0,
      "final_hash": null,
-     "detail": "the page differs from the evidence: complete: the page shows false, the evidence records no completeness and holds what only a complete night writes (a finding, or records in every ledger); billed total: the page shows $0.00, the evidence has $63.8272358011; unkeyed billed amount: the page shows $0.00, the evidence has \u2212$3.10; headline billed total: the page shows $0.00, the evidence has $63.8272358011; headline unkeyed amount: the page shows $0.00, the evidence has \u2212$3.10; headline keyed amount: the page shows $0.00, the evidence has $66.9272358011"
+     "detail": "the page differs from the evidence: complete: the page shows false, the evidence records no completeness, so the night is taken as complete; billed total: the page shows $0.00, the evidence has $63.8272358011; unkeyed billed amount: the page shows $0.00, the evidence has \u2212$3.10; headline billed total: the page shows $0.00, the evidence has $63.8272358011; headline unkeyed amount: the page shows $0.00, the evidence has \u2212$3.10; headline keyed amount: the page shows $0.00, the evidence has $66.9272358011"
+    }
+   },
+   {
+    "name": "before completeness: only an unkeyed bill",
+    "jsonl": "{\"control_hash\":\"14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c\",\"finding_count\":0,\"index\":0,\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"row_count\":2,\"row_hash\":\"5601a092d6ef0608cd234d45451d2f19ddf2c5035ab339c2d22ea896120bb43f\",\"run_id\":\"ad25e22fb3a05034\",\"run_time\":\"2026-11-06T02:00:00Z\",\"type\":\"header\"}\n{\"amount\":\"41.20\",\"attrs\":{},\"index\":1,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"5601a092d6ef0608cd234d45451d2f19ddf2c5035ab339c2d22ea896120bb43f\",\"raw_key\":\"\",\"row_hash\":\"d58fad78ea7d8a15be19138b4c242f25205e81cea7a57feba00a43f00e5088ea\",\"row_id\":\"b1\",\"timestamp\":null,\"type\":\"record\"}\n",
+    "manifest": {
+     "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "final_chain_hash": "d58fad78ea7d8a15be19138b4c242f25205e81cea7a57feba00a43f00e5088ea",
+     "finding_count": 0,
+     "ledgers": {
+      "billed": {
+       "count": 1,
+       "hash": "1efff40ddd1792ebcf7234bef058058db6ef7d5596dfee98ed63df63d7d375f0",
+       "source": "cur"
+      },
+      "intended": {
+       "count": 0,
+       "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+       "source": "stacks"
+      },
+      "observed": {
+       "count": 0,
+       "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+       "source": "inventory"
+      }
+     },
+     "row_count": 2,
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z"
+    },
+    "document": {
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "complete": true,
+     "control_id": "",
+     "control_title": "",
+     "app": "",
+     "region_names": {
+      "IOB": "Living",
+      "IO": "Familiar",
+      "IB": "Wraith",
+      "OB": "Vampire",
+      "I": "Skeleton",
+      "O": "Poltergeist",
+      "B": "Phantom"
+     },
+     "region_meanings": {},
+     "ledger_errors": {},
+     "excluded": {},
+     "missing_ledgers": [],
+     "snapshots": [],
+     "regions": {},
+     "pending_keys": [],
+     "unkeyed": [
+      {
+       "row_id": "b1",
+       "ledger": "billed",
+       "source": "cur",
+       "amount": "41.20"
+      }
+     ],
+     "findings": [],
+     "region_summaries": {},
+     "duplicates": {},
+     "billed_total": "41.20",
+     "billed_unkeyed": "41.20",
+     "dropped": {
+      "intended": 0,
+      "observed": 0,
+      "billed": 0
+     },
+     "resolved": [],
+     "evidence_chain_hash": "d58fad78ea7d8a15be19138b4c242f25205e81cea7a57feba00a43f00e5088ea",
+     "ui": {
+      "title": "Night Audit",
+      "tagline": "Three ledgers of the same reality, matched every night.",
+      "noun": {
+       "singular": "item",
+       "plural": "items"
+      },
+      "ledgers": {
+       "intended": {
+        "label": "Intended",
+        "source": "What was approved."
+       },
+       "observed": {
+        "label": "Observed",
+        "source": "What exists."
+       },
+       "billed": {
+        "label": "Billed",
+        "source": "What is paid for."
+       }
+      },
+      "columns": [
+       {
+        "label": "Key",
+        "from": "key"
+       },
+       {
+        "label": "Since",
+        "from": "status"
+       },
+       {
+        "label": "Billed",
+        "from": "amount"
+       }
+      ],
+      "headlines": {},
+      "unkeyed": {
+       "singular": "line with no resource id",
+       "plural": "lines with no resource id",
+       "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+      },
+      "downloads": []
+     },
+     "notes": [],
+     "view": {
+      "headline": "All three ledgers agree. Nothing to report tonight.",
+      "headline_sentences": [
+       "All three ledgers agree. Nothing to report tonight."
+      ],
+      "calm": true,
+      "ledger_keys": {
+       "intended": null,
+       "observed": null,
+       "billed": null
+      },
+      "keyed_total": "0",
+      "unkeyed_total": "41.20",
+      "billed_total": "41.20",
+      "lines": [
+       {
+        "label": "On the bill for 0 items",
+        "value": "$0.00",
+        "amount": "0",
+        "note": ""
+       },
+       {
+        "label": "1 line with no resource id",
+        "value": "$41.20",
+        "amount": "41.20",
+        "note": "Tax, credits and support lines carry no resource id, so they are kept apart."
+       },
+       {
+        "label": "Billed total",
+        "value": "$41.20",
+        "amount": "41.20",
+        "note": ""
+       }
+      ],
+      "finding_count": 0,
+      "new_count": 0,
+      "persisting_count": 0,
+      "pending_count": 0,
+      "resolved_count": 0
+     },
+     "downloads": []
+    },
+    "verdict": {
+     "ok": true,
+     "failed_row": null,
+     "rows": 2,
+     "findings": 0,
+     "final_hash": "d58fad78ea7d8a15be19138b4c242f25205e81cea7a57feba00a43f00e5088ea",
+     "detail": "verified 2 rows, 0 findings, header matches the manifest; the page matches the evidence"
+    }
+   },
+   {
+    "name": "before completeness: only an unkeyed bill, marked incomplete with no bill",
+    "jsonl": "{\"control_hash\":\"14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c\",\"finding_count\":0,\"index\":0,\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"row_count\":2,\"row_hash\":\"5601a092d6ef0608cd234d45451d2f19ddf2c5035ab339c2d22ea896120bb43f\",\"run_id\":\"ad25e22fb3a05034\",\"run_time\":\"2026-11-06T02:00:00Z\",\"type\":\"header\"}\n{\"amount\":\"41.20\",\"attrs\":{},\"index\":1,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"5601a092d6ef0608cd234d45451d2f19ddf2c5035ab339c2d22ea896120bb43f\",\"raw_key\":\"\",\"row_hash\":\"d58fad78ea7d8a15be19138b4c242f25205e81cea7a57feba00a43f00e5088ea\",\"row_id\":\"b1\",\"timestamp\":null,\"type\":\"record\"}\n",
+    "manifest": {
+     "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "final_chain_hash": "d58fad78ea7d8a15be19138b4c242f25205e81cea7a57feba00a43f00e5088ea",
+     "finding_count": 0,
+     "ledgers": {
+      "billed": {
+       "count": 1,
+       "hash": "1efff40ddd1792ebcf7234bef058058db6ef7d5596dfee98ed63df63d7d375f0",
+       "source": "cur"
+      },
+      "intended": {
+       "count": 0,
+       "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+       "source": "stacks"
+      },
+      "observed": {
+       "count": 0,
+       "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+       "source": "inventory"
+      }
+     },
+     "row_count": 2,
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z"
+    },
+    "document": {
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "complete": false,
+     "control_id": "",
+     "control_title": "",
+     "app": "",
+     "region_names": {
+      "IOB": "Living",
+      "IO": "Familiar",
+      "IB": "Wraith",
+      "OB": "Vampire",
+      "I": "Skeleton",
+      "O": "Poltergeist",
+      "B": "Phantom"
+     },
+     "region_meanings": {},
+     "ledger_errors": {},
+     "excluded": {},
+     "missing_ledgers": [],
+     "snapshots": [],
+     "regions": {},
+     "pending_keys": [],
+     "unkeyed": [
+      {
+       "row_id": "b1",
+       "ledger": "billed",
+       "source": "cur",
+       "amount": "41.20"
+      }
+     ],
+     "findings": [],
+     "region_summaries": {},
+     "duplicates": {},
+     "billed_total": "0",
+     "billed_unkeyed": "0",
+     "dropped": {
+      "intended": 0,
+      "observed": 0,
+      "billed": 0
+     },
+     "resolved": [],
+     "evidence_chain_hash": "d58fad78ea7d8a15be19138b4c242f25205e81cea7a57feba00a43f00e5088ea",
+     "ui": {
+      "title": "Night Audit",
+      "tagline": "Three ledgers of the same reality, matched every night.",
+      "noun": {
+       "singular": "item",
+       "plural": "items"
+      },
+      "ledgers": {
+       "intended": {
+        "label": "Intended",
+        "source": "What was approved."
+       },
+       "observed": {
+        "label": "Observed",
+        "source": "What exists."
+       },
+       "billed": {
+        "label": "Billed",
+        "source": "What is paid for."
+       }
+      },
+      "columns": [
+       {
+        "label": "Key",
+        "from": "key"
+       },
+       {
+        "label": "Since",
+        "from": "status"
+       },
+       {
+        "label": "Billed",
+        "from": "amount"
+       }
+      ],
+      "headlines": {},
+      "unkeyed": {
+       "singular": "line with no resource id",
+       "plural": "lines with no resource id",
+       "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+      },
+      "downloads": []
+     },
+     "notes": [],
+     "view": {
+      "headline": "All three ledgers agree. Nothing to report tonight.",
+      "headline_sentences": [
+       "All three ledgers agree. Nothing to report tonight."
+      ],
+      "calm": true,
+      "ledger_keys": {
+       "intended": null,
+       "observed": null,
+       "billed": null
+      },
+      "keyed_total": "0",
+      "unkeyed_total": "0",
+      "billed_total": "0",
+      "lines": [
+       {
+        "label": "On the bill for 0 items",
+        "value": "$0.00",
+        "amount": "0",
+        "note": ""
+       },
+       {
+        "label": "1 line with no resource id",
+        "value": "$41.20",
+        "amount": "41.20",
+        "note": "Tax, credits and support lines carry no resource id, so they are kept apart."
+       },
+       {
+        "label": "Billed total",
+        "value": "$41.20",
+        "amount": "41.20",
+        "note": ""
+       }
+      ],
+      "finding_count": 0,
+      "new_count": 0,
+      "persisting_count": 0,
+      "pending_count": 0,
+      "resolved_count": 0
+     },
+     "downloads": []
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "the page differs from the evidence: complete: the page shows false, the evidence records no completeness, so the night is taken as complete; billed total: the page shows $0.00, the evidence has $41.20; unkeyed billed amount: the page shows $0.00, the evidence has $41.20; headline billed total: the page shows $0.00, the evidence has $41.20; headline unkeyed amount: the page shows $0.00, the evidence has $41.20"
     }
    },
    {
@@ -8735,7 +10961,149 @@
      "rows": 0,
      "findings": 0,
      "final_hash": null,
-     "detail": "the page differs from the evidence: complete: the page shows false, the evidence records no completeness and holds what only a complete night writes (a finding, or records in every ledger); billed total: the page shows $0.00, the evidence has $63.8272358011; unkeyed billed amount: the page shows $0.00, the evidence has \u2212$3.10; headline billed total: the page shows $0.00, the evidence has $63.8272358011; headline unkeyed amount: the page shows $0.00, the evidence has \u2212$3.10; headline keyed amount: the page shows $0.00, the evidence has $66.9272358011"
+     "detail": "the page differs from the evidence: complete: the page shows false, the evidence records no completeness, so the night is taken as complete; billed total: the page shows $0.00, the evidence has $63.8272358011; unkeyed billed amount: the page shows $0.00, the evidence has \u2212$3.10; headline billed total: the page shows $0.00, the evidence has $63.8272358011; headline unkeyed amount: the page shows $0.00, the evidence has \u2212$3.10; headline keyed amount: the page shows $0.00, the evidence has $66.9272358011"
+    }
+   }
+  ],
+  "ledgers": [
+   {
+    "name": "a manifest without the billed ledger",
+    "jsonl": "{\"complete\":true,\"control_hash\":\"14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c\",\"finding_count\":8,\"index\":0,\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"row_count\":26,\"row_hash\":\"b1189d991af1098be031a0c2af79679896dc5ccd686e3c390ff4d515ac4965a7\",\"run_id\":\"ad25e22fb3a05034\",\"run_time\":\"2026-11-06T02:00:00Z\",\"type\":\"header\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"plain\",\"Z\":\"x\"},\"index\":1,\"key\":\"k0\",\"ledger\":\"intended\",\"prev_hash\":\"b1189d991af1098be031a0c2af79679896dc5ccd686e3c390ff4d515ac4965a7\",\"raw_key\":\"k0\",\"row_hash\":\"aa7be6b6322b4d8c880f7da0695802141ce911939c9902c95ad5acd7f1257fb2\",\"row_id\":\"i0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"quote \\\" and backslash \\\\ and slash /\",\"a\":\"x\"},\"index\":2,\"key\":\"k1\",\"ledger\":\"intended\",\"prev_hash\":\"aa7be6b6322b4d8c880f7da0695802141ce911939c9902c95ad5acd7f1257fb2\",\"raw_key\":\"k1\",\"row_hash\":\"d14d18195b56f046f1519974fea615c8577fb388909824b2ffa0d8cf876717c5\",\"row_id\":\"i1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\",\"\\u00e9\":\"x\"},\"index\":3,\"key\":\"k2\",\"ledger\":\"intended\",\"prev_hash\":\"d14d18195b56f046f1519974fea615c8577fb388909824b2ffa0d8cf876717c5\",\"raw_key\":\"k2\",\"row_hash\":\"4da514ebcd21ad7a4382efac7b103a25423d3c9541cfaf8c65260d6549769f8b\",\"row_id\":\"i2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"astral \\ud83e\\udddb \\ud83d\\udc7b \\ud800\\udc00\",\"\\uffff\":\"x\"},\"index\":4,\"key\":\"k3\",\"ledger\":\"intended\",\"prev_hash\":\"4da514ebcd21ad7a4382efac7b103a25423d3c9541cfaf8c65260d6549769f8b\",\"raw_key\":\"k3\",\"row_hash\":\"39cd72fbead31c0a748f366249ab732e886b9d71b73f0fcf02f7c9c0f131b2f4\",\"row_id\":\"i3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"edge \\uffff\\ufffe\\ufeff\",\"\\ud800\\udc00\":\"x\"},\"index\":5,\"key\":\"k4\",\"ledger\":\"intended\",\"prev_hash\":\"39cd72fbead31c0a748f366249ab732e886b9d71b73f0fcf02f7c9c0f131b2f4\",\"raw_key\":\"k4\",\"row_hash\":\"355f9cc7d98a8145f2ad50b9e787bd484964c957683e6749bec06161a804ebac\",\"row_id\":\"i4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"controls \\u0000\\u0001\\u0007\\b\\t\\n\\u000b\\f\\r\\u001b\\u001f\\u007f\\u0080\\u009f\",\"\\ud83d\\ude00\":\"x\"},\"index\":6,\"key\":\"k5\",\"ledger\":\"intended\",\"prev_hash\":\"355f9cc7d98a8145f2ad50b9e787bd484964c957683e6749bec06161a804ebac\",\"raw_key\":\"k5\",\"row_hash\":\"ee1e9f77b6aa42e0f3d493774d4e02a94117840f7c7dbd650f48390892fb495f\",\"row_id\":\"i5\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"quote \\\" and backslash \\\\ and slash /\"},\"index\":7,\"key\":\"k9\",\"ledger\":\"observed\",\"prev_hash\":\"ee1e9f77b6aa42e0f3d493774d4e02a94117840f7c7dbd650f48390892fb495f\",\"raw_key\":\"k9\",\"row_hash\":\"6a12d94afed0689202d08f2670f8be11064ca1ec8ddff5fc1846e2126bb1c79c\",\"row_id\":\"o-\\u202e\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"controls \\u0000\\u0001\\u0007\\b\\t\\n\\u000b\\f\\r\\u001b\\u001f\\u007f\\u0080\\u009f\"},\"index\":8,\"key\":\"k2\",\"ledger\":\"observed\",\"prev_hash\":\"6a12d94afed0689202d08f2670f8be11064ca1ec8ddff5fc1846e2126bb1c79c\",\"raw_key\":\"k2\",\"row_hash\":\"a302c9a9382d4b2120db1682838012db32ba451d898fccb28d4802815d027bd9\",\"row_id\":\"same\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"lone \\ud800 and \\udfff surrogates\"},\"index\":9,\"key\":\"ghost-\\ud83d\\udc7b\",\"ledger\":\"observed\",\"prev_hash\":\"a302c9a9382d4b2120db1682838012db32ba451d898fccb28d4802815d027bd9\",\"raw_key\":\"ghost-\\ud83d\\udc7b\",\"row_hash\":\"0332b9c757126d847c4ca4b686754a9e5937e82ab6709bf400b3e48303d96707\",\"row_id\":\"same\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\"},\"index\":10,\"key\":\"k0\",\"ledger\":\"observed\",\"prev_hash\":\"0332b9c757126d847c4ca4b686754a9e5937e82ab6709bf400b3e48303d96707\",\"raw_key\":\"k0\",\"row_hash\":\"501706b3c08c27dc243a68b73a0ab0e3df0581be0cf1a0ab7c747c2c1faf6d4a\",\"row_id\":\"\\uffff-1\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"astral \\ud83e\\udddb \\ud83d\\udc7b \\ud800\\udc00\"},\"index\":11,\"key\":\"k1\",\"ledger\":\"observed\",\"prev_hash\":\"501706b3c08c27dc243a68b73a0ab0e3df0581be0cf1a0ab7c747c2c1faf6d4a\",\"raw_key\":\"k1\",\"row_hash\":\"d8e082d8a16d9001e5a60d6d8adb6467e911187b241587df5b2d7bf383d26db1\",\"row_id\":\"\\ud800\\udc00-1\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":\"18.61\",\"attrs\":{\"usage\":\"accents caf\\u00e9 \\u00df \\u0130\"},\"index\":12,\"key\":\"k0\",\"ledger\":\"billed\",\"prev_hash\":\"d8e082d8a16d9001e5a60d6d8adb6467e911187b241587df5b2d7bf383d26db1\",\"raw_key\":\"k0\",\"row_hash\":\"1012747a498527d756c60094cb15a97b418199439ed144441f283ad3fd6e64c8\",\"row_id\":\"b0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"1E-9\",\"attrs\":{\"usage\":\"<script>alert(1)</script>\"},\"index\":13,\"key\":\"k1\",\"ledger\":\"billed\",\"prev_hash\":\"1012747a498527d756c60094cb15a97b418199439ed144441f283ad3fd6e64c8\",\"raw_key\":\"k1\",\"row_hash\":\"c9467e87d2eef4c8a98434546e47e4bcc8b1db5cbe86bbb0610139ee3fddb84f\",\"row_id\":\"b1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"41.20\",\"attrs\":{\"usage\":\"edge \\uffff\\ufffe\\ufeff\"},\"index\":14,\"key\":\"k9\",\"ledger\":\"billed\",\"prev_hash\":\"c9467e87d2eef4c8a98434546e47e4bcc8b1db5cbe86bbb0610139ee3fddb84f\",\"raw_key\":\"k9\",\"row_hash\":\"c14e4cb7d24ec8c10f9dd171fcbd03e83de7795c893af7a6f1b93ea9946d0770\",\"row_id\":\"b2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"6.40\",\"attrs\":{\"usage\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\"},\"index\":15,\"key\":\"phantom-\\u00e9\",\"ledger\":\"billed\",\"prev_hash\":\"c14e4cb7d24ec8c10f9dd171fcbd03e83de7795c893af7a6f1b93ea9946d0770\",\"raw_key\":\"phantom-\\u00e9\",\"row_hash\":\"23fe124c3c342bc29354a5155101dd0020874c1fc6b263205000a18d404fa386\",\"row_id\":\"b3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"0.7172358001\",\"attrs\":{\"usage\":\"plain\"},\"index\":16,\"key\":\"phantom-two\",\"ledger\":\"billed\",\"prev_hash\":\"23fe124c3c342bc29354a5155101dd0020874c1fc6b263205000a18d404fa386\",\"raw_key\":\"phantom-two\",\"row_hash\":\"722df4dcfdd1f2172dad3be3d15152821a125d040cfa93e1ce8ed6ab8ba57abd\",\"row_id\":\"b4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"-3.10\",\"attrs\":{\"usage\":\"credit\"},\"index\":17,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"722df4dcfdd1f2172dad3be3d15152821a125d040cfa93e1ce8ed6ab8ba57abd\",\"raw_key\":\"\",\"row_hash\":\"a0fa9e75259618ac25f8ec6a007cf43972a842ae071a33456678a63483a5645e\",\"row_id\":\"b5\",\"timestamp\":null,\"type\":\"record\"}\n{\"billed_amount\":\"0.7172358001\",\"context\":{},\"evidence_rows\":[\"billed:b4\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":18,\"key\":\"phantom-two\",\"name\":\"Phantom\",\"prev_hash\":\"a0fa9e75259618ac25f8ec6a007cf43972a842ae071a33456678a63483a5645e\",\"region_code\":\"B\",\"row_hash\":\"65bda0bb4320a08c75f027eba75176be906aad8ef6a7b10d6cafd7ebf50c3840\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"6.40\",\"context\":{},\"evidence_rows\":[\"billed:b3\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":19,\"key\":\"phantom-\\u00e9\",\"name\":\"Phantom\",\"prev_hash\":\"65bda0bb4320a08c75f027eba75176be906aad8ef6a7b10d6cafd7ebf50c3840\",\"region_code\":\"B\",\"row_hash\":\"de34f1a9883896d9c137abf794bf53c34608e47e9c13d066ec5824ec6671c1b4\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i3\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":20,\"key\":\"k3\",\"name\":\"Skeleton\",\"prev_hash\":\"de34f1a9883896d9c137abf794bf53c34608e47e9c13d066ec5824ec6671c1b4\",\"region_code\":\"I\",\"row_hash\":\"5748cfddce4b4b16969fa92edf304dd6f06e24af246fc60ee6426369e3b10d37\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i4\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":21,\"key\":\"k4\",\"name\":\"Skeleton\",\"prev_hash\":\"5748cfddce4b4b16969fa92edf304dd6f06e24af246fc60ee6426369e3b10d37\",\"region_code\":\"I\",\"row_hash\":\"13a4cff49121f576beb4ba00e47a249c56977476dc124818eaa1f72234e39c51\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i5\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":22,\"key\":\"k5\",\"name\":\"Skeleton\",\"prev_hash\":\"13a4cff49121f576beb4ba00e47a249c56977476dc124818eaa1f72234e39c51\",\"region_code\":\"I\",\"row_hash\":\"02dfc82aa346a2c1e529c3c077b248b9e279846b5c41fb484c91627f2d0b8bf6\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i2\",\"observed:same\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":23,\"key\":\"k2\",\"name\":\"Familiar\",\"prev_hash\":\"02dfc82aa346a2c1e529c3c077b248b9e279846b5c41fb484c91627f2d0b8bf6\",\"region_code\":\"IO\",\"row_hash\":\"237d7abc329d3b23761a000f7c869a7c6ef4a0625474e22936bbb51ebbdf2532\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"observed:same\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":24,\"key\":\"ghost-\\ud83d\\udc7b\",\"name\":\"Poltergeist\",\"prev_hash\":\"237d7abc329d3b23761a000f7c869a7c6ef4a0625474e22936bbb51ebbdf2532\",\"region_code\":\"O\",\"row_hash\":\"5ca7f1f81232e69ebfdca1b599eb3b2fcba8f6f2948bd1c62325c31c4918cb8c\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"41.20\",\"context\":{},\"evidence_rows\":[\"billed:b2\",\"observed:o-\\u202e\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":25,\"key\":\"k9\",\"name\":\"Vampire\",\"prev_hash\":\"5ca7f1f81232e69ebfdca1b599eb3b2fcba8f6f2948bd1c62325c31c4918cb8c\",\"region_code\":\"OB\",\"row_hash\":\"8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666\",\"status\":\"new\",\"type\":\"finding\"}\n",
+    "manifest": {
+     "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+     "complete": true,
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "final_chain_hash": "8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666",
+     "finding_count": 8,
+     "ledgers": {
+      "intended": {
+       "count": 6,
+       "hash": "04cd0c3748b626e0ba1816150726541ab84ff2c68549a615fc43e6dfba149c0e",
+       "source": "stacks"
+      },
+      "observed": {
+       "count": 5,
+       "hash": "8f180d94172e650315a6b27b436cf287bfe6173cbcc5bec0f9c944f31513bfaa",
+       "source": "inventory"
+      }
+     },
+     "row_count": 26,
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z"
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "manifest ledgers are billed, intended, observed: it names intended, observed"
+    }
+   },
+   {
+    "name": "a manifest with a fourth ledger",
+    "jsonl": "{\"complete\":true,\"control_hash\":\"14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c\",\"finding_count\":8,\"index\":0,\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"row_count\":26,\"row_hash\":\"b1189d991af1098be031a0c2af79679896dc5ccd686e3c390ff4d515ac4965a7\",\"run_id\":\"ad25e22fb3a05034\",\"run_time\":\"2026-11-06T02:00:00Z\",\"type\":\"header\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"plain\",\"Z\":\"x\"},\"index\":1,\"key\":\"k0\",\"ledger\":\"intended\",\"prev_hash\":\"b1189d991af1098be031a0c2af79679896dc5ccd686e3c390ff4d515ac4965a7\",\"raw_key\":\"k0\",\"row_hash\":\"aa7be6b6322b4d8c880f7da0695802141ce911939c9902c95ad5acd7f1257fb2\",\"row_id\":\"i0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"quote \\\" and backslash \\\\ and slash /\",\"a\":\"x\"},\"index\":2,\"key\":\"k1\",\"ledger\":\"intended\",\"prev_hash\":\"aa7be6b6322b4d8c880f7da0695802141ce911939c9902c95ad5acd7f1257fb2\",\"raw_key\":\"k1\",\"row_hash\":\"d14d18195b56f046f1519974fea615c8577fb388909824b2ffa0d8cf876717c5\",\"row_id\":\"i1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\",\"\\u00e9\":\"x\"},\"index\":3,\"key\":\"k2\",\"ledger\":\"intended\",\"prev_hash\":\"d14d18195b56f046f1519974fea615c8577fb388909824b2ffa0d8cf876717c5\",\"raw_key\":\"k2\",\"row_hash\":\"4da514ebcd21ad7a4382efac7b103a25423d3c9541cfaf8c65260d6549769f8b\",\"row_id\":\"i2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"astral \\ud83e\\udddb \\ud83d\\udc7b \\ud800\\udc00\",\"\\uffff\":\"x\"},\"index\":4,\"key\":\"k3\",\"ledger\":\"intended\",\"prev_hash\":\"4da514ebcd21ad7a4382efac7b103a25423d3c9541cfaf8c65260d6549769f8b\",\"raw_key\":\"k3\",\"row_hash\":\"39cd72fbead31c0a748f366249ab732e886b9d71b73f0fcf02f7c9c0f131b2f4\",\"row_id\":\"i3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"edge \\uffff\\ufffe\\ufeff\",\"\\ud800\\udc00\":\"x\"},\"index\":5,\"key\":\"k4\",\"ledger\":\"intended\",\"prev_hash\":\"39cd72fbead31c0a748f366249ab732e886b9d71b73f0fcf02f7c9c0f131b2f4\",\"raw_key\":\"k4\",\"row_hash\":\"355f9cc7d98a8145f2ad50b9e787bd484964c957683e6749bec06161a804ebac\",\"row_id\":\"i4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"controls \\u0000\\u0001\\u0007\\b\\t\\n\\u000b\\f\\r\\u001b\\u001f\\u007f\\u0080\\u009f\",\"\\ud83d\\ude00\":\"x\"},\"index\":6,\"key\":\"k5\",\"ledger\":\"intended\",\"prev_hash\":\"355f9cc7d98a8145f2ad50b9e787bd484964c957683e6749bec06161a804ebac\",\"raw_key\":\"k5\",\"row_hash\":\"ee1e9f77b6aa42e0f3d493774d4e02a94117840f7c7dbd650f48390892fb495f\",\"row_id\":\"i5\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"quote \\\" and backslash \\\\ and slash /\"},\"index\":7,\"key\":\"k9\",\"ledger\":\"observed\",\"prev_hash\":\"ee1e9f77b6aa42e0f3d493774d4e02a94117840f7c7dbd650f48390892fb495f\",\"raw_key\":\"k9\",\"row_hash\":\"6a12d94afed0689202d08f2670f8be11064ca1ec8ddff5fc1846e2126bb1c79c\",\"row_id\":\"o-\\u202e\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"controls \\u0000\\u0001\\u0007\\b\\t\\n\\u000b\\f\\r\\u001b\\u001f\\u007f\\u0080\\u009f\"},\"index\":8,\"key\":\"k2\",\"ledger\":\"observed\",\"prev_hash\":\"6a12d94afed0689202d08f2670f8be11064ca1ec8ddff5fc1846e2126bb1c79c\",\"raw_key\":\"k2\",\"row_hash\":\"a302c9a9382d4b2120db1682838012db32ba451d898fccb28d4802815d027bd9\",\"row_id\":\"same\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"lone \\ud800 and \\udfff surrogates\"},\"index\":9,\"key\":\"ghost-\\ud83d\\udc7b\",\"ledger\":\"observed\",\"prev_hash\":\"a302c9a9382d4b2120db1682838012db32ba451d898fccb28d4802815d027bd9\",\"raw_key\":\"ghost-\\ud83d\\udc7b\",\"row_hash\":\"0332b9c757126d847c4ca4b686754a9e5937e82ab6709bf400b3e48303d96707\",\"row_id\":\"same\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\"},\"index\":10,\"key\":\"k0\",\"ledger\":\"observed\",\"prev_hash\":\"0332b9c757126d847c4ca4b686754a9e5937e82ab6709bf400b3e48303d96707\",\"raw_key\":\"k0\",\"row_hash\":\"501706b3c08c27dc243a68b73a0ab0e3df0581be0cf1a0ab7c747c2c1faf6d4a\",\"row_id\":\"\\uffff-1\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"astral \\ud83e\\udddb \\ud83d\\udc7b \\ud800\\udc00\"},\"index\":11,\"key\":\"k1\",\"ledger\":\"observed\",\"prev_hash\":\"501706b3c08c27dc243a68b73a0ab0e3df0581be0cf1a0ab7c747c2c1faf6d4a\",\"raw_key\":\"k1\",\"row_hash\":\"d8e082d8a16d9001e5a60d6d8adb6467e911187b241587df5b2d7bf383d26db1\",\"row_id\":\"\\ud800\\udc00-1\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":\"18.61\",\"attrs\":{\"usage\":\"accents caf\\u00e9 \\u00df \\u0130\"},\"index\":12,\"key\":\"k0\",\"ledger\":\"billed\",\"prev_hash\":\"d8e082d8a16d9001e5a60d6d8adb6467e911187b241587df5b2d7bf383d26db1\",\"raw_key\":\"k0\",\"row_hash\":\"1012747a498527d756c60094cb15a97b418199439ed144441f283ad3fd6e64c8\",\"row_id\":\"b0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"1E-9\",\"attrs\":{\"usage\":\"<script>alert(1)</script>\"},\"index\":13,\"key\":\"k1\",\"ledger\":\"billed\",\"prev_hash\":\"1012747a498527d756c60094cb15a97b418199439ed144441f283ad3fd6e64c8\",\"raw_key\":\"k1\",\"row_hash\":\"c9467e87d2eef4c8a98434546e47e4bcc8b1db5cbe86bbb0610139ee3fddb84f\",\"row_id\":\"b1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"41.20\",\"attrs\":{\"usage\":\"edge \\uffff\\ufffe\\ufeff\"},\"index\":14,\"key\":\"k9\",\"ledger\":\"billed\",\"prev_hash\":\"c9467e87d2eef4c8a98434546e47e4bcc8b1db5cbe86bbb0610139ee3fddb84f\",\"raw_key\":\"k9\",\"row_hash\":\"c14e4cb7d24ec8c10f9dd171fcbd03e83de7795c893af7a6f1b93ea9946d0770\",\"row_id\":\"b2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"6.40\",\"attrs\":{\"usage\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\"},\"index\":15,\"key\":\"phantom-\\u00e9\",\"ledger\":\"billed\",\"prev_hash\":\"c14e4cb7d24ec8c10f9dd171fcbd03e83de7795c893af7a6f1b93ea9946d0770\",\"raw_key\":\"phantom-\\u00e9\",\"row_hash\":\"23fe124c3c342bc29354a5155101dd0020874c1fc6b263205000a18d404fa386\",\"row_id\":\"b3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"0.7172358001\",\"attrs\":{\"usage\":\"plain\"},\"index\":16,\"key\":\"phantom-two\",\"ledger\":\"billed\",\"prev_hash\":\"23fe124c3c342bc29354a5155101dd0020874c1fc6b263205000a18d404fa386\",\"raw_key\":\"phantom-two\",\"row_hash\":\"722df4dcfdd1f2172dad3be3d15152821a125d040cfa93e1ce8ed6ab8ba57abd\",\"row_id\":\"b4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"-3.10\",\"attrs\":{\"usage\":\"credit\"},\"index\":17,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"722df4dcfdd1f2172dad3be3d15152821a125d040cfa93e1ce8ed6ab8ba57abd\",\"raw_key\":\"\",\"row_hash\":\"a0fa9e75259618ac25f8ec6a007cf43972a842ae071a33456678a63483a5645e\",\"row_id\":\"b5\",\"timestamp\":null,\"type\":\"record\"}\n{\"billed_amount\":\"0.7172358001\",\"context\":{},\"evidence_rows\":[\"billed:b4\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":18,\"key\":\"phantom-two\",\"name\":\"Phantom\",\"prev_hash\":\"a0fa9e75259618ac25f8ec6a007cf43972a842ae071a33456678a63483a5645e\",\"region_code\":\"B\",\"row_hash\":\"65bda0bb4320a08c75f027eba75176be906aad8ef6a7b10d6cafd7ebf50c3840\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"6.40\",\"context\":{},\"evidence_rows\":[\"billed:b3\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":19,\"key\":\"phantom-\\u00e9\",\"name\":\"Phantom\",\"prev_hash\":\"65bda0bb4320a08c75f027eba75176be906aad8ef6a7b10d6cafd7ebf50c3840\",\"region_code\":\"B\",\"row_hash\":\"de34f1a9883896d9c137abf794bf53c34608e47e9c13d066ec5824ec6671c1b4\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i3\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":20,\"key\":\"k3\",\"name\":\"Skeleton\",\"prev_hash\":\"de34f1a9883896d9c137abf794bf53c34608e47e9c13d066ec5824ec6671c1b4\",\"region_code\":\"I\",\"row_hash\":\"5748cfddce4b4b16969fa92edf304dd6f06e24af246fc60ee6426369e3b10d37\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i4\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":21,\"key\":\"k4\",\"name\":\"Skeleton\",\"prev_hash\":\"5748cfddce4b4b16969fa92edf304dd6f06e24af246fc60ee6426369e3b10d37\",\"region_code\":\"I\",\"row_hash\":\"13a4cff49121f576beb4ba00e47a249c56977476dc124818eaa1f72234e39c51\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i5\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":22,\"key\":\"k5\",\"name\":\"Skeleton\",\"prev_hash\":\"13a4cff49121f576beb4ba00e47a249c56977476dc124818eaa1f72234e39c51\",\"region_code\":\"I\",\"row_hash\":\"02dfc82aa346a2c1e529c3c077b248b9e279846b5c41fb484c91627f2d0b8bf6\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i2\",\"observed:same\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":23,\"key\":\"k2\",\"name\":\"Familiar\",\"prev_hash\":\"02dfc82aa346a2c1e529c3c077b248b9e279846b5c41fb484c91627f2d0b8bf6\",\"region_code\":\"IO\",\"row_hash\":\"237d7abc329d3b23761a000f7c869a7c6ef4a0625474e22936bbb51ebbdf2532\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"observed:same\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":24,\"key\":\"ghost-\\ud83d\\udc7b\",\"name\":\"Poltergeist\",\"prev_hash\":\"237d7abc329d3b23761a000f7c869a7c6ef4a0625474e22936bbb51ebbdf2532\",\"region_code\":\"O\",\"row_hash\":\"5ca7f1f81232e69ebfdca1b599eb3b2fcba8f6f2948bd1c62325c31c4918cb8c\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"41.20\",\"context\":{},\"evidence_rows\":[\"billed:b2\",\"observed:o-\\u202e\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":25,\"key\":\"k9\",\"name\":\"Vampire\",\"prev_hash\":\"5ca7f1f81232e69ebfdca1b599eb3b2fcba8f6f2948bd1c62325c31c4918cb8c\",\"region_code\":\"OB\",\"row_hash\":\"8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666\",\"status\":\"new\",\"type\":\"finding\"}\n",
+    "manifest": {
+     "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+     "complete": true,
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "final_chain_hash": "8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666",
+     "finding_count": 8,
+     "ledgers": {
+      "billed": {
+       "count": 6,
+       "hash": "2105b27bfad72f71b1ffa75433c1315fd5f94013f796c154c64cb0a18e67e31f",
+       "source": "cur"
+      },
+      "intended": {
+       "count": 6,
+       "hash": "04cd0c3748b626e0ba1816150726541ab84ff2c68549a615fc43e6dfba149c0e",
+       "source": "stacks"
+      },
+      "observed": {
+       "count": 5,
+       "hash": "8f180d94172e650315a6b27b436cf287bfe6173cbcc5bec0f9c944f31513bfaa",
+       "source": "inventory"
+      },
+      "\u00e9xtra": {
+       "count": 6,
+       "hash": "2105b27bfad72f71b1ffa75433c1315fd5f94013f796c154c64cb0a18e67e31f",
+       "source": "cur"
+      }
+     },
+     "row_count": 26,
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z"
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "manifest ledgers are billed, intended, observed: it names billed, intended, observed, \u00e9xtra"
+    }
+   },
+   {
+    "name": "a manifest with no ledgers",
+    "jsonl": "{\"complete\":true,\"control_hash\":\"14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c\",\"finding_count\":8,\"index\":0,\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"row_count\":26,\"row_hash\":\"b1189d991af1098be031a0c2af79679896dc5ccd686e3c390ff4d515ac4965a7\",\"run_id\":\"ad25e22fb3a05034\",\"run_time\":\"2026-11-06T02:00:00Z\",\"type\":\"header\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"plain\",\"Z\":\"x\"},\"index\":1,\"key\":\"k0\",\"ledger\":\"intended\",\"prev_hash\":\"b1189d991af1098be031a0c2af79679896dc5ccd686e3c390ff4d515ac4965a7\",\"raw_key\":\"k0\",\"row_hash\":\"aa7be6b6322b4d8c880f7da0695802141ce911939c9902c95ad5acd7f1257fb2\",\"row_id\":\"i0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"quote \\\" and backslash \\\\ and slash /\",\"a\":\"x\"},\"index\":2,\"key\":\"k1\",\"ledger\":\"intended\",\"prev_hash\":\"aa7be6b6322b4d8c880f7da0695802141ce911939c9902c95ad5acd7f1257fb2\",\"raw_key\":\"k1\",\"row_hash\":\"d14d18195b56f046f1519974fea615c8577fb388909824b2ffa0d8cf876717c5\",\"row_id\":\"i1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\",\"\\u00e9\":\"x\"},\"index\":3,\"key\":\"k2\",\"ledger\":\"intended\",\"prev_hash\":\"d14d18195b56f046f1519974fea615c8577fb388909824b2ffa0d8cf876717c5\",\"raw_key\":\"k2\",\"row_hash\":\"4da514ebcd21ad7a4382efac7b103a25423d3c9541cfaf8c65260d6549769f8b\",\"row_id\":\"i2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"astral \\ud83e\\udddb \\ud83d\\udc7b \\ud800\\udc00\",\"\\uffff\":\"x\"},\"index\":4,\"key\":\"k3\",\"ledger\":\"intended\",\"prev_hash\":\"4da514ebcd21ad7a4382efac7b103a25423d3c9541cfaf8c65260d6549769f8b\",\"raw_key\":\"k3\",\"row_hash\":\"39cd72fbead31c0a748f366249ab732e886b9d71b73f0fcf02f7c9c0f131b2f4\",\"row_id\":\"i3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"edge \\uffff\\ufffe\\ufeff\",\"\\ud800\\udc00\":\"x\"},\"index\":5,\"key\":\"k4\",\"ledger\":\"intended\",\"prev_hash\":\"39cd72fbead31c0a748f366249ab732e886b9d71b73f0fcf02f7c9c0f131b2f4\",\"raw_key\":\"k4\",\"row_hash\":\"355f9cc7d98a8145f2ad50b9e787bd484964c957683e6749bec06161a804ebac\",\"row_id\":\"i4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"controls \\u0000\\u0001\\u0007\\b\\t\\n\\u000b\\f\\r\\u001b\\u001f\\u007f\\u0080\\u009f\",\"\\ud83d\\ude00\":\"x\"},\"index\":6,\"key\":\"k5\",\"ledger\":\"intended\",\"prev_hash\":\"355f9cc7d98a8145f2ad50b9e787bd484964c957683e6749bec06161a804ebac\",\"raw_key\":\"k5\",\"row_hash\":\"ee1e9f77b6aa42e0f3d493774d4e02a94117840f7c7dbd650f48390892fb495f\",\"row_id\":\"i5\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"quote \\\" and backslash \\\\ and slash /\"},\"index\":7,\"key\":\"k9\",\"ledger\":\"observed\",\"prev_hash\":\"ee1e9f77b6aa42e0f3d493774d4e02a94117840f7c7dbd650f48390892fb495f\",\"raw_key\":\"k9\",\"row_hash\":\"6a12d94afed0689202d08f2670f8be11064ca1ec8ddff5fc1846e2126bb1c79c\",\"row_id\":\"o-\\u202e\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"controls \\u0000\\u0001\\u0007\\b\\t\\n\\u000b\\f\\r\\u001b\\u001f\\u007f\\u0080\\u009f\"},\"index\":8,\"key\":\"k2\",\"ledger\":\"observed\",\"prev_hash\":\"6a12d94afed0689202d08f2670f8be11064ca1ec8ddff5fc1846e2126bb1c79c\",\"raw_key\":\"k2\",\"row_hash\":\"a302c9a9382d4b2120db1682838012db32ba451d898fccb28d4802815d027bd9\",\"row_id\":\"same\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"lone \\ud800 and \\udfff surrogates\"},\"index\":9,\"key\":\"ghost-\\ud83d\\udc7b\",\"ledger\":\"observed\",\"prev_hash\":\"a302c9a9382d4b2120db1682838012db32ba451d898fccb28d4802815d027bd9\",\"raw_key\":\"ghost-\\ud83d\\udc7b\",\"row_hash\":\"0332b9c757126d847c4ca4b686754a9e5937e82ab6709bf400b3e48303d96707\",\"row_id\":\"same\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\"},\"index\":10,\"key\":\"k0\",\"ledger\":\"observed\",\"prev_hash\":\"0332b9c757126d847c4ca4b686754a9e5937e82ab6709bf400b3e48303d96707\",\"raw_key\":\"k0\",\"row_hash\":\"501706b3c08c27dc243a68b73a0ab0e3df0581be0cf1a0ab7c747c2c1faf6d4a\",\"row_id\":\"\\uffff-1\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"astral \\ud83e\\udddb \\ud83d\\udc7b \\ud800\\udc00\"},\"index\":11,\"key\":\"k1\",\"ledger\":\"observed\",\"prev_hash\":\"501706b3c08c27dc243a68b73a0ab0e3df0581be0cf1a0ab7c747c2c1faf6d4a\",\"raw_key\":\"k1\",\"row_hash\":\"d8e082d8a16d9001e5a60d6d8adb6467e911187b241587df5b2d7bf383d26db1\",\"row_id\":\"\\ud800\\udc00-1\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":\"18.61\",\"attrs\":{\"usage\":\"accents caf\\u00e9 \\u00df \\u0130\"},\"index\":12,\"key\":\"k0\",\"ledger\":\"billed\",\"prev_hash\":\"d8e082d8a16d9001e5a60d6d8adb6467e911187b241587df5b2d7bf383d26db1\",\"raw_key\":\"k0\",\"row_hash\":\"1012747a498527d756c60094cb15a97b418199439ed144441f283ad3fd6e64c8\",\"row_id\":\"b0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"1E-9\",\"attrs\":{\"usage\":\"<script>alert(1)</script>\"},\"index\":13,\"key\":\"k1\",\"ledger\":\"billed\",\"prev_hash\":\"1012747a498527d756c60094cb15a97b418199439ed144441f283ad3fd6e64c8\",\"raw_key\":\"k1\",\"row_hash\":\"c9467e87d2eef4c8a98434546e47e4bcc8b1db5cbe86bbb0610139ee3fddb84f\",\"row_id\":\"b1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"41.20\",\"attrs\":{\"usage\":\"edge \\uffff\\ufffe\\ufeff\"},\"index\":14,\"key\":\"k9\",\"ledger\":\"billed\",\"prev_hash\":\"c9467e87d2eef4c8a98434546e47e4bcc8b1db5cbe86bbb0610139ee3fddb84f\",\"raw_key\":\"k9\",\"row_hash\":\"c14e4cb7d24ec8c10f9dd171fcbd03e83de7795c893af7a6f1b93ea9946d0770\",\"row_id\":\"b2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"6.40\",\"attrs\":{\"usage\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\"},\"index\":15,\"key\":\"phantom-\\u00e9\",\"ledger\":\"billed\",\"prev_hash\":\"c14e4cb7d24ec8c10f9dd171fcbd03e83de7795c893af7a6f1b93ea9946d0770\",\"raw_key\":\"phantom-\\u00e9\",\"row_hash\":\"23fe124c3c342bc29354a5155101dd0020874c1fc6b263205000a18d404fa386\",\"row_id\":\"b3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"0.7172358001\",\"attrs\":{\"usage\":\"plain\"},\"index\":16,\"key\":\"phantom-two\",\"ledger\":\"billed\",\"prev_hash\":\"23fe124c3c342bc29354a5155101dd0020874c1fc6b263205000a18d404fa386\",\"raw_key\":\"phantom-two\",\"row_hash\":\"722df4dcfdd1f2172dad3be3d15152821a125d040cfa93e1ce8ed6ab8ba57abd\",\"row_id\":\"b4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"-3.10\",\"attrs\":{\"usage\":\"credit\"},\"index\":17,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"722df4dcfdd1f2172dad3be3d15152821a125d040cfa93e1ce8ed6ab8ba57abd\",\"raw_key\":\"\",\"row_hash\":\"a0fa9e75259618ac25f8ec6a007cf43972a842ae071a33456678a63483a5645e\",\"row_id\":\"b5\",\"timestamp\":null,\"type\":\"record\"}\n{\"billed_amount\":\"0.7172358001\",\"context\":{},\"evidence_rows\":[\"billed:b4\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":18,\"key\":\"phantom-two\",\"name\":\"Phantom\",\"prev_hash\":\"a0fa9e75259618ac25f8ec6a007cf43972a842ae071a33456678a63483a5645e\",\"region_code\":\"B\",\"row_hash\":\"65bda0bb4320a08c75f027eba75176be906aad8ef6a7b10d6cafd7ebf50c3840\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"6.40\",\"context\":{},\"evidence_rows\":[\"billed:b3\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":19,\"key\":\"phantom-\\u00e9\",\"name\":\"Phantom\",\"prev_hash\":\"65bda0bb4320a08c75f027eba75176be906aad8ef6a7b10d6cafd7ebf50c3840\",\"region_code\":\"B\",\"row_hash\":\"de34f1a9883896d9c137abf794bf53c34608e47e9c13d066ec5824ec6671c1b4\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i3\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":20,\"key\":\"k3\",\"name\":\"Skeleton\",\"prev_hash\":\"de34f1a9883896d9c137abf794bf53c34608e47e9c13d066ec5824ec6671c1b4\",\"region_code\":\"I\",\"row_hash\":\"5748cfddce4b4b16969fa92edf304dd6f06e24af246fc60ee6426369e3b10d37\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i4\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":21,\"key\":\"k4\",\"name\":\"Skeleton\",\"prev_hash\":\"5748cfddce4b4b16969fa92edf304dd6f06e24af246fc60ee6426369e3b10d37\",\"region_code\":\"I\",\"row_hash\":\"13a4cff49121f576beb4ba00e47a249c56977476dc124818eaa1f72234e39c51\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i5\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":22,\"key\":\"k5\",\"name\":\"Skeleton\",\"prev_hash\":\"13a4cff49121f576beb4ba00e47a249c56977476dc124818eaa1f72234e39c51\",\"region_code\":\"I\",\"row_hash\":\"02dfc82aa346a2c1e529c3c077b248b9e279846b5c41fb484c91627f2d0b8bf6\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i2\",\"observed:same\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":23,\"key\":\"k2\",\"name\":\"Familiar\",\"prev_hash\":\"02dfc82aa346a2c1e529c3c077b248b9e279846b5c41fb484c91627f2d0b8bf6\",\"region_code\":\"IO\",\"row_hash\":\"237d7abc329d3b23761a000f7c869a7c6ef4a0625474e22936bbb51ebbdf2532\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"observed:same\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":24,\"key\":\"ghost-\\ud83d\\udc7b\",\"name\":\"Poltergeist\",\"prev_hash\":\"237d7abc329d3b23761a000f7c869a7c6ef4a0625474e22936bbb51ebbdf2532\",\"region_code\":\"O\",\"row_hash\":\"5ca7f1f81232e69ebfdca1b599eb3b2fcba8f6f2948bd1c62325c31c4918cb8c\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"41.20\",\"context\":{},\"evidence_rows\":[\"billed:b2\",\"observed:o-\\u202e\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":25,\"key\":\"k9\",\"name\":\"Vampire\",\"prev_hash\":\"5ca7f1f81232e69ebfdca1b599eb3b2fcba8f6f2948bd1c62325c31c4918cb8c\",\"region_code\":\"OB\",\"row_hash\":\"8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666\",\"status\":\"new\",\"type\":\"finding\"}\n",
+    "manifest": {
+     "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+     "complete": true,
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "final_chain_hash": "8eac52e09e7d6ce39084ea7e1bcc61a33a172309b1c66b7c264bdb1c45211666",
+     "finding_count": 8,
+     "ledgers": {},
+     "row_count": 26,
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z"
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "manifest ledgers are billed, intended, observed: it names none"
+    }
+   },
+   {
+    "name": "a record row of another ledger",
+    "jsonl": "{\"complete\":true,\"control_hash\":\"14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c\",\"finding_count\":8,\"index\":0,\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"row_count\":26,\"row_hash\":\"b1189d991af1098be031a0c2af79679896dc5ccd686e3c390ff4d515ac4965a7\",\"run_id\":\"ad25e22fb3a05034\",\"run_time\":\"2026-11-06T02:00:00Z\",\"type\":\"header\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"plain\",\"Z\":\"x\"},\"index\":1,\"key\":\"k0\",\"ledger\":\"intended\",\"prev_hash\":\"b1189d991af1098be031a0c2af79679896dc5ccd686e3c390ff4d515ac4965a7\",\"raw_key\":\"k0\",\"row_hash\":\"aa7be6b6322b4d8c880f7da0695802141ce911939c9902c95ad5acd7f1257fb2\",\"row_id\":\"i0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"quote \\\" and backslash \\\\ and slash /\",\"a\":\"x\"},\"index\":2,\"key\":\"k1\",\"ledger\":\"intended\",\"prev_hash\":\"aa7be6b6322b4d8c880f7da0695802141ce911939c9902c95ad5acd7f1257fb2\",\"raw_key\":\"k1\",\"row_hash\":\"d14d18195b56f046f1519974fea615c8577fb388909824b2ffa0d8cf876717c5\",\"row_id\":\"i1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\",\"\\u00e9\":\"x\"},\"index\":3,\"key\":\"k2\",\"ledger\":\"intended\",\"prev_hash\":\"d14d18195b56f046f1519974fea615c8577fb388909824b2ffa0d8cf876717c5\",\"raw_key\":\"k2\",\"row_hash\":\"4da514ebcd21ad7a4382efac7b103a25423d3c9541cfaf8c65260d6549769f8b\",\"row_id\":\"i2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"astral \\ud83e\\udddb \\ud83d\\udc7b \\ud800\\udc00\",\"\\uffff\":\"x\"},\"index\":4,\"key\":\"k3\",\"ledger\":\"intended\",\"prev_hash\":\"4da514ebcd21ad7a4382efac7b103a25423d3c9541cfaf8c65260d6549769f8b\",\"raw_key\":\"k3\",\"row_hash\":\"39cd72fbead31c0a748f366249ab732e886b9d71b73f0fcf02f7c9c0f131b2f4\",\"row_id\":\"i3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"edge \\uffff\\ufffe\\ufeff\",\"\\ud800\\udc00\":\"x\"},\"index\":5,\"key\":\"k4\",\"ledger\":\"intended\",\"prev_hash\":\"39cd72fbead31c0a748f366249ab732e886b9d71b73f0fcf02f7c9c0f131b2f4\",\"raw_key\":\"k4\",\"row_hash\":\"355f9cc7d98a8145f2ad50b9e787bd484964c957683e6749bec06161a804ebac\",\"row_id\":\"i4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"Name\":\"controls \\u0000\\u0001\\u0007\\b\\t\\n\\u000b\\f\\r\\u001b\\u001f\\u007f\\u0080\\u009f\",\"\\ud83d\\ude00\":\"x\"},\"index\":6,\"key\":\"k5\",\"ledger\":\"intended\",\"prev_hash\":\"355f9cc7d98a8145f2ad50b9e787bd484964c957683e6749bec06161a804ebac\",\"raw_key\":\"k5\",\"row_hash\":\"ee1e9f77b6aa42e0f3d493774d4e02a94117840f7c7dbd650f48390892fb495f\",\"row_id\":\"i5\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"quote \\\" and backslash \\\\ and slash /\"},\"index\":7,\"key\":\"k9\",\"ledger\":\"observed\",\"prev_hash\":\"ee1e9f77b6aa42e0f3d493774d4e02a94117840f7c7dbd650f48390892fb495f\",\"raw_key\":\"k9\",\"row_hash\":\"6a12d94afed0689202d08f2670f8be11064ca1ec8ddff5fc1846e2126bb1c79c\",\"row_id\":\"o-\\u202e\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"controls \\u0000\\u0001\\u0007\\b\\t\\n\\u000b\\f\\r\\u001b\\u001f\\u007f\\u0080\\u009f\"},\"index\":8,\"key\":\"k2\",\"ledger\":\"observed\",\"prev_hash\":\"6a12d94afed0689202d08f2670f8be11064ca1ec8ddff5fc1846e2126bb1c79c\",\"raw_key\":\"k2\",\"row_hash\":\"a302c9a9382d4b2120db1682838012db32ba451d898fccb28d4802815d027bd9\",\"row_id\":\"same\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"lone \\ud800 and \\udfff surrogates\"},\"index\":9,\"key\":\"ghost-\\ud83d\\udc7b\",\"ledger\":\"observed\",\"prev_hash\":\"a302c9a9382d4b2120db1682838012db32ba451d898fccb28d4802815d027bd9\",\"raw_key\":\"ghost-\\ud83d\\udc7b\",\"row_hash\":\"0332b9c757126d847c4ca4b686754a9e5937e82ab6709bf400b3e48303d96707\",\"row_id\":\"same\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\"},\"index\":10,\"key\":\"k0\",\"ledger\":\"observed\",\"prev_hash\":\"0332b9c757126d847c4ca4b686754a9e5937e82ab6709bf400b3e48303d96707\",\"raw_key\":\"k0\",\"row_hash\":\"501706b3c08c27dc243a68b73a0ab0e3df0581be0cf1a0ab7c747c2c1faf6d4a\",\"row_id\":\"\\uffff-1\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{\"note\":\"astral \\ud83e\\udddb \\ud83d\\udc7b \\ud800\\udc00\"},\"index\":11,\"key\":\"k1\",\"ledger\":\"observed\",\"prev_hash\":\"501706b3c08c27dc243a68b73a0ab0e3df0581be0cf1a0ab7c747c2c1faf6d4a\",\"raw_key\":\"k1\",\"row_hash\":\"d8e082d8a16d9001e5a60d6d8adb6467e911187b241587df5b2d7bf383d26db1\",\"row_id\":\"\\ud800\\udc00-1\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":\"18.61\",\"attrs\":{\"usage\":\"accents caf\\u00e9 \\u00df \\u0130\"},\"index\":12,\"key\":\"k0\",\"ledger\":\"elsewhere \\u202e\",\"prev_hash\":\"d8e082d8a16d9001e5a60d6d8adb6467e911187b241587df5b2d7bf383d26db1\",\"raw_key\":\"k0\",\"row_hash\":\"37cd978014725162259a25bd80df5ac1fd53cfef64127438703f885bb03eebc4\",\"row_id\":\"b0\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"1E-9\",\"attrs\":{\"usage\":\"<script>alert(1)</script>\"},\"index\":13,\"key\":\"k1\",\"ledger\":\"billed\",\"prev_hash\":\"37cd978014725162259a25bd80df5ac1fd53cfef64127438703f885bb03eebc4\",\"raw_key\":\"k1\",\"row_hash\":\"a5c971c3cdb51a36fc7701593fc42bfef1352ac2afc304b7e83f6505483c0207\",\"row_id\":\"b1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"41.20\",\"attrs\":{\"usage\":\"edge \\uffff\\ufffe\\ufeff\"},\"index\":14,\"key\":\"k9\",\"ledger\":\"billed\",\"prev_hash\":\"a5c971c3cdb51a36fc7701593fc42bfef1352ac2afc304b7e83f6505483c0207\",\"raw_key\":\"k9\",\"row_hash\":\"d68482ed74f13a1e8cb71b3d163211a96c9b770924bcd345314e6947239c36e0\",\"row_id\":\"b2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"6.40\",\"attrs\":{\"usage\":\"bidi \\u202eevil\\u202c and \\u2066isolate\\u2069 and \\u200f\"},\"index\":15,\"key\":\"phantom-\\u00e9\",\"ledger\":\"billed\",\"prev_hash\":\"d68482ed74f13a1e8cb71b3d163211a96c9b770924bcd345314e6947239c36e0\",\"raw_key\":\"phantom-\\u00e9\",\"row_hash\":\"035e69d6b221e67d754ceba1ee20c3ccbe28667b9a647eab1d9c2876f241f1c9\",\"row_id\":\"b3\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"0.7172358001\",\"attrs\":{\"usage\":\"plain\"},\"index\":16,\"key\":\"phantom-two\",\"ledger\":\"billed\",\"prev_hash\":\"035e69d6b221e67d754ceba1ee20c3ccbe28667b9a647eab1d9c2876f241f1c9\",\"raw_key\":\"phantom-two\",\"row_hash\":\"365f85285579c48ce17fac0f26626e03e3bf5e32b7c96e79a522d31326e84bba\",\"row_id\":\"b4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"-3.10\",\"attrs\":{\"usage\":\"credit\"},\"index\":17,\"key\":null,\"ledger\":\"billed\",\"prev_hash\":\"365f85285579c48ce17fac0f26626e03e3bf5e32b7c96e79a522d31326e84bba\",\"raw_key\":\"\",\"row_hash\":\"27b455d6050be1c5ae526485921147aae0304c087287d004a9b9ee8e9d73d8ee\",\"row_id\":\"b5\",\"timestamp\":null,\"type\":\"record\"}\n{\"billed_amount\":\"0.7172358001\",\"context\":{},\"evidence_rows\":[\"billed:b4\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":18,\"key\":\"phantom-two\",\"name\":\"Phantom\",\"prev_hash\":\"27b455d6050be1c5ae526485921147aae0304c087287d004a9b9ee8e9d73d8ee\",\"region_code\":\"B\",\"row_hash\":\"963fb3e89c09f52bf346827d259c1fc72756b62929e82309bd6c922355667f09\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"6.40\",\"context\":{},\"evidence_rows\":[\"billed:b3\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":19,\"key\":\"phantom-\\u00e9\",\"name\":\"Phantom\",\"prev_hash\":\"963fb3e89c09f52bf346827d259c1fc72756b62929e82309bd6c922355667f09\",\"region_code\":\"B\",\"row_hash\":\"82b09845ef0d670669fb67c9e169e86008a1c45b16e9c16df208c281151af4d5\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i3\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":20,\"key\":\"k3\",\"name\":\"Skeleton\",\"prev_hash\":\"82b09845ef0d670669fb67c9e169e86008a1c45b16e9c16df208c281151af4d5\",\"region_code\":\"I\",\"row_hash\":\"831b8716746e2c5fcb4ef33822a17b81cc2f8ba0de408b8de4cf7170bc0eb521\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i4\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":21,\"key\":\"k4\",\"name\":\"Skeleton\",\"prev_hash\":\"831b8716746e2c5fcb4ef33822a17b81cc2f8ba0de408b8de4cf7170bc0eb521\",\"region_code\":\"I\",\"row_hash\":\"ae37fb2ca6ec8a445f2dec1239c818c57eb82f084d85b931a0a17cdcd02cab43\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i5\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":22,\"key\":\"k5\",\"name\":\"Skeleton\",\"prev_hash\":\"ae37fb2ca6ec8a445f2dec1239c818c57eb82f084d85b931a0a17cdcd02cab43\",\"region_code\":\"I\",\"row_hash\":\"1dad7e727667be844f51cdbcba17215a3c548b16068c246f2f5dd2fc8c9c7c3a\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i2\",\"observed:same\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":23,\"key\":\"k2\",\"name\":\"Familiar\",\"prev_hash\":\"1dad7e727667be844f51cdbcba17215a3c548b16068c246f2f5dd2fc8c9c7c3a\",\"region_code\":\"IO\",\"row_hash\":\"7484ccd83c812b31c4097ef26c23c3926ea829be472b90a70700a2de49e59df6\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"observed:same\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":24,\"key\":\"ghost-\\ud83d\\udc7b\",\"name\":\"Poltergeist\",\"prev_hash\":\"7484ccd83c812b31c4097ef26c23c3926ea829be472b90a70700a2de49e59df6\",\"region_code\":\"O\",\"row_hash\":\"0edd8a3558c75512dd9f54c5643b5a01e62278e06943ab877ee6382c6df0bb63\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"41.20\",\"context\":{},\"evidence_rows\":[\"billed:b2\",\"observed:o-\\u202e\"],\"first_seen\":\"2026-11-06T02:00:00Z\",\"index\":25,\"key\":\"k9\",\"name\":\"Vampire\",\"prev_hash\":\"0edd8a3558c75512dd9f54c5643b5a01e62278e06943ab877ee6382c6df0bb63\",\"region_code\":\"OB\",\"row_hash\":\"4d3458c4cac8a87b7c91652f6f45239e0cda8e9bed124df6fac1fc1a0eb59d58\",\"status\":\"new\",\"type\":\"finding\"}\n",
+    "manifest": {
+     "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+     "complete": true,
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "final_chain_hash": "4d3458c4cac8a87b7c91652f6f45239e0cda8e9bed124df6fac1fc1a0eb59d58",
+     "finding_count": 8,
+     "ledgers": {
+      "billed": {
+       "count": 6,
+       "hash": "2105b27bfad72f71b1ffa75433c1315fd5f94013f796c154c64cb0a18e67e31f",
+       "source": "cur"
+      },
+      "intended": {
+       "count": 6,
+       "hash": "04cd0c3748b626e0ba1816150726541ab84ff2c68549a615fc43e6dfba149c0e",
+       "source": "stacks"
+      },
+      "observed": {
+       "count": 5,
+       "hash": "8f180d94172e650315a6b27b436cf287bfe6173cbcc5bec0f9c944f31513bfaa",
+       "source": "inventory"
+      }
+     },
+     "row_count": 26,
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z"
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": 12,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "row 12: record of ledger \"elsewhere \\u202e\", which is not intended, observed or billed"
     }
    }
   ]

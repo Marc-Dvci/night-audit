@@ -284,7 +284,31 @@ def _displayed_variants(shown: dict[str, Any]) -> list[tuple[str, dict[str, Any]
         edit("a headline amount rounded wrongly", lambda d: _headline_amount(d, "B", lambda a: _off_by_one(a))),
         edit("a headline amount written exactly", lambda d: _headline_amount(d, "B", money_text)),
         edit("a finding amount rounded like the headline", lambda d: _round_finding(d, "phantom-two")),
+        edit("a headline amount written without a dollar sign", lambda d: _headline_amount(d, "B", _no_dollar)),
+        edit("a headline count changed", lambda d: _headline_text(d, _count_plus_ten)),
+        edit("a headline with an extra number", lambda d: _headline_text(d, lambda s: s + " For 9 nights.")),
+        edit("a headline number after a letter and a minus", lambda d: _headline_text(d, lambda s: s + " x\u00e9-7.")),
+        edit("a headline number after a space and a minus", lambda d: _headline_text(d, lambda s: s + " \u22122.")),
+        edit("a headline with a digit that is not 0 to 9", lambda d: _headline_text(d, lambda s: s + " \u0662.")),
     ]
+
+
+def _count_plus_ten(sentence: str) -> str:
+    """The lead sentence with its leading count ten higher, a count no region has."""
+    count, rest = sentence.split(" ", 1)
+    return f"{int(count) + 10} {rest}"
+
+
+def _no_dollar(amount: Decimal) -> str:
+    """The headline's amount with its last digit one higher and no dollar sign: ``7.118 dollars``."""
+    return _off_by_one(amount).replace("$", "") + " dollars"
+
+
+def _headline_text(d: dict[str, Any], change: Callable[[str], str]) -> None:
+    """Change the lead sentence, in the sentence list and in the joined headline alike."""
+    sentences = d["view"]["headline_sentences"]
+    sentences[0] = change(sentences[0])
+    d["view"]["headline"] = " ".join(sentences)
 
 
 def _off_by_one(amount: Decimal) -> str:
@@ -364,18 +388,82 @@ def _completeness_cases(jsonl: str, manifest: dict[str, Any], shown: dict[str, A
     pre_shown = {**shown, "evidence_chain_hash": pre_manifest["final_chain_hash"]}
     pre_hidden = json.loads(json.dumps(pre_shown))
     hide_the_bill(pre_hidden)
+    unkeyed = _unkeyed_bill_only()
+    old_unkeyed_jsonl, old_unkeyed_manifest = _without_completeness(unkeyed["jsonl"], unkeyed["manifest"])
+    old_unkeyed_shown = {**unkeyed["shown"], "evidence_chain_hash": old_unkeyed_manifest["final_chain_hash"]}
+    old_unkeyed_hidden = json.loads(json.dumps(old_unkeyed_shown))
+    hide_the_bill(old_unkeyed_hidden)
     cases = [
         ("an incomplete night served as it is", inc_jsonl, inc_manifest, inc_shown),
         ("an incomplete night marked complete", inc_jsonl, inc_manifest, marked_complete),
         ("before completeness: a complete night", old_jsonl, old_manifest, old_shown),
-        ("before completeness: an incomplete night", old_inc_jsonl, old_inc_manifest, old_inc_shown),
+        (
+            "before completeness: an incomplete night is taken as complete",
+            old_inc_jsonl,
+            old_inc_manifest,
+            old_inc_shown,
+        ),
         ("before completeness: a complete night marked incomplete with no bill", old_jsonl, old_manifest, hidden),
+        ("before completeness: only an unkeyed bill", old_unkeyed_jsonl, old_unkeyed_manifest, old_unkeyed_shown),
+        (
+            "before completeness: only an unkeyed bill, marked incomplete with no bill",
+            old_unkeyed_jsonl,
+            old_unkeyed_manifest,
+            old_unkeyed_hidden,
+        ),
         ("before the header (the lab night's shape): a complete night", pre_jsonl, pre_manifest, pre_shown),
         ("before the header: a complete night marked incomplete with no bill", pre_jsonl, pre_manifest, pre_hidden),
     ]
     return [
         {"name": name, "jsonl": text, "manifest": m, "document": doc, "verdict": _verdict(text, json.dumps(m), doc)}
         for name, text, m, doc in cases
+    ]
+
+
+def _unkeyed_bill_only() -> dict[str, Any]:
+    """A complete night with empty intended and observed ledgers and one unkeyed billed row of 41.20."""
+    snapshots = [
+        LedgerSnapshot(name=LedgerName.intended, source="stacks", records=[]),
+        LedgerSnapshot(name=LedgerName.observed, source="inventory", records=[]),
+        LedgerSnapshot(
+            name=LedgerName.billed,
+            source="cur",
+            records=[Record(ledger=LedgerName.billed, source="cur", row_id="b1", raw_key="", amount=Decimal("41.20"))],
+        ),
+    ]
+    result = match(snapshots, ControlConfig(), RUN_TIME)
+    with tempfile.TemporaryDirectory() as tmp:
+        pack = Path(tmp)
+        write_evidence_pack(result, pack)
+        jsonl = (pack / "evidence.jsonl").read_text(encoding="utf-8")
+        manifest = json.loads((pack / "manifest.json").read_text(encoding="utf-8"))
+    return {"jsonl": jsonl, "manifest": manifest, "shown": _page(result, manifest["final_chain_hash"])}
+
+
+def _ledger_cases(jsonl: str, manifest: dict[str, Any]) -> list[dict[str, Any]]:
+    """The manifest must name exactly the three ledgers, and every record row must belong to one of them."""
+    without_billed = {**manifest, "ledgers": {k: v for k, v in manifest["ledgers"].items() if k != "billed"}}
+    with_extra = {**manifest, "ledgers": {**manifest["ledgers"], "\u00e9xtra": manifest["ledgers"]["billed"]}}
+    prev, lines, moved = "0" * 64, [], False
+    for line in jsonl.split("\n")[:-1]:
+        row = json.loads(line)
+        if not moved and row.get("type") == "record" and row.get("ledger") == "billed":
+            row["ledger"], moved = "elsewhere \u202e", True
+        row.pop("row_hash")
+        row["prev_hash"] = prev
+        row["row_hash"] = hashlib.sha256((prev + canonical_json(row)).encode()).hexdigest()
+        prev = row["row_hash"]
+        lines.append(canonical_json(row))
+    other_jsonl, other_manifest = "\n".join(lines) + "\n", {**manifest, "final_chain_hash": prev}
+    cases = [
+        ("a manifest without the billed ledger", jsonl, without_billed),
+        ("a manifest with a fourth ledger", jsonl, with_extra),
+        ("a manifest with no ledgers", jsonl, {**manifest, "ledgers": {}}),
+        ("a record row of another ledger", other_jsonl, other_manifest),
+    ]
+    return [
+        {"name": name, "jsonl": text, "manifest": m, "verdict": _verdict(text, json.dumps(m))}
+        for name, text, m in cases
     ]
 
 
@@ -420,6 +508,7 @@ def _pack_case() -> dict[str, Any]:
             for name, document in _displayed_variants(shown)
         ],
         "completeness": _completeness_cases(jsonl, json.loads(manifest), shown),
+        "ledgers": _ledger_cases(jsonl, json.loads(manifest)),
     }
 
 

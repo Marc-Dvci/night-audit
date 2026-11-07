@@ -26,7 +26,7 @@ This power gives Kiro two skills.
    private, `uv add` from GitHub fails unless you are signed in to it, so point the skills at your clone:
 
    ```bash
-   export NIGHTAUDIT_SOURCE=/path/to/night-audit/skeleton        # PowerShell: $env:NIGHTAUDIT_SOURCE = "C:\path\to\night-audit\skeleton"
+   export NIGHTAUDIT_SOURCE=/path/to/night-audit/skeleton        # PowerShell: $env:NIGHTAUDIT_SOURCE = "<path-to-clone>\skeleton"
    ```
 
    Set it before you start Kiro. When it is not set, the skill uses
