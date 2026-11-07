@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 
 from .control import DEFAULT_HEADLINES, fill_region_name
 from .models import DEFAULT_REGION_LABELS, REGION_CODES, Finding, HeadlineUi, LedgerName, RunResult, UnkeyedUi
+from .wording import BUILT_IN_WORDS, AppWords, words_for
 
 #: Headline order: the regions on the bill first, then the unbilled ones, as in the Req 2.2 example (OB, O, I).
 HEADLINE_ORDER: tuple[str, ...] = ("OB", "B", "IB", "O", "I")
@@ -106,7 +107,11 @@ def _findings(run: RunResult) -> list[Finding]:
     return [f for f in run.findings if not f.informational]
 
 
-def _template(run: RunResult, code: str) -> HeadlineUi:
+def _template(run: RunResult, code: str, words: AppWords | None = None) -> HeadlineUi:
+    if not run.region_labels.get(code):
+        # Stored before its control gave this region a plain label: today's plain template, the run's own figures.
+        current = words_for(run.app, words).headlines.get(code)
+        return current if current is not None else BUILT_IN_WORDS.headlines[code]
     configured = run.ui.headlines.get(code)
     if configured is not None:
         return configured
@@ -116,14 +121,26 @@ def _template(run: RunResult, code: str) -> HeadlineUi:
     return HeadlineUi(one=fill_region_name(one, name), other=fill_region_name(other, name))
 
 
+def region_labels_shown(run: RunResult, words: AppWords | None = None) -> dict[str, str]:
+    """The short plain label of every region as this run is shown: its stored label, or for a region stored without
+    one, the label of that region code in the app's current control, else the built-in plain label."""
+    current = words_for(run.app, words).labels
+    return {
+        code: run.region_labels.get(code) or current.get(code) or DEFAULT_REGION_LABELS[code]
+        for code in DEFAULT_REGION_LABELS
+    }
+
+
 def _join(words: list[str]) -> str:
     if len(words) <= 1:
         return "".join(words)
     return ", ".join(words[:-1]) + " and " + words[-1]
 
 
-def headline_sentences(run: RunResult) -> list[str]:
-    """Tonight's result as sentences, computed from the region summaries (Req 2.2, 2.3). The first is the lead."""
+def headline_sentences(run: RunResult, words: AppWords | None = None) -> list[str]:
+    """Tonight's result as sentences, computed from the region summaries (Req 2.2, 2.3). The first is the lead.
+
+    *words* are the apps' current plain words, used for the regions the run was stored without a label for."""
     if not run.complete:
         labels = [run.ui.ledgers[n].label if n in run.ui.ledgers else n for n in run.missing_ledgers]
         noun = "ledger" if len(labels) == 1 else "ledgers"
@@ -135,7 +152,7 @@ def headline_sentences(run: RunResult) -> list[str]:
         summary = run.region_summaries.get(code)
         if summary is None or summary.key_count == 0:
             continue
-        template = _template(run, code)
+        template = _template(run, code, words)
         one = summary.key_count == 1
         sentences.append(
             (template.one if one else template.other).format(
@@ -147,9 +164,9 @@ def headline_sentences(run: RunResult) -> list[str]:
     return sentences
 
 
-def headline(run: RunResult) -> str:
+def headline(run: RunResult, words: AppWords | None = None) -> str:
     """Tonight's result in one or a few sentences (Req 2.2, 2.3)."""
-    return " ".join(headline_sentences(run))
+    return " ".join(headline_sentences(run, words))
 
 
 # --- The view the page reads ------------------------------------------------------------------------------------------
@@ -170,6 +187,8 @@ class RunView(BaseModel):
     headline: str
     #: The same headline, one sentence per region. The page prints the first large and the rest beneath it.
     headline_sentences: list[str] = Field(default_factory=list)
+    #: Each region's plain label as shown: stored, or for a night stored without one, from the app's current control.
+    region_labels: dict[str, str] = Field(default_factory=dict)
     calm: bool
     ledger_keys: dict[str, int | None]
     keyed_total: Decimal
@@ -187,8 +206,9 @@ def _unkeyed_billed_rows(run: RunResult) -> int:
     return sum(1 for u in run.unkeyed if u.ledger == LedgerName.billed and u.amount is not None)
 
 
-def run_view(run: RunResult) -> RunView:
-    """The headline, the key counts and the money lines of a run (Req 2, 3)."""
+def run_view(run: RunResult, words: AppWords | None = None) -> RunView:
+    """The headline, the key counts and the money lines of a run (Req 2, 3), in the apps' current plain words where
+    the run was stored without labels (*words*; the built-in plain words when its app has none)."""
     findings = _findings(run)
     with decimal.localcontext(_EXACT):  # the default 28-digit context would round the sum
         keyed_total = sum((s.billed_amount for s in run.region_summaries.values()), Decimal("0"))
@@ -208,16 +228,16 @@ def run_view(run: RunResult) -> RunView:
         )
         rows = _unkeyed_billed_rows(run)
         if rows:
-            words = run.ui.unkeyed
+            unkeyed_words = run.ui.unkeyed
             # The credits sentence describes a cloud bill, so it is only used while the default words are (Req 10.4).
             note = (
                 "Negative because credits are larger than tax and support. A credit is expected here."
-                if unkeyed_total < 0 and words == UnkeyedUi()
-                else words.explanation
+                if unkeyed_total < 0 and unkeyed_words == UnkeyedUi()
+                else unkeyed_words.explanation
             )
             lines.append(
                 MoneyLine(
-                    label=f"{rows} {words.singular if rows == 1 else words.plural}",
+                    label=f"{rows} {unkeyed_words.singular if rows == 1 else unkeyed_words.plural}",
                     value=money_text(unkeyed_total),
                     amount=str(unkeyed_total),
                     note=note,
@@ -225,8 +245,9 @@ def run_view(run: RunResult) -> RunView:
             )
         lines.append(MoneyLine(label="Billed total", value=money_text(run.billed_total), amount=str(run.billed_total)))
     return RunView(
-        headline=headline(run),
-        headline_sentences=headline_sentences(run),
+        headline=headline(run, words),
+        headline_sentences=headline_sentences(run, words),
+        region_labels=region_labels_shown(run, words),
         calm=run.complete and not findings,
         ledger_keys=keys,
         keyed_total=keyed_total,
@@ -357,22 +378,23 @@ def _e(value: object) -> str:
     return html.escape("" if value is None else str(value), quote=True)
 
 
-def region_label(run: RunResult, code: str) -> str:
-    """The short plain label of a region in this run. A run saved before labels existed uses the default label."""
-    return run.region_labels.get(code) or DEFAULT_REGION_LABELS.get(code, code)
+def region_label(run: RunResult, code: str, words: AppWords | None = None) -> str:
+    """The short plain label of a region as this run is shown (``region_labels_shown``)."""
+    return region_labels_shown(run, words).get(code, code)
 
 
-def _region_cell(run: RunResult, code: str, name: str | None = None) -> str:
+def _region_cell(run: RunResult, code: str, name: str | None = None, words: AppWords | None = None) -> str:
     """A region as the report prints it: the plain label, then the Halloween name as a small tag when it differs."""
-    label = region_label(run, code)
+    label = region_label(run, code, words)
     tag = name if name is not None else run.region_names.get(code, "")
     tag_html = f' <span class="tag">{_e(tag)}</span>' if tag and tag != label else ""
     return f"{_e(label)}{tag_html}"
 
 
-def report_html(run: RunResult, recorded: bool = False) -> str:
-    """A one-page, self-contained morning report of a run (Req 7.1). Every value is escaped (Req 7.3)."""
-    view = run_view(run)
+def report_html(run: RunResult, recorded: bool = False, words: AppWords | None = None) -> str:
+    """A one-page, self-contained morning report of a run (Req 7.1). Every value is escaped (Req 7.3). *words* are the
+    apps' current plain words, for a run stored without region labels (``run_view``)."""
+    view = run_view(run, words)
     ui = run.ui
     title = run.control_title or run.control_id or ui.title
     when = f"{date_text(run.run_time)}, {run.run_time.astimezone(UTC):%H:%M} UTC"
@@ -405,7 +427,7 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
         count = summary.key_count if summary else 0
         amount = money_text(summary.billed_amount) if summary and "B" in code else ""
         parts.append(
-            f"<tr><td>{_region_cell(run, code)}</td><td>{code}</td>"
+            f"<tr><td>{_region_cell(run, code, words=words)}</td><td>{code}</td>"
             f'<td class="num">{count}</td><td class="num">{_e(amount)}</td></tr>'
         )
     parts.append("</tbody></table>")
@@ -425,7 +447,7 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
             billed = money_text(f.billed_amount) if "B" in f.region_code else "not billed"
             parts.append(
                 f'<tr class="{"new" if f.status == "new" else "old"}"><td>{status}</td>'
-                f"<td>{_region_cell(run, f.region_code, f.name)}</td>"
+                f"<td>{_region_cell(run, f.region_code, f.name, words)}</td>"
                 f'<td class="key">{_e(f.key)}</td><td>{_e(date_text(f.first_seen))}</td>'
                 f'<td class="num">{_e(f.nights_persisted if f.nights_persisted is not None else "")}</td>'
                 f'<td class="num">{_e(billed)}</td></tr>'
@@ -444,7 +466,7 @@ def report_html(run: RunResult, recorded: bool = False) -> str:
         )
         for f in resolved:
             parts.append(
-                f'<tr><td>{_region_cell(run, f.region_code, f.name)}</td><td class="key">{_e(f.key)}</td>'
+                f'<tr><td>{_region_cell(run, f.region_code, f.name, words)}</td><td class="key">{_e(f.key)}</td>'
                 f"<td>{_e(date_text(f.first_seen))}</td>"
                 f'<td class="num">{_e(_nights_text(f.nights_persisted))}</td></tr>'
             )
@@ -477,6 +499,7 @@ __all__ = [
     "headline_sentences",
     "ledger_key_counts",
     "money_text",
+    "region_labels_shown",
     "report_csp",
     "report_html",
     "run_numbers",

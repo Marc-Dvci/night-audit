@@ -22,19 +22,21 @@ from .notes import NOTES_FILE
 from .report import report_html
 from .runner import load_run, run_summary
 from .textfile import write_text_exact
+from .wording import AppWords
 
 ZipTime = tuple[int, int, int, int, int, int]
 #: The "created by" system of every zip entry: Unix, whatever machine builds the demo.
 ZIP_CREATE_SYSTEM = 3
 
 
-def export_run(runs: Path, run_id: str, out: Path, zip_time: ZipTime) -> None:
-    """Write one run's static files into *out*."""
+def export_run(runs: Path, run_id: str, out: Path, zip_time: ZipTime, words: AppWords | None = None) -> None:
+    """Write one run's static files into *out*, in the apps' current plain words (*words*) where the run was stored
+    without region labels, as the live API shows it."""
     result = load_run(runs, run_id)
     run_dir = runs / run_id
     out.mkdir(parents=True)
-    write_text_exact(out / "run.json", json.dumps(run_document(result, run_dir)))
-    write_text_exact(out / "report.html", report_html(result, recorded=True))
+    write_text_exact(out / "run.json", json.dumps(run_document(result, run_dir, words)))
+    write_text_exact(out / "report.html", report_html(result, recorded=True, words=words))
     evidence = run_dir / "evidence"
     with zipfile.ZipFile(out / "evidence.zip", "w", zipfile.ZIP_DEFLATED) as zf:
         for name in ("evidence.jsonl", "manifest.json"):

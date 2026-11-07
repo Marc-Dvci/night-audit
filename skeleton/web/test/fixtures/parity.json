@@ -792,7 +792,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -1043,6 +1051,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -1108,7 +1125,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -1375,6 +1400,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -1440,7 +1474,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -1691,6 +1733,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -1756,7 +1807,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -2007,6 +2066,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -2072,7 +2140,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -2323,6 +2399,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -2388,7 +2473,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -2623,6 +2716,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -2688,7 +2790,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -2955,6 +3065,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -3020,7 +3139,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -3271,6 +3398,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -3336,7 +3472,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -3587,6 +3731,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -3652,7 +3805,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -3903,6 +4064,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -3968,7 +4138,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -4219,6 +4397,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -4284,7 +4471,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -4535,6 +4730,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -4600,7 +4804,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -4721,6 +4933,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -4786,7 +5007,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -5037,6 +5266,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -5102,7 +5340,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -5353,6 +5599,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -5418,7 +5673,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -5669,6 +5932,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -5733,7 +6005,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -5984,6 +6264,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -6049,7 +6338,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -6300,6 +6597,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -6365,7 +6671,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -6616,6 +6930,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -6681,7 +7004,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -6932,6 +7263,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -6997,7 +7337,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -7248,6 +7596,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -7313,7 +7670,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -7564,6 +7929,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -7629,7 +8003,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -7880,6 +8262,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -7945,7 +8336,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -8196,6 +8595,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -8261,7 +8669,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -8512,6 +8928,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -8577,7 +9002,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -8828,6 +9261,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -8987,6 +9429,15 @@
       "headline_sentences": [
        "The Observed ledger could not be read, so tonight has no findings."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -9125,6 +9576,15 @@
       "headline_sentences": [
        "The Observed ledger could not be read, so tonight has no findings."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -9198,7 +9658,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -9449,6 +9917,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -9605,6 +10082,15 @@
       "headline_sentences": [
        "The Observed ledger could not be read, so tonight has no findings."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -9678,7 +10164,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -9929,6 +10423,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -10021,7 +10524,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -10098,6 +10609,15 @@
       "headline_sentences": [
        "All three ledgers agree. Nothing to report tonight."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": true,
       "ledger_keys": {
        "intended": null,
@@ -10190,7 +10710,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -10267,6 +10795,15 @@
       "headline_sentences": [
        "All three ledgers agree. Nothing to report tonight."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": true,
       "ledger_keys": {
        "intended": null,
@@ -10359,7 +10896,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -10610,6 +11155,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -10702,7 +11256,15 @@
       "O": "Poltergeist",
       "B": "Phantom"
      },
-     "region_labels": {},
+     "region_labels": {
+      "IOB": "Matched",
+      "IO": "Approved and present, not billed",
+      "IB": "Approved and billed, not seen",
+      "OB": "Exists and billed, never approved",
+      "I": "Approved, but absent",
+      "O": "Exists, never approved, not billed",
+      "B": "Billed, never approved, not seen"
+     },
      "region_meanings": {},
      "ledger_errors": {},
      "excluded": {},
@@ -10953,6 +11515,15 @@
        "1 item exists with no approval and costs nothing.",
        "3 approved items are gone and unbilled."
       ],
+      "region_labels": {
+       "IOB": "Matched",
+       "IO": "Approved and present, not billed",
+       "IB": "Approved and billed, not seen",
+       "OB": "Exists and billed, never approved",
+       "I": "Approved, but absent",
+       "O": "Exists, never approved, not billed",
+       "B": "Billed, never approved, not seen"
+      },
       "calm": false,
       "ledger_keys": {
        "intended": null,
@@ -11141,6 +11712,1668 @@
      "detail": "row 12: record of ledger \"elsewhere \\u202e\", which is not intended, observed or billed"
     }
    }
-  ]
+  ],
+  "relabelled": {
+   "jsonl": "{\"complete\":true,\"control_hash\":\"14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c\",\"finding_count\":8,\"index\":0,\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"row_count\":25,\"row_hash\":\"d152180e0f22caa9360f1a5c4ea77ddc576e794b7ef05e85bff1b5df663a5195\",\"run_id\":\"2e4b018dd34aad3d\",\"run_time\":\"2026-11-07T02:00:00Z\",\"type\":\"header\"}\n{\"amount\":null,\"attrs\":{},\"index\":1,\"key\":\"i-0d4\",\"ledger\":\"intended\",\"prev_hash\":\"d152180e0f22caa9360f1a5c4ea77ddc576e794b7ef05e85bff1b5df663a5195\",\"raw_key\":\"i-0d4\",\"row_hash\":\"b9390be292bd375a28d93b43b81ceaef95f1782c1c69144494896890f78e6be4\",\"row_id\":\"i-i-0d4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":2,\"key\":\"lab-deployer\",\"ledger\":\"intended\",\"prev_hash\":\"b9390be292bd375a28d93b43b81ceaef95f1782c1c69144494896890f78e6be4\",\"raw_key\":\"lab-deployer\",\"row_hash\":\"4e9ce820bfcaf1bf1d33954b81d899849c85636d66522638c39bf15abaef6b0f\",\"row_id\":\"i-lab-deployer\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":3,\"key\":\"lab-reader\",\"ledger\":\"intended\",\"prev_hash\":\"4e9ce820bfcaf1bf1d33954b81d899849c85636d66522638c39bf15abaef6b0f\",\"raw_key\":\"lab-reader\",\"row_hash\":\"da2ef705f9b395be622c6a9cab1b01cebaa58787d22c80dbc573ca63e15c945c\",\"row_id\":\"i-lab-reader\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":4,\"key\":\"lab-trail\",\"ledger\":\"intended\",\"prev_hash\":\"da2ef705f9b395be622c6a9cab1b01cebaa58787d22c80dbc573ca63e15c945c\",\"raw_key\":\"lab-trail\",\"row_hash\":\"faaf83567a0f18cceca69439b0f502eaa8c340c277827f6ac839150489535947\",\"row_id\":\"i-lab-trail\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":5,\"key\":\"access-key-one\",\"ledger\":\"observed\",\"prev_hash\":\"faaf83567a0f18cceca69439b0f502eaa8c340c277827f6ac839150489535947\",\"raw_key\":\"access-key-one\",\"row_hash\":\"8a5e25d4b6ef980f95665bbfc08d5db96121bde657a754387a1f946b8b1bc856\",\"row_id\":\"o-access-key-one\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":6,\"key\":\"eni-0a1\",\"ledger\":\"observed\",\"prev_hash\":\"8a5e25d4b6ef980f95665bbfc08d5db96121bde657a754387a1f946b8b1bc856\",\"raw_key\":\"eni-0a1\",\"row_hash\":\"3ea09febfee4f22841067680d3c8a7f56e5e29614b4cb17a07b49b5794a1a1c3\",\"row_id\":\"o-eni-0a1\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":7,\"key\":\"i-0b2\",\"ledger\":\"observed\",\"prev_hash\":\"3ea09febfee4f22841067680d3c8a7f56e5e29614b4cb17a07b49b5794a1a1c3\",\"raw_key\":\"i-0b2\",\"row_hash\":\"8f6a84e05c0c64fafe5c7dbae063d3c8eb63dd80b02e07ded49239e9de649c2c\",\"row_id\":\"o-i-0b2\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":8,\"key\":\"i-0d4\",\"ledger\":\"observed\",\"prev_hash\":\"8f6a84e05c0c64fafe5c7dbae063d3c8eb63dd80b02e07ded49239e9de649c2c\",\"raw_key\":\"i-0d4\",\"row_hash\":\"67195de8b14ea7af2d642112d83f409146440dcc7eb0074a1218369163c6fef5\",\"row_id\":\"o-i-0d4\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":9,\"key\":\"lab-debug\",\"ledger\":\"observed\",\"prev_hash\":\"67195de8b14ea7af2d642112d83f409146440dcc7eb0074a1218369163c6fef5\",\"raw_key\":\"lab-debug\",\"row_hash\":\"e67d44ddc0e9c955f7e335541ba85db121dce1d040f0b15dd772ac18c3c93da7\",\"row_id\":\"o-lab-debug\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":10,\"key\":\"lab-reader\",\"ledger\":\"observed\",\"prev_hash\":\"e67d44ddc0e9c955f7e335541ba85db121dce1d040f0b15dd772ac18c3c93da7\",\"raw_key\":\"lab-reader\",\"row_hash\":\"03a30091790524421531e9b5926bd00d20a52f4a7a78068ea9cf176d550b62f4\",\"row_id\":\"o-lab-reader\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":11,\"key\":\"lab-trail\",\"ledger\":\"observed\",\"prev_hash\":\"03a30091790524421531e9b5926bd00d20a52f4a7a78068ea9cf176d550b62f4\",\"raw_key\":\"lab-trail\",\"row_hash\":\"42117b40b4a6de24fad8320b402eeaadb3ef1d37ac1ccc6b153b20492ace1208\",\"row_id\":\"o-lab-trail\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":null,\"attrs\":{},\"index\":12,\"key\":\"vol-0c3\",\"ledger\":\"observed\",\"prev_hash\":\"42117b40b4a6de24fad8320b402eeaadb3ef1d37ac1ccc6b153b20492ace1208\",\"raw_key\":\"vol-0c3\",\"row_hash\":\"4b50da5c2ebaf0af55bdf4ff3e054f211e7d7806a06c1bb9f4fb4012eb07c920\",\"row_id\":\"o-vol-0c3\",\"timestamp\":\"2026-09-01T00:00:00Z\",\"type\":\"record\"}\n{\"amount\":\"0.2525833\",\"attrs\":{},\"index\":13,\"key\":\"eni-0a1\",\"ledger\":\"billed\",\"prev_hash\":\"4b50da5c2ebaf0af55bdf4ff3e054f211e7d7806a06c1bb9f4fb4012eb07c920\",\"raw_key\":\"eni-0a1\",\"row_hash\":\"dd3598434439d3c0df20277293858aae27519594e14b5e0760ec94a48eb0e3b9\",\"row_id\":\"b-eni-0a1\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"0.4191369\",\"attrs\":{},\"index\":14,\"key\":\"i-0b2\",\"ledger\":\"billed\",\"prev_hash\":\"dd3598434439d3c0df20277293858aae27519594e14b5e0760ec94a48eb0e3b9\",\"raw_key\":\"i-0b2\",\"row_hash\":\"a0eecec3acf7b43d00d83899b7a2947b70971909849ce9c0292d268f183c08cb\",\"row_id\":\"b-i-0b2\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"0.7143713\",\"attrs\":{},\"index\":15,\"key\":\"i-0d4\",\"ledger\":\"billed\",\"prev_hash\":\"a0eecec3acf7b43d00d83899b7a2947b70971909849ce9c0292d268f183c08cb\",\"raw_key\":\"i-0d4\",\"row_hash\":\"3964453ec89bf922beccd955d041eb3f9557e0c6f23afa6af3e9b262f5dbe910\",\"row_id\":\"b-i-0d4\",\"timestamp\":null,\"type\":\"record\"}\n{\"amount\":\"0.0455156\",\"attrs\":{},\"index\":16,\"key\":\"vol-0c3\",\"ledger\":\"billed\",\"prev_hash\":\"3964453ec89bf922beccd955d041eb3f9557e0c6f23afa6af3e9b262f5dbe910\",\"raw_key\":\"vol-0c3\",\"row_hash\":\"fd84ec2c30f2468891f060bf89b809c7f59baf884e413ac5994548ab335e7611\",\"row_id\":\"b-vol-0c3\",\"timestamp\":null,\"type\":\"record\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i-lab-deployer\"],\"first_seen\":\"2026-11-07T02:00:00Z\",\"index\":17,\"key\":\"lab-deployer\",\"name\":\"Skeleton\",\"prev_hash\":\"fd84ec2c30f2468891f060bf89b809c7f59baf884e413ac5994548ab335e7611\",\"region_code\":\"I\",\"row_hash\":\"5544e7045856c2e2f4658986ab19bf6478582cd5196b9256a500e474418b887e\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i-lab-reader\",\"observed:o-lab-reader\"],\"first_seen\":\"2026-11-07T02:00:00Z\",\"index\":18,\"key\":\"lab-reader\",\"name\":\"Familiar\",\"prev_hash\":\"5544e7045856c2e2f4658986ab19bf6478582cd5196b9256a500e474418b887e\",\"region_code\":\"IO\",\"row_hash\":\"29c7a80668adf8760bcc2a89af250ab8300918c2257f0ece2edc844de14264db\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"intended:i-lab-trail\",\"observed:o-lab-trail\"],\"first_seen\":\"2026-11-07T02:00:00Z\",\"index\":19,\"key\":\"lab-trail\",\"name\":\"Familiar\",\"prev_hash\":\"29c7a80668adf8760bcc2a89af250ab8300918c2257f0ece2edc844de14264db\",\"region_code\":\"IO\",\"row_hash\":\"56e1c860bd2137353c30040d43318974749eb63290a09348985ff0d2ba8bbd31\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"observed:o-access-key-one\"],\"first_seen\":\"2026-11-07T02:00:00Z\",\"index\":20,\"key\":\"access-key-one\",\"name\":\"Poltergeist\",\"prev_hash\":\"56e1c860bd2137353c30040d43318974749eb63290a09348985ff0d2ba8bbd31\",\"region_code\":\"O\",\"row_hash\":\"62c81eaadef5415a96bd72e97fb809924e2e01f8cae514ee8aeb4ee3b0a0b3ae\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0\",\"context\":{},\"evidence_rows\":[\"observed:o-lab-debug\"],\"first_seen\":\"2026-11-07T02:00:00Z\",\"index\":21,\"key\":\"lab-debug\",\"name\":\"Poltergeist\",\"prev_hash\":\"62c81eaadef5415a96bd72e97fb809924e2e01f8cae514ee8aeb4ee3b0a0b3ae\",\"region_code\":\"O\",\"row_hash\":\"e047b6f5571b7e86f35e279cdf075d188225bac2c763da323a62a19c2d33a852\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0.2525833\",\"context\":{},\"evidence_rows\":[\"billed:b-eni-0a1\",\"observed:o-eni-0a1\"],\"first_seen\":\"2026-11-07T02:00:00Z\",\"index\":22,\"key\":\"eni-0a1\",\"name\":\"Vampire\",\"prev_hash\":\"e047b6f5571b7e86f35e279cdf075d188225bac2c763da323a62a19c2d33a852\",\"region_code\":\"OB\",\"row_hash\":\"8ad7c16a3adf6282c11dd1d5458211ca99e8def84f27a5441786092d104dea2f\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0.4191369\",\"context\":{},\"evidence_rows\":[\"billed:b-i-0b2\",\"observed:o-i-0b2\"],\"first_seen\":\"2026-11-07T02:00:00Z\",\"index\":23,\"key\":\"i-0b2\",\"name\":\"Vampire\",\"prev_hash\":\"8ad7c16a3adf6282c11dd1d5458211ca99e8def84f27a5441786092d104dea2f\",\"region_code\":\"OB\",\"row_hash\":\"ab9ff5bf092b5393f5ef9f47e0286446e28b6a7ee332fd47beaf0be2a6050f96\",\"status\":\"new\",\"type\":\"finding\"}\n{\"billed_amount\":\"0.0455156\",\"context\":{},\"evidence_rows\":[\"billed:b-vol-0c3\",\"observed:o-vol-0c3\"],\"first_seen\":\"2026-11-07T02:00:00Z\",\"index\":24,\"key\":\"vol-0c3\",\"name\":\"Vampire\",\"prev_hash\":\"ab9ff5bf092b5393f5ef9f47e0286446e28b6a7ee332fd47beaf0be2a6050f96\",\"region_code\":\"OB\",\"row_hash\":\"a9e945083222cb13601aa29d8c9369a3b099cae2a58ff7c4183e9849754228d3\",\"status\":\"new\",\"type\":\"finding\"}\n",
+   "manifest": {
+    "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
+    "complete": true,
+    "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+    "final_chain_hash": "a9e945083222cb13601aa29d8c9369a3b099cae2a58ff7c4183e9849754228d3",
+    "finding_count": 8,
+    "ledgers": {
+     "billed": {
+      "count": 4,
+      "hash": "b19a42361e8afc390d77bcf4702e02847f98c03945f1f0cae54a0f03994debad",
+      "source": "billed"
+     },
+     "intended": {
+      "count": 4,
+      "hash": "faea206f94de32364456d36ccc576c8099ba205fa5f3ffb9f96916e449db4447",
+      "source": "intended"
+     },
+     "observed": {
+      "count": 8,
+      "hash": "9899d6d49304f4415e00170d9925fb8bedb725d019c6ab090e8b7a8cd44b6f1f",
+      "source": "observed"
+     }
+    },
+    "row_count": 25,
+    "run_id": "2e4b018dd34aad3d",
+    "run_time": "2026-11-07T02:00:00Z"
+   },
+   "displayed": [
+    {
+     "name": "a night stored without labels, served in plain words",
+     "document": {
+      "run_id": "2e4b018dd34aad3d",
+      "run_time": "2026-11-07T02:00:00Z",
+      "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+      "complete": true,
+      "control_id": "aws-account",
+      "control_title": "Lab account",
+      "app": "vampires",
+      "region_names": {
+       "IOB": "Living",
+       "IO": "Familiar",
+       "IB": "Wraith",
+       "OB": "Vampire",
+       "I": "Skeleton",
+       "O": "Poltergeist",
+       "B": "Phantom"
+      },
+      "region_labels": {},
+      "region_meanings": {},
+      "ledger_errors": {},
+      "excluded": {},
+      "missing_ledgers": [],
+      "snapshots": [],
+      "regions": {
+       "lab-deployer": "I",
+       "lab-trail": "IO",
+       "lab-reader": "IO",
+       "i-0d4": "IOB",
+       "eni-0a1": "OB",
+       "i-0b2": "OB",
+       "vol-0c3": "OB",
+       "access-key-one": "O",
+       "lab-debug": "O"
+      },
+      "pending_keys": [],
+      "unkeyed": [],
+      "findings": [
+       {
+        "key": "lab-deployer",
+        "region_code": "I",
+        "name": "Skeleton",
+        "severity": "medium",
+        "meaning": "Approved, but absent and unbilled.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-reader",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-trail",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "access-key-one",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-debug",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "eni-0a1",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.2525833",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "i-0b2",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.4191369",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "vol-0c3",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.0455156",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       }
+      ],
+      "region_summaries": {
+       "I": {
+        "code": "I",
+        "key_count": 1,
+        "billed_amount": "0"
+       },
+       "IO": {
+        "code": "IO",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "IOB": {
+        "code": "IOB",
+        "key_count": 1,
+        "billed_amount": "0.7143713"
+       },
+       "O": {
+        "code": "O",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "OB": {
+        "code": "OB",
+        "key_count": 3,
+        "billed_amount": "0.7172358"
+       }
+      },
+      "duplicates": {},
+      "billed_total": "1.4316071",
+      "billed_unkeyed": "0",
+      "dropped": {
+       "intended": 0,
+       "observed": 0,
+       "billed": 0
+      },
+      "resolved": [],
+      "evidence_chain_hash": "a9e945083222cb13601aa29d8c9369a3b099cae2a58ff7c4183e9849754228d3",
+      "ui": {
+       "title": "Cloud account",
+       "tagline": "Three ledgers of the same reality, matched every night.",
+       "noun": {
+        "singular": "resource",
+        "plural": "resources"
+       },
+       "ledgers": {
+        "intended": {
+         "label": "Intended",
+         "source": "What was approved."
+        },
+        "observed": {
+         "label": "Observed",
+         "source": "What exists."
+        },
+        "billed": {
+         "label": "Billed",
+         "source": "What is paid for."
+        }
+       },
+       "columns": [
+        {
+         "label": "Key",
+         "from": "key"
+        },
+        {
+         "label": "Since",
+         "from": "status"
+        },
+        {
+         "label": "Billed",
+         "from": "amount"
+        }
+       ],
+       "headlines": {
+        "OB": {
+         "one": "{count} Vampire is running and on the bill with no approval: {amount} so far.",
+         "other": "{count} Vampires are running and on the bill with no approval: {amount} so far."
+        },
+        "B": {
+         "one": "{count} Phantom is billed, but nobody declared it or can see it: {amount}.",
+         "other": "{count} Phantoms are billed, but nobody declared them or can see them: {amount}."
+        },
+        "IB": {
+         "one": "{count} Wraith is declared and billed, but cannot be seen: {amount}.",
+         "other": "{count} Wraiths are declared and billed, but cannot be seen: {amount}."
+        },
+        "I": {
+         "one": "{count} declared {noun} is gone.",
+         "other": "{count} declared {noun} are gone."
+        },
+        "O": {
+         "one": "{count} Poltergeist costs nothing.",
+         "other": "{count} Poltergeists cost nothing."
+        }
+       },
+       "unkeyed": {
+        "singular": "line with no resource id",
+        "plural": "lines with no resource id",
+        "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+       },
+       "downloads": []
+      },
+      "notes": [],
+      "view": {
+       "headline": "3 resources are running and on the bill with no approval: $0.7172 so far. 2 resources exist with no approval and cost nothing. 1 approved resource is gone.",
+       "headline_sentences": [
+        "3 resources are running and on the bill with no approval: $0.7172 so far.",
+        "2 resources exist with no approval and cost nothing.",
+        "1 approved resource is gone."
+       ],
+       "region_labels": {
+        "IOB": "Matched",
+        "IO": "Approved and present, not billed yet",
+        "IB": "Approved and billed, not seen",
+        "OB": "Running and billed, never approved",
+        "I": "Approved, but gone",
+        "O": "Exists, never approved, free",
+        "B": "Billed, nothing to see"
+       },
+       "calm": false,
+       "ledger_keys": {
+        "intended": null,
+        "observed": null,
+        "billed": null
+       },
+       "keyed_total": "1.4316071",
+       "unkeyed_total": "0",
+       "billed_total": "1.4316071",
+       "lines": [
+        {
+         "label": "On the bill for 0 resources",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        },
+        {
+         "label": "Billed total",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        }
+       ],
+       "finding_count": 6,
+       "new_count": 6,
+       "persisting_count": 0,
+       "pending_count": 0,
+       "resolved_count": 0
+      },
+      "downloads": []
+     },
+     "verdict": {
+      "ok": true,
+      "failed_row": null,
+      "rows": 25,
+      "findings": 8,
+      "final_hash": "a9e945083222cb13601aa29d8c9369a3b099cae2a58ff7c4183e9849754228d3",
+      "detail": "verified 25 rows, 8 findings, header matches the manifest; the page matches the evidence"
+     }
+    },
+    {
+     "name": "its plain headline with the lead count changed",
+     "document": {
+      "run_id": "2e4b018dd34aad3d",
+      "run_time": "2026-11-07T02:00:00Z",
+      "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+      "complete": true,
+      "control_id": "aws-account",
+      "control_title": "Lab account",
+      "app": "vampires",
+      "region_names": {
+       "IOB": "Living",
+       "IO": "Familiar",
+       "IB": "Wraith",
+       "OB": "Vampire",
+       "I": "Skeleton",
+       "O": "Poltergeist",
+       "B": "Phantom"
+      },
+      "region_labels": {},
+      "region_meanings": {},
+      "ledger_errors": {},
+      "excluded": {},
+      "missing_ledgers": [],
+      "snapshots": [],
+      "regions": {
+       "lab-deployer": "I",
+       "lab-trail": "IO",
+       "lab-reader": "IO",
+       "i-0d4": "IOB",
+       "eni-0a1": "OB",
+       "i-0b2": "OB",
+       "vol-0c3": "OB",
+       "access-key-one": "O",
+       "lab-debug": "O"
+      },
+      "pending_keys": [],
+      "unkeyed": [],
+      "findings": [
+       {
+        "key": "lab-deployer",
+        "region_code": "I",
+        "name": "Skeleton",
+        "severity": "medium",
+        "meaning": "Approved, but absent and unbilled.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-reader",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-trail",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "access-key-one",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-debug",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "eni-0a1",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.2525833",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "i-0b2",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.4191369",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "vol-0c3",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.0455156",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       }
+      ],
+      "region_summaries": {
+       "I": {
+        "code": "I",
+        "key_count": 1,
+        "billed_amount": "0"
+       },
+       "IO": {
+        "code": "IO",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "IOB": {
+        "code": "IOB",
+        "key_count": 1,
+        "billed_amount": "0.7143713"
+       },
+       "O": {
+        "code": "O",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "OB": {
+        "code": "OB",
+        "key_count": 3,
+        "billed_amount": "0.7172358"
+       }
+      },
+      "duplicates": {},
+      "billed_total": "1.4316071",
+      "billed_unkeyed": "0",
+      "dropped": {
+       "intended": 0,
+       "observed": 0,
+       "billed": 0
+      },
+      "resolved": [],
+      "evidence_chain_hash": "a9e945083222cb13601aa29d8c9369a3b099cae2a58ff7c4183e9849754228d3",
+      "ui": {
+       "title": "Cloud account",
+       "tagline": "Three ledgers of the same reality, matched every night.",
+       "noun": {
+        "singular": "resource",
+        "plural": "resources"
+       },
+       "ledgers": {
+        "intended": {
+         "label": "Intended",
+         "source": "What was approved."
+        },
+        "observed": {
+         "label": "Observed",
+         "source": "What exists."
+        },
+        "billed": {
+         "label": "Billed",
+         "source": "What is paid for."
+        }
+       },
+       "columns": [
+        {
+         "label": "Key",
+         "from": "key"
+        },
+        {
+         "label": "Since",
+         "from": "status"
+        },
+        {
+         "label": "Billed",
+         "from": "amount"
+        }
+       ],
+       "headlines": {
+        "OB": {
+         "one": "{count} Vampire is running and on the bill with no approval: {amount} so far.",
+         "other": "{count} Vampires are running and on the bill with no approval: {amount} so far."
+        },
+        "B": {
+         "one": "{count} Phantom is billed, but nobody declared it or can see it: {amount}.",
+         "other": "{count} Phantoms are billed, but nobody declared them or can see them: {amount}."
+        },
+        "IB": {
+         "one": "{count} Wraith is declared and billed, but cannot be seen: {amount}.",
+         "other": "{count} Wraiths are declared and billed, but cannot be seen: {amount}."
+        },
+        "I": {
+         "one": "{count} declared {noun} is gone.",
+         "other": "{count} declared {noun} are gone."
+        },
+        "O": {
+         "one": "{count} Poltergeist costs nothing.",
+         "other": "{count} Poltergeists cost nothing."
+        }
+       },
+       "unkeyed": {
+        "singular": "line with no resource id",
+        "plural": "lines with no resource id",
+        "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+       },
+       "downloads": []
+      },
+      "notes": [],
+      "view": {
+       "headline": "13 resources are running and on the bill with no approval: $0.7172 so far. 2 resources exist with no approval and cost nothing. 1 approved resource is gone.",
+       "headline_sentences": [
+        "13 resources are running and on the bill with no approval: $0.7172 so far.",
+        "2 resources exist with no approval and cost nothing.",
+        "1 approved resource is gone."
+       ],
+       "region_labels": {
+        "IOB": "Matched",
+        "IO": "Approved and present, not billed yet",
+        "IB": "Approved and billed, not seen",
+        "OB": "Running and billed, never approved",
+        "I": "Approved, but gone",
+        "O": "Exists, never approved, free",
+        "B": "Billed, nothing to see"
+       },
+       "calm": false,
+       "ledger_keys": {
+        "intended": null,
+        "observed": null,
+        "billed": null
+       },
+       "keyed_total": "1.4316071",
+       "unkeyed_total": "0",
+       "billed_total": "1.4316071",
+       "lines": [
+        {
+         "label": "On the bill for 0 resources",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        },
+        {
+         "label": "Billed total",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        }
+       ],
+       "finding_count": 6,
+       "new_count": 6,
+       "persisting_count": 0,
+       "pending_count": 0,
+       "resolved_count": 0
+      },
+      "downloads": []
+     },
+     "verdict": {
+      "ok": false,
+      "failed_row": null,
+      "rows": 0,
+      "findings": 0,
+      "final_hash": null,
+      "detail": "the page differs from the evidence: headline: the page shows the number 13, which is not one of the headline's counts or amounts"
+     }
+    },
+    {
+     "name": "its plain headline with the last count changed",
+     "document": {
+      "run_id": "2e4b018dd34aad3d",
+      "run_time": "2026-11-07T02:00:00Z",
+      "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+      "complete": true,
+      "control_id": "aws-account",
+      "control_title": "Lab account",
+      "app": "vampires",
+      "region_names": {
+       "IOB": "Living",
+       "IO": "Familiar",
+       "IB": "Wraith",
+       "OB": "Vampire",
+       "I": "Skeleton",
+       "O": "Poltergeist",
+       "B": "Phantom"
+      },
+      "region_labels": {},
+      "region_meanings": {},
+      "ledger_errors": {},
+      "excluded": {},
+      "missing_ledgers": [],
+      "snapshots": [],
+      "regions": {
+       "lab-deployer": "I",
+       "lab-trail": "IO",
+       "lab-reader": "IO",
+       "i-0d4": "IOB",
+       "eni-0a1": "OB",
+       "i-0b2": "OB",
+       "vol-0c3": "OB",
+       "access-key-one": "O",
+       "lab-debug": "O"
+      },
+      "pending_keys": [],
+      "unkeyed": [],
+      "findings": [
+       {
+        "key": "lab-deployer",
+        "region_code": "I",
+        "name": "Skeleton",
+        "severity": "medium",
+        "meaning": "Approved, but absent and unbilled.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-reader",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-trail",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "access-key-one",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-debug",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "eni-0a1",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.2525833",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "i-0b2",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.4191369",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "vol-0c3",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.0455156",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       }
+      ],
+      "region_summaries": {
+       "I": {
+        "code": "I",
+        "key_count": 1,
+        "billed_amount": "0"
+       },
+       "IO": {
+        "code": "IO",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "IOB": {
+        "code": "IOB",
+        "key_count": 1,
+        "billed_amount": "0.7143713"
+       },
+       "O": {
+        "code": "O",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "OB": {
+        "code": "OB",
+        "key_count": 3,
+        "billed_amount": "0.7172358"
+       }
+      },
+      "duplicates": {},
+      "billed_total": "1.4316071",
+      "billed_unkeyed": "0",
+      "dropped": {
+       "intended": 0,
+       "observed": 0,
+       "billed": 0
+      },
+      "resolved": [],
+      "evidence_chain_hash": "a9e945083222cb13601aa29d8c9369a3b099cae2a58ff7c4183e9849754228d3",
+      "ui": {
+       "title": "Cloud account",
+       "tagline": "Three ledgers of the same reality, matched every night.",
+       "noun": {
+        "singular": "resource",
+        "plural": "resources"
+       },
+       "ledgers": {
+        "intended": {
+         "label": "Intended",
+         "source": "What was approved."
+        },
+        "observed": {
+         "label": "Observed",
+         "source": "What exists."
+        },
+        "billed": {
+         "label": "Billed",
+         "source": "What is paid for."
+        }
+       },
+       "columns": [
+        {
+         "label": "Key",
+         "from": "key"
+        },
+        {
+         "label": "Since",
+         "from": "status"
+        },
+        {
+         "label": "Billed",
+         "from": "amount"
+        }
+       ],
+       "headlines": {
+        "OB": {
+         "one": "{count} Vampire is running and on the bill with no approval: {amount} so far.",
+         "other": "{count} Vampires are running and on the bill with no approval: {amount} so far."
+        },
+        "B": {
+         "one": "{count} Phantom is billed, but nobody declared it or can see it: {amount}.",
+         "other": "{count} Phantoms are billed, but nobody declared them or can see them: {amount}."
+        },
+        "IB": {
+         "one": "{count} Wraith is declared and billed, but cannot be seen: {amount}.",
+         "other": "{count} Wraiths are declared and billed, but cannot be seen: {amount}."
+        },
+        "I": {
+         "one": "{count} declared {noun} is gone.",
+         "other": "{count} declared {noun} are gone."
+        },
+        "O": {
+         "one": "{count} Poltergeist costs nothing.",
+         "other": "{count} Poltergeists cost nothing."
+        }
+       },
+       "unkeyed": {
+        "singular": "line with no resource id",
+        "plural": "lines with no resource id",
+        "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+       },
+       "downloads": []
+      },
+      "notes": [],
+      "view": {
+       "headline": "3 resources are running and on the bill with no approval: $0.7172 so far. 2 resources exist with no approval and cost nothing. 4 approved resource is gone.",
+       "headline_sentences": [
+        "3 resources are running and on the bill with no approval: $0.7172 so far.",
+        "2 resources exist with no approval and cost nothing.",
+        "4 approved resource is gone."
+       ],
+       "region_labels": {
+        "IOB": "Matched",
+        "IO": "Approved and present, not billed yet",
+        "IB": "Approved and billed, not seen",
+        "OB": "Running and billed, never approved",
+        "I": "Approved, but gone",
+        "O": "Exists, never approved, free",
+        "B": "Billed, nothing to see"
+       },
+       "calm": false,
+       "ledger_keys": {
+        "intended": null,
+        "observed": null,
+        "billed": null
+       },
+       "keyed_total": "1.4316071",
+       "unkeyed_total": "0",
+       "billed_total": "1.4316071",
+       "lines": [
+        {
+         "label": "On the bill for 0 resources",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        },
+        {
+         "label": "Billed total",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        }
+       ],
+       "finding_count": 6,
+       "new_count": 6,
+       "persisting_count": 0,
+       "pending_count": 0,
+       "resolved_count": 0
+      },
+      "downloads": []
+     },
+     "verdict": {
+      "ok": false,
+      "failed_row": null,
+      "rows": 0,
+      "findings": 0,
+      "final_hash": null,
+      "detail": "the page differs from the evidence: headline: the page shows the number 4, which is not one of the headline's counts or amounts"
+     }
+    },
+    {
+     "name": "its plain headline with the amount rounded wrongly",
+     "document": {
+      "run_id": "2e4b018dd34aad3d",
+      "run_time": "2026-11-07T02:00:00Z",
+      "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+      "complete": true,
+      "control_id": "aws-account",
+      "control_title": "Lab account",
+      "app": "vampires",
+      "region_names": {
+       "IOB": "Living",
+       "IO": "Familiar",
+       "IB": "Wraith",
+       "OB": "Vampire",
+       "I": "Skeleton",
+       "O": "Poltergeist",
+       "B": "Phantom"
+      },
+      "region_labels": {},
+      "region_meanings": {},
+      "ledger_errors": {},
+      "excluded": {},
+      "missing_ledgers": [],
+      "snapshots": [],
+      "regions": {
+       "lab-deployer": "I",
+       "lab-trail": "IO",
+       "lab-reader": "IO",
+       "i-0d4": "IOB",
+       "eni-0a1": "OB",
+       "i-0b2": "OB",
+       "vol-0c3": "OB",
+       "access-key-one": "O",
+       "lab-debug": "O"
+      },
+      "pending_keys": [],
+      "unkeyed": [],
+      "findings": [
+       {
+        "key": "lab-deployer",
+        "region_code": "I",
+        "name": "Skeleton",
+        "severity": "medium",
+        "meaning": "Approved, but absent and unbilled.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-reader",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-trail",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "access-key-one",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-debug",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "eni-0a1",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.2525833",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "i-0b2",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.4191369",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "vol-0c3",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.0455156",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       }
+      ],
+      "region_summaries": {
+       "I": {
+        "code": "I",
+        "key_count": 1,
+        "billed_amount": "0"
+       },
+       "IO": {
+        "code": "IO",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "IOB": {
+        "code": "IOB",
+        "key_count": 1,
+        "billed_amount": "0.7143713"
+       },
+       "O": {
+        "code": "O",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "OB": {
+        "code": "OB",
+        "key_count": 3,
+        "billed_amount": "0.7172358"
+       }
+      },
+      "duplicates": {},
+      "billed_total": "1.4316071",
+      "billed_unkeyed": "0",
+      "dropped": {
+       "intended": 0,
+       "observed": 0,
+       "billed": 0
+      },
+      "resolved": [],
+      "evidence_chain_hash": "a9e945083222cb13601aa29d8c9369a3b099cae2a58ff7c4183e9849754228d3",
+      "ui": {
+       "title": "Cloud account",
+       "tagline": "Three ledgers of the same reality, matched every night.",
+       "noun": {
+        "singular": "resource",
+        "plural": "resources"
+       },
+       "ledgers": {
+        "intended": {
+         "label": "Intended",
+         "source": "What was approved."
+        },
+        "observed": {
+         "label": "Observed",
+         "source": "What exists."
+        },
+        "billed": {
+         "label": "Billed",
+         "source": "What is paid for."
+        }
+       },
+       "columns": [
+        {
+         "label": "Key",
+         "from": "key"
+        },
+        {
+         "label": "Since",
+         "from": "status"
+        },
+        {
+         "label": "Billed",
+         "from": "amount"
+        }
+       ],
+       "headlines": {
+        "OB": {
+         "one": "{count} Vampire is running and on the bill with no approval: {amount} so far.",
+         "other": "{count} Vampires are running and on the bill with no approval: {amount} so far."
+        },
+        "B": {
+         "one": "{count} Phantom is billed, but nobody declared it or can see it: {amount}.",
+         "other": "{count} Phantoms are billed, but nobody declared them or can see them: {amount}."
+        },
+        "IB": {
+         "one": "{count} Wraith is declared and billed, but cannot be seen: {amount}.",
+         "other": "{count} Wraiths are declared and billed, but cannot be seen: {amount}."
+        },
+        "I": {
+         "one": "{count} declared {noun} is gone.",
+         "other": "{count} declared {noun} are gone."
+        },
+        "O": {
+         "one": "{count} Poltergeist costs nothing.",
+         "other": "{count} Poltergeists cost nothing."
+        }
+       },
+       "unkeyed": {
+        "singular": "line with no resource id",
+        "plural": "lines with no resource id",
+        "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+       },
+       "downloads": []
+      },
+      "notes": [],
+      "view": {
+       "headline": "3 resources are running and on the bill with no approval: $0.7173 so far. 2 resources exist with no approval and cost nothing. 1 approved resource is gone.",
+       "headline_sentences": [
+        "3 resources are running and on the bill with no approval: $0.7173 so far.",
+        "2 resources exist with no approval and cost nothing.",
+        "1 approved resource is gone."
+       ],
+       "region_labels": {
+        "IOB": "Matched",
+        "IO": "Approved and present, not billed yet",
+        "IB": "Approved and billed, not seen",
+        "OB": "Running and billed, never approved",
+        "I": "Approved, but gone",
+        "O": "Exists, never approved, free",
+        "B": "Billed, nothing to see"
+       },
+       "calm": false,
+       "ledger_keys": {
+        "intended": null,
+        "observed": null,
+        "billed": null
+       },
+       "keyed_total": "1.4316071",
+       "unkeyed_total": "0",
+       "billed_total": "1.4316071",
+       "lines": [
+        {
+         "label": "On the bill for 0 resources",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        },
+        {
+         "label": "Billed total",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        }
+       ],
+       "finding_count": 6,
+       "new_count": 6,
+       "persisting_count": 0,
+       "pending_count": 0,
+       "resolved_count": 0
+      },
+      "downloads": []
+     },
+     "verdict": {
+      "ok": false,
+      "failed_row": null,
+      "rows": 0,
+      "findings": 0,
+      "final_hash": null,
+      "detail": "the page differs from the evidence: headline: the page shows $0.7173, which is no region's amount in the evidence; headline: the page shows the number 0.7173, which is not one of the headline's counts or amounts"
+     }
+    },
+    {
+     "name": "its plain headline with the amount written without a dollar sign",
+     "document": {
+      "run_id": "2e4b018dd34aad3d",
+      "run_time": "2026-11-07T02:00:00Z",
+      "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+      "complete": true,
+      "control_id": "aws-account",
+      "control_title": "Lab account",
+      "app": "vampires",
+      "region_names": {
+       "IOB": "Living",
+       "IO": "Familiar",
+       "IB": "Wraith",
+       "OB": "Vampire",
+       "I": "Skeleton",
+       "O": "Poltergeist",
+       "B": "Phantom"
+      },
+      "region_labels": {},
+      "region_meanings": {},
+      "ledger_errors": {},
+      "excluded": {},
+      "missing_ledgers": [],
+      "snapshots": [],
+      "regions": {
+       "lab-deployer": "I",
+       "lab-trail": "IO",
+       "lab-reader": "IO",
+       "i-0d4": "IOB",
+       "eni-0a1": "OB",
+       "i-0b2": "OB",
+       "vol-0c3": "OB",
+       "access-key-one": "O",
+       "lab-debug": "O"
+      },
+      "pending_keys": [],
+      "unkeyed": [],
+      "findings": [
+       {
+        "key": "lab-deployer",
+        "region_code": "I",
+        "name": "Skeleton",
+        "severity": "medium",
+        "meaning": "Approved, but absent and unbilled.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-reader",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-trail",
+        "region_code": "IO",
+        "name": "Familiar",
+        "severity": "informational",
+        "meaning": "Approved and present, not billed. Informational.",
+        "informational": true,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "access-key-one",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "lab-debug",
+        "region_code": "O",
+        "name": "Poltergeist",
+        "severity": "low",
+        "meaning": "Exists, unapproved, not billed.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "eni-0a1",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.2525833",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "i-0b2",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.4191369",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       },
+       {
+        "key": "vol-0c3",
+        "region_code": "OB",
+        "name": "Vampire",
+        "severity": "high",
+        "meaning": "Exists and is paid for, but nobody approved it.",
+        "informational": false,
+        "records": [],
+        "billed_amount": "0.0455156",
+        "duplicate_counts": {},
+        "status": "new",
+        "nights_persisted": null,
+        "first_seen": "2026-11-07T02:00:00Z",
+        "explanation": null,
+        "context": {}
+       }
+      ],
+      "region_summaries": {
+       "I": {
+        "code": "I",
+        "key_count": 1,
+        "billed_amount": "0"
+       },
+       "IO": {
+        "code": "IO",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "IOB": {
+        "code": "IOB",
+        "key_count": 1,
+        "billed_amount": "0.7143713"
+       },
+       "O": {
+        "code": "O",
+        "key_count": 2,
+        "billed_amount": "0"
+       },
+       "OB": {
+        "code": "OB",
+        "key_count": 3,
+        "billed_amount": "0.7172358"
+       }
+      },
+      "duplicates": {},
+      "billed_total": "1.4316071",
+      "billed_unkeyed": "0",
+      "dropped": {
+       "intended": 0,
+       "observed": 0,
+       "billed": 0
+      },
+      "resolved": [],
+      "evidence_chain_hash": "a9e945083222cb13601aa29d8c9369a3b099cae2a58ff7c4183e9849754228d3",
+      "ui": {
+       "title": "Cloud account",
+       "tagline": "Three ledgers of the same reality, matched every night.",
+       "noun": {
+        "singular": "resource",
+        "plural": "resources"
+       },
+       "ledgers": {
+        "intended": {
+         "label": "Intended",
+         "source": "What was approved."
+        },
+        "observed": {
+         "label": "Observed",
+         "source": "What exists."
+        },
+        "billed": {
+         "label": "Billed",
+         "source": "What is paid for."
+        }
+       },
+       "columns": [
+        {
+         "label": "Key",
+         "from": "key"
+        },
+        {
+         "label": "Since",
+         "from": "status"
+        },
+        {
+         "label": "Billed",
+         "from": "amount"
+        }
+       ],
+       "headlines": {
+        "OB": {
+         "one": "{count} Vampire is running and on the bill with no approval: {amount} so far.",
+         "other": "{count} Vampires are running and on the bill with no approval: {amount} so far."
+        },
+        "B": {
+         "one": "{count} Phantom is billed, but nobody declared it or can see it: {amount}.",
+         "other": "{count} Phantoms are billed, but nobody declared them or can see them: {amount}."
+        },
+        "IB": {
+         "one": "{count} Wraith is declared and billed, but cannot be seen: {amount}.",
+         "other": "{count} Wraiths are declared and billed, but cannot be seen: {amount}."
+        },
+        "I": {
+         "one": "{count} declared {noun} is gone.",
+         "other": "{count} declared {noun} are gone."
+        },
+        "O": {
+         "one": "{count} Poltergeist costs nothing.",
+         "other": "{count} Poltergeists cost nothing."
+        }
+       },
+       "unkeyed": {
+        "singular": "line with no resource id",
+        "plural": "lines with no resource id",
+        "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+       },
+       "downloads": []
+      },
+      "notes": [],
+      "view": {
+       "headline": "3 resources are running and on the bill with no approval: 0.7173 dollars so far. 2 resources exist with no approval and cost nothing. 1 approved resource is gone.",
+       "headline_sentences": [
+        "3 resources are running and on the bill with no approval: 0.7173 dollars so far.",
+        "2 resources exist with no approval and cost nothing.",
+        "1 approved resource is gone."
+       ],
+       "region_labels": {
+        "IOB": "Matched",
+        "IO": "Approved and present, not billed yet",
+        "IB": "Approved and billed, not seen",
+        "OB": "Running and billed, never approved",
+        "I": "Approved, but gone",
+        "O": "Exists, never approved, free",
+        "B": "Billed, nothing to see"
+       },
+       "calm": false,
+       "ledger_keys": {
+        "intended": null,
+        "observed": null,
+        "billed": null
+       },
+       "keyed_total": "1.4316071",
+       "unkeyed_total": "0",
+       "billed_total": "1.4316071",
+       "lines": [
+        {
+         "label": "On the bill for 0 resources",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        },
+        {
+         "label": "Billed total",
+         "value": "$1.4316071",
+         "amount": "1.4316071",
+         "note": ""
+        }
+       ],
+       "finding_count": 6,
+       "new_count": 6,
+       "persisting_count": 0,
+       "pending_count": 0,
+       "resolved_count": 0
+      },
+      "downloads": []
+     },
+     "verdict": {
+      "ok": false,
+      "failed_row": null,
+      "rows": 0,
+      "findings": 0,
+      "final_hash": null,
+      "detail": "the page differs from the evidence: headline: the page shows the number 0.7173, which is not one of the headline's counts or amounts"
+     }
+    }
+   ]
+  }
  }
 }

@@ -16,6 +16,7 @@ import boto3
 from mangum import Mangum
 from nightaudit.api import create_app
 from nightaudit.runner import run_control, run_summary
+from nightaudit.wording import control_files, load_words
 
 HERE = Path(__file__).resolve().parent
 BUCKET = os.environ["RUNS_BUCKET"]
@@ -48,7 +49,8 @@ def _upload_dir(src: Path, prefix: str) -> None:
 
 
 RUNS.mkdir(parents=True, exist_ok=True)
-_app = create_app(RUNS, static_dir=HERE / "web")
+#: Nights stored before plain labels are shown in the packaged controls' current plain words (presentation only).
+_app = create_app(RUNS, static_dir=HERE / "web", words=load_words(control_files(HERE / "controls")))
 _mangum = Mangum(_app, lifespan="off")
 
 

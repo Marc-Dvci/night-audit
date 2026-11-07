@@ -20,6 +20,7 @@ from pathlib import Path
 
 from nightaudit.demo import export_run, replace_folder, write_runs_json
 from nightaudit.runner import run_control
+from nightaudit.wording import repo_app_words
 
 HERE = Path(__file__).resolve().parent
 APP_DIR = HERE.parent
@@ -46,7 +47,7 @@ def build(target: Path = TARGET, runs: Path = RUNS) -> list[str]:
         f"own-build {NIGHT.date()}: run {result.run_id}, {len(findings)} findings, "
         f"{len(result.findings) - len(findings)} informational, pending {result.pending_keys}"
     )
-    export_run(runs, result.run_id, target / result.run_id, ZIP_TIME)
+    export_run(runs, result.run_id, target / result.run_id, ZIP_TIME, words=repo_app_words(ROOT))
     write_runs_json(runs, [result.run_id], target)
     print(f"own-build demo written to {target}")
     return [result.run_id]

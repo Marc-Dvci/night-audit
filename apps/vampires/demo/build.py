@@ -21,6 +21,7 @@ from pathlib import Path
 
 from nightaudit.demo import export_run, replace_folder, write_runs_json
 from nightaudit.runner import run_control
+from nightaudit.wording import repo_app_words
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -52,7 +53,7 @@ def build(target: Path = TARGET, runs: Path = RUNS) -> list[str]:
         run_ids.append(result.run_id)
         print(f"vampires {folder}: run {result.run_id}, {len(result.findings)} findings, pending {result.pending_keys}")
     for run_id in run_ids:
-        export_run(runs, run_id, target / run_id, ZIP_TIME)
+        export_run(runs, run_id, target / run_id, ZIP_TIME, words=repo_app_words(ROOT))
     write_runs_json(runs, run_ids, target)
     print(f"vampires demo written to {target}")
     return run_ids

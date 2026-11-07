@@ -16,9 +16,10 @@ export const DEFAULT_LABELS: Record<string, string> = {
   B: "Billed, never approved, not seen",
 };
 
-/** The region's plain label in this run. */
+/** The region's plain label as shown. The view's labels come first: for a night stored without labels the API fills
+ * them from the app's current control, so the page, the static demo and the morning report agree. */
 export function regionLabel(run: RunResult, code: string): string {
-  return run.region_labels?.[code] || DEFAULT_LABELS[code] || code;
+  return run.view?.region_labels?.[code] || run.region_labels?.[code] || DEFAULT_LABELS[code] || code;
 }
 
 /** The small tag: the glyph and the Halloween name. Empty when the name is the label (a control with plain names). */

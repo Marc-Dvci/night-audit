@@ -35,6 +35,7 @@ from .models import DOWNLOAD_FILE, Finding, RunResult
 from .notes import NOTES_FILE, page_notes
 from .report import report_csp, report_html, run_view
 from .runner import list_run_ids, load_run, run_summary
+from .wording import AppWords
 
 _RUN_ID = re.compile(r"^[0-9a-f]{16}$")
 #: The media type of each allowed download type (``DOWNLOAD_FILE``).
@@ -72,15 +73,19 @@ def _as_json_dict(model: Any) -> dict[str, Any]:
     return data
 
 
-def run_document(result: RunResult, run_dir: Path | None = None) -> dict[str, Any]:
+def run_document(result: RunResult, run_dir: Path | None = None, words: AppWords | None = None) -> dict[str, Any]:
     """The run as the page reads it: the stored result plus the view computed by ``report.py``.
+
+    The stored result is passed through unchanged. Only the ``view`` is computed, in the apps' current plain words
+    (*words*) for the regions a night was stored without a label for, so the live API, the static demo and the
+    morning report show the same words from the same function.
 
     With the run's folder it also lists the downloads that exist there (Req 10.6) and the review decisions when the
     evidence folder holds a decision chain (Req 10.7), and the investigator's notes when it holds a notes chain
     (night shift Req 1.2).
     """
     data = _as_json_dict(result)
-    data["view"] = _as_json_dict(run_view(result))
+    data["view"] = _as_json_dict(run_view(result, words))
     data["downloads"] = (
         [{"label": d.label, "file": d.file} for d in result.ui.downloads if download_path(run_dir, result, d.file)]
         if run_dir is not None
@@ -111,8 +116,11 @@ def download_path(run_dir: Path, result: RunResult, name: str) -> Path | None:
     return path
 
 
-def create_app(runs_dir: Path, static_dir: Path | None = None) -> FastAPI:
-    """Build the Night Audit FastAPI app reading runs from *runs_dir*."""
+def create_app(runs_dir: Path, static_dir: Path | None = None, words: AppWords | None = None) -> FastAPI:
+    """Build the Night Audit FastAPI app reading runs from *runs_dir*.
+
+    *words* are the apps' current plain words (``wording.load_words``), for nights stored without region labels.
+    """
     app = FastAPI(title="Night Audit", version="0.1.0")
     runs_dir.mkdir(parents=True, exist_ok=True)
 
@@ -143,11 +151,11 @@ def create_app(runs_dir: Path, static_dir: Path | None = None) -> FastAPI:
         ids = list_run_ids(runs_dir)
         if not ids:
             raise HTTPException(status_code=404, detail="no runs yet")
-        return run_document(_run_or_404(runs_dir, ids[0]), runs_dir / ids[0])
+        return run_document(_run_or_404(runs_dir, ids[0]), runs_dir / ids[0], words)
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str) -> dict[str, Any]:
-        return run_document(_run_or_404(runs_dir, run_id), runs_dir / run_id)
+        return run_document(_run_or_404(runs_dir, run_id), runs_dir / run_id, words)
 
     @app.get("/api/runs/{run_id}/files/{name}")
     def get_download(run_id: str, name: str) -> FileResponse:
@@ -213,7 +221,7 @@ def create_app(runs_dir: Path, static_dir: Path | None = None) -> FastAPI:
     @app.get("/api/runs/{run_id}/report.html")
     def get_report(run_id: str) -> HTMLResponse:
         result = _run_or_404(runs_dir, run_id)
-        return HTMLResponse(report_html(result), headers={"Content-Security-Policy": report_csp()})
+        return HTMLResponse(report_html(result, words=words), headers={"Content-Security-Policy": report_csp()})
 
     if static_dir is not None and static_dir.exists():
         app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")

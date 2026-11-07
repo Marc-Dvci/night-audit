@@ -117,3 +117,33 @@ describe("every number in the headline is checked, as in Python", () => {
   });
 });
 
+describe("a night stored without labels, its headline rebuilt in plain words, is checked as in Python", () => {
+  const { jsonl, manifest: labManifest, displayed } = fixture.pack.relabelled;
+
+  it.each(displayed.map((d) => [d.name, d] as const))("%s", async (_name, shown) => {
+    const result = await verifyPack(jsonl, labManifest, undefined, shown.document);
+    expect(result.ok).toBe(shown.verdict.ok);
+    expect(result.detail).toBe(shown.verdict.detail);
+    expect(result.failedRow).toBe(shown.verdict.failed_row);
+  });
+
+  it("shows the lab night's own figures in plain words", () => {
+    const view = displayed[0].document.view as { headline_sentences: string[] };
+    expect(view.headline_sentences).toEqual([
+      "3 resources are running and on the bill with no approval: $0.7172 so far.",
+      "2 resources exist with no approval and cost nothing.",
+      "1 approved resource is gone.",
+    ]);
+  });
+
+  it("fails on every edit of a count or an amount in the rebuilt headline", async () => {
+    const edits = displayed.slice(1);
+    expect(edits.length).toBe(4);
+    for (const shown of edits) {
+      const result = await verifyPack(jsonl, labManifest, undefined, shown.document);
+      expect(result.ok, shown.name).toBe(false);
+      expect(result.detail, shown.name).toContain("headline: the page shows");
+    }
+  });
+});
+

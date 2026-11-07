@@ -23,6 +23,7 @@ from pathlib import Path
 from ghosts.review import COLUMNS, import_sheet, load_result, neutralise, review_rows
 from ghosts.run import run
 from nightaudit.demo import export_run, replace_folder, write_runs_json
+from nightaudit.wording import repo_app_words
 
 HERE = Path(__file__).resolve().parent
 APP_DIR = HERE.parent
@@ -79,7 +80,7 @@ def build(target: Path = TARGET, runs: Path = RUNS) -> list[str]:
     rows = import_sheet(second, sheet, REVIEWER, clock=lambda: IMPORTED_AT)
     print(f"ghosts: {len(rows)} decisions recorded by {REVIEWER}")
     for run_id in run_ids:
-        export_run(runs, run_id, target / run_id, ZIP_TIME)
+        export_run(runs, run_id, target / run_id, ZIP_TIME, words=repo_app_words(ROOT))
     write_runs_json(runs, run_ids, target)
     print(f"ghosts demo written to {target}")
     return run_ids

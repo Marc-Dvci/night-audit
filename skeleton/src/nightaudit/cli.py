@@ -23,6 +23,7 @@ from .evidence import verify_evidence_pack
 from .models import RunResult
 from .notes import NOTES_FILE, verify_note_chain
 from .runner import run_control
+from .wording import repo_app_words
 
 
 def _parse_run_time(text: str | None) -> datetime | None:
@@ -70,7 +71,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
 def _cmd_serve(args: argparse.Namespace) -> int:
     import uvicorn
 
-    app = create_app(Path(args.runs), static_dir=_web_dist())
+    app = create_app(Path(args.runs), static_dir=_web_dist(), words=repo_app_words(_repo_root()))
     uvicorn.run(app, host=args.host, port=args.port)
     return 0
 

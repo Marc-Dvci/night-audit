@@ -115,6 +115,8 @@ export interface MoneyLine {
 export interface RunView {
   headline: string;
   headline_sentences: string[];
+  /** Each region's plain label as shown: stored, or for a night stored without labels, from the app's current control. */
+  region_labels?: Record<string, string>;
   calm: boolean;
   ledger_keys: Record<string, number | null>;
   keyed_total: string;

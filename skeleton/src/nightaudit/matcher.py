@@ -13,7 +13,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-from .control import ControlConfig, region_names
+from .control import ControlConfig, region_labels, region_names
 from .grace import find_pending
 from .models import (
     DEFAULT_REGION_MEANINGS,
@@ -312,4 +312,5 @@ def _match(
         dropped=dropped,
         excluded=excluded,
         region_names=region_names(control),
+        region_labels=region_labels(control),
     )

@@ -29,8 +29,18 @@ from nightaudit.api import run_document
 from nightaudit.control import ControlConfig
 from nightaudit.evidence import canonical_json, verify_evidence_pack, write_evidence_pack
 from nightaudit.matcher import match
-from nightaudit.models import LedgerName, LedgerSnapshot, Record, RegionSummary
+from nightaudit.models import (
+    HeadlineUi,
+    LedgerName,
+    LedgerSnapshot,
+    NounUi,
+    Record,
+    RegionSummary,
+    RunResult,
+    UiConfig,
+)
 from nightaudit.report import headline_money_text, headline_rounded, money_text
+from nightaudit.wording import PlainWords, load_words
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "skeleton" / "web" / "test" / "fixtures" / "parity.json"
@@ -480,6 +490,123 @@ def _legacy_pack(jsonl: str, manifest: dict[str, Any]) -> tuple[str, dict[str, A
     return "\n".join(lines) + "\n", {**manifest, "final_chain_hash": prev, "row_count": len(rows)}
 
 
+#: The night of 7 Nov 2026 02:00 UTC, when the lab account's night was recorded.
+LAB_RUN_TIME = datetime(2026, 11, 7, 2, 0, tzinfo=UTC)
+#: The Cloud account control as it read before plain labels: Halloween names in its headlines, no region labels.
+LAB_STORED_HEADLINES: dict[str, HeadlineUi] = {
+    "OB": HeadlineUi(
+        one="{count} Vampire is running and on the bill with no approval: {amount} so far.",
+        other="{count} Vampires are running and on the bill with no approval: {amount} so far.",
+    ),
+    "B": HeadlineUi(
+        one="{count} Phantom is billed, but nobody declared it or can see it: {amount}.",
+        other="{count} Phantoms are billed, but nobody declared them or can see them: {amount}.",
+    ),
+    "IB": HeadlineUi(
+        one="{count} Wraith is declared and billed, but cannot be seen: {amount}.",
+        other="{count} Wraiths are declared and billed, but cannot be seen: {amount}.",
+    ),
+    "I": HeadlineUi(one="{count} declared {noun} is gone.", other="{count} declared {noun} are gone."),
+    "O": HeadlineUi(one="{count} Poltergeist costs nothing.", other="{count} Poltergeists cost nothing."),
+}
+#: The Cloud account control of today, whose plain words the page uses for a night stored without labels.
+VAMPIRES_CONTROL = ROOT / "apps" / "vampires" / "controls" / "aws-account.yaml"
+
+
+def lab_shaped_night() -> RunResult:
+    """A night of the same shape as the lab night of 7 Nov: a stored control with no region labels and Halloween names
+    in its headlines; three resources running and billed with no approval (0.2525833 + 0.4191369 + 0.0455156 =
+    0.7172358), two present with no approval and no bill, one approved and gone, two approved and present with no bill
+    and one matched."""
+    old = datetime(2026, 9, 1, tzinfo=UTC)
+
+    def row(ledger: LedgerName, key: str, amount: str | None = None) -> Record:
+        return Record(
+            ledger=ledger,
+            source=ledger.value,
+            row_id=f"{ledger.value[0]}-{key}",
+            raw_key=key,
+            amount=None if amount is None else Decimal(amount),
+            timestamp=old if ledger is LedgerName.observed else None,
+        )
+
+    i, o, b = LedgerName.intended, LedgerName.observed, LedgerName.billed
+    billed_unapproved = [("eni-0a1", "0.2525833"), ("i-0b2", "0.4191369"), ("vol-0c3", "0.0455156")]
+    records = [
+        *(r for key, amount in billed_unapproved for r in (row(o, key), row(b, key, amount))),
+        row(o, "access-key-one"),
+        row(o, "lab-debug"),
+        row(i, "lab-deployer"),
+        *(r for key in ("lab-trail", "lab-reader") for r in (row(i, key), row(o, key))),
+        row(i, "i-0d4"),
+        row(o, "i-0d4"),
+        row(b, "i-0d4", "0.7143713"),
+    ]
+    snapshots = [
+        LedgerSnapshot(name=name, source=name.value, records=[r for r in records if r.ledger is name])
+        for name in (i, o, b)
+    ]
+    result = match(snapshots, ControlConfig(), LAB_RUN_TIME)
+    result.app = "vampires"
+    result.control_id = "aws-account"
+    result.control_title = "Lab account"
+    result.ui = UiConfig(
+        title="Cloud account", noun=NounUi(singular="resource", plural="resources"), headlines=LAB_STORED_HEADLINES
+    )
+    result.region_labels = {}  # a night stored before plain labels carries none
+    return result
+
+
+def lab_words() -> dict[str, PlainWords]:
+    """Today's plain words of the Cloud account app, read from its control file."""
+    return load_words([VAMPIRES_CONTROL])
+
+
+def _relabelled_case() -> dict[str, Any]:
+    """The lab-shaped night as the page shows it today: its headline rebuilt in plain words from its own counts and
+    amounts. Both verifiers check those numbers against the evidence as they check any headline."""
+    result = lab_shaped_night()
+    with tempfile.TemporaryDirectory() as tmp:
+        pack = Path(tmp)
+        write_evidence_pack(result, pack)
+        jsonl = (pack / "evidence.jsonl").read_text(encoding="utf-8")
+        manifest = (pack / "manifest.json").read_text(encoding="utf-8")
+    page = result.model_copy(
+        update={"snapshots": [], "findings": [f.model_copy(update={"records": []}) for f in result.findings]}
+    )
+    shown: dict[str, Any] = json.loads(json.dumps(run_document(page, words=lab_words())))
+
+    def edit(name: str, change: Callable[[dict[str, Any]], None]) -> tuple[str, dict[str, Any]]:
+        copy: dict[str, Any] = json.loads(json.dumps(shown))
+        change(copy)
+        return name, copy
+
+    def last_count(d: dict[str, Any]) -> None:
+        sentences = d["view"]["headline_sentences"]
+        count, rest = sentences[-1].split(" ", 1)
+        sentences[-1] = f"{int(count) + 3} {rest}"
+        d["view"]["headline"] = " ".join(sentences)
+
+    variants = [
+        ("a night stored without labels, served in plain words", shown),
+        edit("its plain headline with the lead count changed", lambda d: _headline_text(d, _count_plus_ten)),
+        edit("its plain headline with the last count changed", last_count),
+        edit("its plain headline with the amount rounded wrongly", lambda d: _headline_amount(d, "OB", _off_by_one)),
+        edit(
+            "its plain headline with the amount written without a dollar sign",
+            lambda d: _headline_amount(d, "OB", _no_dollar),
+        ),
+    ]
+    return {
+        "jsonl": jsonl,
+        "manifest": json.loads(manifest),
+        "displayed": [
+            {"name": name, "document": document, "verdict": _verdict(jsonl, manifest, document)}
+            for name, document in variants
+        ],
+    }
+
+
 def _pack_case() -> dict[str, Any]:
     result = match(_hostile_snapshots(), ControlConfig(), RUN_TIME)
     with tempfile.TemporaryDirectory() as tmp:
@@ -509,6 +636,7 @@ def _pack_case() -> dict[str, Any]:
         ],
         "completeness": _completeness_cases(jsonl, json.loads(manifest), shown),
         "ledgers": _ledger_cases(jsonl, json.loads(manifest)),
+        "relabelled": _relabelled_case(),
     }
 
 
