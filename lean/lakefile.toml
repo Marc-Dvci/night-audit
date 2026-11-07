@@ -1,0 +1,13 @@
+# The partition proof (night shift Req 3). Lean core only: no Mathlib, no other packages.
+name = "nightaudit"
+version = "0.1.0"
+defaultTargets = ["NightAudit", "regions"]
+
+# The model (NightAudit/Region.lean) and the theorems (NightAudit/Partition.lean).
+[[lean_lib]]
+name = "NightAudit"
+
+# Reads JSON Lines on stdin and prints the model's region code, or `none`, for each line.
+[[lean_exe]]
+name = "regions"
+root = "Main"

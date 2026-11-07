@@ -160,6 +160,47 @@ def test_the_subprocess_edge_runs_kiro_without_a_shell_input_or_unbounded_time(
     assert not seen.get("shell")
 
 
+def test_kiro_gets_aws_profile_from_the_profile_option_default_night_audit_and_keeps_the_rest_of_the_environment(
+    monkeypatch: pytest.MonkeyPatch, night: tuple[Path, RunResult]
+) -> None:
+    """The power's MCP server reads ${AWS_PROFILE}; under --require-mcp-startup a server that fails ends the session."""
+    runs, result = night
+    envs: list[dict[str, str]] = []
+
+    def fake_run(argv: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        envs.append(kwargs["env"])
+        return subprocess.CompletedProcess(argv, 0, stdout="nothing", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setenv("AWS_PROFILE", "someone-elses-profile")
+    monkeypatch.setenv("NIGHT_AUDIT_TEST_MARKER", "kept")
+
+    assert shift.main(["--runs", str(runs), "--run", result.run_id]) == 0
+    assert envs and all(env["AWS_PROFILE"] == "night-audit" for env in envs)
+    assert all(env["NIGHT_AUDIT_TEST_MARKER"] == "kept" for env in envs)
+
+    envs.clear()
+    assert shift.main(["--runs", str(runs), "--run", result.run_id, "--profile", "audit-readonly"]) == 0
+    assert envs and all(env["AWS_PROFILE"] == "audit-readonly" for env in envs)
+
+
+def test_exit_code_3_is_reported_as_an_mcp_server_that_did_not_start_naming_the_profile_that_was_set(
+    monkeypatch: pytest.MonkeyPatch, night: tuple[Path, RunResult]
+) -> None:
+    runs, result = night
+
+    def mcp_failure(argv: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(argv, 3, stdout="", stderr="mcp server failed to start")
+
+    monkeypatch.setattr(subprocess, "run", mcp_failure)
+    report = shift.investigate(runs, result, profile="audit-readonly", clock=lambda: AT, say=lambda _: None)
+    detail = report.outcomes[0].detail
+    assert report.exit_code == 2 and "code 3" in detail
+    assert "--require-mcp-startup" in detail and "AWS_PROFILE" in detail and "'audit-readonly'" in detail
+    assert shift.exit_problem(1, "night-audit") == "kiro-cli exited with code 1"
+    assert not (runs / result.run_id / "evidence" / NOTES_FILE).exists()
+
+
 def test_a_note_citing_a_number_that_is_not_in_the_evidence_is_recorded_with_its_reason_and_never_shown(
     night: tuple[Path, RunResult],
 ) -> None:

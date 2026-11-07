@@ -1,6 +1,6 @@
 # Tasks: the night shift
 
-Requirement 2 (the Kiro power) only. Requirements 1 and 3 get tasks when they are taken up.
+Requirements 2 (the Kiro power) and 3 (the partition proof). Requirement 1 gets tasks when it is taken up.
 
 ## Requirement 2: the Kiro power
 
@@ -22,3 +22,22 @@ Requirement 2 (the Kiro power) only. Requirements 1 and 3 get tasks when they ar
       with_no_other_night_audit_files`), which does not exercise `uv add` or the git URL.
 - [ ] **10. Lint, types, tests, casebook.** `uv run ruff check .`, `uv run mypy skeleton`, `uv run pytest -q`,
       `uv run python scripts/score_casebook.py --set dev`. [tech]
+
+## Requirement 3: the partition proof
+
+Lean is not installed on the machine these were written on; CI's `lean` job is the only compiler. A task is ticked
+when that job passes it.
+
+- [ ] **11. Lake project.** `lean/` pinned to `leanprover/lean4:v4.28.0`, core library only; `lakefile.toml` with the
+      `NightAudit` library and the `regions` executable. [Req 3.1]
+- [ ] **12. Model.** `lean/NightAudit/Region.lean`: `Region`, `regionOfFlags`, `regionOf`, with the `matcher.py` lines
+      it models. [Req 3.1]
+- [ ] **13. Theorems.** `lean/NightAudit/Partition.lean`: `every_key_has_a_region`, `no_key_outside_has_a_region`,
+      `region_is_exact`, `order_independent`, `duplicates_do_not_matter`, `partition_counts`; `Audit.lean` prints the
+      axioms of each. [Req 3.1]
+- [ ] **14. Executable.** `lean/Main.lean` reads JSON Lines with `Lean.Json` and prints a region code or `none`.
+      [Req 3.2]
+- [ ] **15. Differential test.** `skeleton/tests/test_lean_differential.py`, marker `lean`, 500 derandomised examples
+      with hostile keys; skips without `lake`, fails without it in CI. [Req 3.2]
+- [ ] **16. CI.** `lean` job: forbidden-word grep, `leanprover/lean-action` build, `sorry` in the build log, axiom
+      audit against `propext`, `Classical.choice`, `Quot.sound`, the executable, the differential test. [Req 3.3]

@@ -15,6 +15,10 @@ number in it must be in the finding's evidence rows. An accepted note is appende
 (see ``nightaudit.notes``); a rejected one is recorded there with its reason and is never shown. When Kiro is missing,
 times out or fails, nothing is written and the run is exactly as it was.
 
+The child process gets ``AWS_PROFILE`` from ``--profile`` (default ``night-audit``). ``--require-mcp-startup`` fails
+the whole session when any configured MCP server fails to start, including one the agent does not use, and the
+installed ``night-audit`` power's server reads ``${AWS_PROFILE}``. Without it, kiro-cli exits with code 3.
+
 Exit code: 0 done (rejections are normal), 1 nothing was attempted (no such run, the evidence or the notes chain does
 not verify), 2 Kiro was unavailable for at least one finding.
 """
@@ -22,7 +26,9 @@ not verify), 2 Kiro was unavailable for at least one finding.
 from __future__ import annotations
 
 import argparse
+import functools
 import json
+import os
 import re
 import subprocess
 import sys
@@ -43,6 +49,10 @@ AGENT = "night-investigator"
 DEFAULT_MODEL = f"kiro-cli agent {AGENT}"
 DEFAULT_TIMEOUT = 300.0
 DEFAULT_LIMIT = 25
+#: The AWS profile given to the child as ``AWS_PROFILE``; the night-audit power's MCP server reads it.
+DEFAULT_PROFILE = "night-audit"
+#: kiro-cli's exit code when an MCP server fails to start under ``--require-mcp-startup``.
+MCP_STARTUP_EXIT = 3
 #: A prompt this long means the finding holds an unusual number of evidence rows; it is skipped, not cut.
 MAX_PROMPT_CHARS = 24_000
 
@@ -90,12 +100,16 @@ Fetch = Callable[[str], Any]
 Clock = Callable[[], datetime]
 
 
-def launch_process(argv: Sequence[str], cwd: Path, timeout: float) -> Process:
-    """Run *argv* with no input, wait at most *timeout* seconds; raise ``KiroUnavailable`` if it cannot be run."""
+def launch_process(argv: Sequence[str], cwd: Path, timeout: float, profile: str = DEFAULT_PROFILE) -> Process:
+    """Run *argv* with no input, wait at most *timeout* seconds; raise ``KiroUnavailable`` if it cannot be run.
+
+    The child inherits this environment with ``AWS_PROFILE`` set to *profile*.
+    """
     try:
         done = subprocess.run(  # noqa: S603 - argv is a list, no shell
             list(argv),
             cwd=cwd,
+            env={**os.environ, "AWS_PROFILE": profile},
             stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
@@ -144,6 +158,18 @@ def read_note(stdout: str) -> tuple[str | None, str]:
     return notes[0], ""
 
 
+def exit_problem(returncode: int, profile: str) -> str:
+    """Why kiro-cli failed, in words: exit code 3 is an MCP server that did not start."""
+    message = f"kiro-cli exited with code {returncode}"
+    if returncode == MCP_STARTUP_EXIT:
+        message += (
+            ": an MCP server did not start, and --require-mcp-startup fails the session for any configured server, "
+            "including one the agent does not use. The night-audit power's server reads AWS_PROFILE; this run set "
+            f"it to {profile!r} (--profile). Check that the profile exists and that kiro-cli can start its servers"
+        )
+    return message
+
+
 def judge(text: str, finding: Finding) -> str:
     """The guard's verdict on a note: ``""`` when it is kept, else the reason it is not."""
     problem = note_text_problem(text)
@@ -189,7 +215,8 @@ def investigate(
     runs: Path,
     result: RunResult,
     *,
-    launch: Launch = launch_process,
+    launch: Launch | None = None,
+    profile: str = DEFAULT_PROFILE,
     clock: Clock = lambda: datetime.now(UTC),
     kiro: str = "kiro-cli",
     model: str | None = None,
@@ -198,7 +225,12 @@ def investigate(
     cwd: Path = ROOT,
     say: Callable[[str], None] = print,
 ) -> Report:
-    """Write a note for each new finding of *result* that has none yet; the run's other files are never touched."""
+    """Write a note for each new finding of *result* that has none yet; the run's other files are never touched.
+
+    Without *launch*, kiro-cli is started by ``launch_process`` with ``AWS_PROFILE`` set to *profile*.
+    """
+    if launch is None:
+        launch = functools.partial(launch_process, profile=profile)
     report = Report(result.run_id)
     run_dir = runs / result.run_id
     chain = verify_note_chain(run_dir, result)
@@ -218,7 +250,7 @@ def investigate(
         try:
             process = launch(kiro_argv(prompt, kiro, model), cwd, timeout)
             if process.returncode != 0:
-                raise KiroUnavailable(f"kiro-cli exited with code {process.returncode}")
+                raise KiroUnavailable(exit_problem(process.returncode, profile))
         except KiroUnavailable as exc:
             report.outcomes.append(Outcome(finding.key, finding.region_code, "unavailable", str(exc)))
             say(f"unavailable  {finding.key}: {exc}")
@@ -289,6 +321,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--api", help="base URL of the live API; it names the run, the local folder holds its evidence")
     parser.add_argument("--kiro", default="kiro-cli", help="the Kiro CLI program (default: kiro-cli)")
     parser.add_argument("--model", help="model to ask Kiro for; recorded with each note")
+    parser.add_argument(
+        "--profile",
+        default=DEFAULT_PROFILE,
+        help=f"AWS profile passed to kiro-cli as AWS_PROFILE; the power's MCP server needs it (default: {DEFAULT_PROFILE})",
+    )
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT, help="seconds per finding")
     parser.add_argument("--limit", type=int, default=DEFAULT_LIMIT, help="findings to investigate in one go")
     args = parser.parse_args(argv)
@@ -297,7 +334,15 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, ValueError) as exc:
         print(f"cannot choose a run: {exc}", file=sys.stderr)
         return 1
-    report = investigate(args.runs, result, kiro=args.kiro, model=args.model, timeout=args.timeout, limit=args.limit)
+    report = investigate(
+        args.runs,
+        result,
+        profile=args.profile,
+        kiro=args.kiro,
+        model=args.model,
+        timeout=args.timeout,
+        limit=args.limit,
+    )
     if report.refused is not None:
         print(f"refused: {report.refused}", file=sys.stderr)
         return report.exit_code

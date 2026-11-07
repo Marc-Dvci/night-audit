@@ -17,3 +17,7 @@ build/
 .coverage
 coverage.xml
 junit*.xml
+lean/.lake/
+lean/build.log
+lean/axioms.log
+lean/used.txt

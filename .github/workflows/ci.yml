@@ -118,3 +118,67 @@ jobs:
         run: docker build --target app -t night-audit:app .
       - if: failure()
         run: docker logs demo
+
+  # The partition proof (night shift Req 3): build it with the pinned toolchain, refuse any unfinished or trusted-code
+  # proof, print what each theorem rests on, then check the Lean model against the Python matcher.
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No sorry, native_decide or axiom in the Lean sources
+        shell: bash
+        run: |
+          if grep -nwE 'sorry|native_decide|axiom|admit' lean/Main.lean lean/NightAudit.lean lean/NightAudit/*.lean; then
+            echo "::error::the Lean sources contain sorry, native_decide, admit or axiom"
+            exit 1
+          fi
+      - name: Build the proofs and the executable
+        uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: lean
+          build: true
+          test: false
+          lint: false
+          use-mathlib-cache: false
+      - name: Fail on any sorry in the build log
+        working-directory: lean
+        shell: bash
+        run: |
+          lake build 2>&1 | tee build.log
+          if grep -n "declaration uses 'sorry'" build.log; then
+            echo "::error::a proof is incomplete (sorry)"
+            exit 1
+          fi
+      - name: Axiom audit
+        working-directory: lean
+        shell: bash
+        run: |
+          lake env lean NightAudit/Audit.lean 2>&1 | tee axioms.log
+          printed=$(grep -cE "depends on axioms|does not depend on any axioms" axioms.log || true)
+          if [ "$printed" -ne 10 ]; then
+            echo "::error::expected 10 axiom reports, found $printed"
+            exit 1
+          fi
+          if grep -nE "sorryAx|ofReduceBool|ofReduceNat|trustCompiler" axioms.log; then
+            echo "::error::a theorem depends on sorry or on compiled code"
+            exit 1
+          fi
+          { grep -oE "depends on axioms: \[[^]]*\]" axioms.log || true; } \
+            | sed -E 's/.*\[(.*)\]/\1/' | tr ',' '\n' | tr -d ' ' | sed '/^$/d' | sort -u > used.txt
+          echo "axioms used: $(paste -sd' ' used.txt)"
+          if grep -vxE 'propext|Classical\.choice|Quot\.sound' used.txt; then
+            echo "::error::a theorem depends on an axiom outside propext, Classical.choice, Quot.sound"
+            exit 1
+          fi
+      - name: Build the executable
+        working-directory: lean
+        run: lake build regions
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync
+      - name: Differential test, the Lean model against the Python matcher
+        env:
+          NIGHTAUDIT_REQUIRE_LEAN: "1"
+        run: uv run pytest -q -m lean skeleton/tests/test_lean_differential.py -p no:randomly

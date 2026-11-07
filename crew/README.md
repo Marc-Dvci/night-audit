@@ -21,6 +21,10 @@ The agent cron and `scripts/night_shift.py` are two separate routes to an invest
   finding, checks the note's numbers against the finding's evidence, and appends the verdict to
   `runs/<run_id>/evidence/notes.jsonl` as a hash chain bound to the run. Verify it with
   `uv run nightaudit verify-notes runs/<run_id>/evidence`. The page shows only notes recorded this way.
+* `scripts/night_shift.py` sets `AWS_PROFILE` for kiro-cli from `--profile` (default `night-audit`). It has to:
+  the installed `night-audit` power's MCP server reads `${AWS_PROFILE}`, and `--require-mcp-startup` fails the whole
+  session when any configured server fails to start, including a server the agent does not use. kiro-cli then exits
+  with code 3 and no note is written. Pass `--profile <name>` for a different read-only profile.
 * The `night-investigator` cron runs the agent inside Crew. Its reply is kept by Crew. Nothing in this app takes that
   reply, checks it and writes it to `notes.jsonl`. To get checked notes onto the page, run `scripts/night_shift.py`
   after the cron, by hand or from your own scheduler.

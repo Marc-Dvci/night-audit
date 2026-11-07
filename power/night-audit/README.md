@@ -36,6 +36,10 @@ This power gives Kiro two skills.
    anywhere. If `AWS_PROFILE` is unset, the server fails to start and nothing is called. On Windows, if `uvx` cannot
    start the server, see the server's own install notes at
    [awslabs/mcp](https://github.com/awslabs/mcp/tree/main/src/aws-api-mcp-server).
+5. `AWS_PROFILE` is needed even when you use no AWS source, if any agent runs with `--require-mcp-startup`. That flag
+   fails the whole session when any configured MCP server fails to start, including a server the agent does not use,
+   and this server does not start without `AWS_PROFILE`. Night Audit's `scripts/night_shift.py` runs that way, so it
+   sets `AWS_PROFILE` for kiro-cli from `--profile` (default `night-audit`); without it kiro-cli exits with code 3.
 
 ## Try it in an empty folder
 
