@@ -180,12 +180,16 @@ async function verify(change: "none" | "tamper" = "none"): Promise<void> {
             }
           }
         : undefined,
+      // What the page displays must also be what the chain holds: a fake finding fails here (Req 6.6).
+      run as unknown as Record<string, unknown>,
     );
     const pageHash = run.evidence_chain_hash;
     let verdict: string;
     let ok = result.ok;
     if (result.ok && result.finalHash === evidenceCache.manifest.final_chain_hash && result.finalHash === pageHash) {
-      verdict = `VERIFIED  ${result.rows} rows, ${result.findings} findings. Final hash ${result.finalHash} matches the manifest and the hash on this page.`;
+      verdict = `VERIFIED  ${result.rows} rows, ${result.findings} findings. Final hash ${result.finalHash} matches the manifest and the hash on this page. The findings and figures on this page match the chain.${
+        result.hasHeader ? "" : " This older pack has no header row, so its run id and run time are not bound to the chain."
+      }`;
     } else if (result.ok) {
       ok = false;
       verdict = `CHAIN IS WHOLE, BUT  its final hash ${result.finalHash} differs from the hash on this page.`;

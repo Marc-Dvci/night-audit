@@ -416,5 +416,5 @@ def test_a_control_without_the_new_sections_keeps_its_run_ids() -> None:
 def test_a_run_without_notes_writes_no_note_row(tmp_path: Path) -> None:
     runs = tmp_path / "runs"
     result = run_control(control(tmp_path / "c"), runs, run_time=RUN_TIME)
-    assert {r["type"] for r in evidence_rows(runs, result)} == {"record", "finding"}
+    assert {r["type"] for r in evidence_rows(runs, result)} == {"header", "record", "finding"}
     assert "notes" in json.loads((runs / result.run_id / "result.json").read_text("utf-8"))

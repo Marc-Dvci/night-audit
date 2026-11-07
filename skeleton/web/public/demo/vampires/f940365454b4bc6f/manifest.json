@@ -1,7 +1,7 @@
 {
   "chain_seed": "0000000000000000000000000000000000000000000000000000000000000000",
   "control_hash": "71b44a372d7a91dcb7ddbf67a1ed103cf941b33ff3d9a522f9fc681e068e239d",
-  "final_chain_hash": "20e249a56db77c6456d93e457a8d18fae5d075a20680f9d9f24e3ebeed6fa1c5",
+  "final_chain_hash": "d89388304b2e12ea2fa0249faf6ffa86c789cb6c1ec4a9e4d1a55eb0cc4e4d71",
   "finding_count": 6,
   "ledgers": {
     "billed": {
@@ -20,7 +20,7 @@
       "source": "observed.csv"
     }
   },
-  "row_count": 31,
+  "row_count": 32,
   "run_id": "f940365454b4bc6f",
   "run_time": "2026-11-05T02:00:00Z"
 }

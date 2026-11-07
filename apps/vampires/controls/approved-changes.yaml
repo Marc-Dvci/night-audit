@@ -1,14 +1,16 @@
 # Resources approved outside a CloudFormation stack. Each entry names who approved it, why, and until when.
+# Generic: {cur_bucket}, {artifacts_bucket}, {account_id} and {approver} are filled from settings.local.yaml or the
+# environment when the control runs (see settings.example.yaml). Add your own entries to approved-changes.local.yaml.
 approved:
-  - id: night-audit-cur-416964654816
-    approver: Marc Donovici
+  - id: "{cur_bucket}"
+    approver: "{approver}"
     reason: Destination of the CUR 2.0 data export that Night Audit reads as the billed ledger.
     expires: "2027-03-31"
   - id: night-audit-reader
-    approver: Marc Donovici
+    approver: "{approver}"
     reason: Read-only IAM user that runs the audit locally.
     expires: "2027-03-31"
-  - id: night-audit-artifacts-416964654816
-    approver: Marc Donovici
+  - id: "{artifacts_bucket}"
+    approver: "{approver}"
     reason: Holds the Lambda deployment packages of the Night Audit stack.
     expires: "2027-03-31"

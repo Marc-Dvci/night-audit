@@ -29,8 +29,10 @@ export default defineConfig({
     modulePreload: { polyfill: false },
     rollupOptions: {
       output: {
-        // The browser verifier is a stable, readable chunk so the e2e parity test imports the exact shipped code.
-        manualChunks: (id) => (/[\\/]src[\\/](verify|canonical)\.ts$/.test(id) ? "verify" : undefined),
+        // The browser verifier is a stable, readable chunk so the e2e parity test imports the exact shipped code. The
+        // formatters it shares with the page sit in their own chunk, so nothing but the dynamic import reaches verify.js.
+        manualChunks: (id) =>
+          /[\\/]src[\\/](verify|canonical)\.ts$/.test(id) ? "verify" : /[\\/]src[\\/]format\.ts$/.test(id) ? "format" : undefined,
         chunkFileNames: (chunk) => (chunk.name === "verify" ? "assets/verify.js" : "assets/[name]-[hash].js"),
         minifyInternalExports: false,
       },

@@ -184,6 +184,56 @@ def test_cur_sums_lines_and_keeps_zero_cost_usage(tmp_path: Path) -> None:
     assert by_key[""].attrs["line_type"] == "Credit"
 
 
+def test_cur_keeps_a_charge_of_four_hundred_millionths_of_a_dollar(tmp_path: Path) -> None:
+    """Regression: the amount was quantized to seven places, so a line of 0.00000004 became 0."""
+    rows = [("Usage", "AmazonS3", "TimedStorage-ByteHrs", "bucket-a", "0.00000004", "us-east-1")]
+    (record,) = CostAndUsage(ledger=LedgerName.billed, path=str(_cur(tmp_path, rows))).fetch()
+    assert record.amount == Decimal("0.00000004")
+
+
+def test_cur_sums_hourly_lines_without_losing_a_digit(tmp_path: Path) -> None:
+    """Regression: many tiny lines must add up to their exact sum, not a rounded one."""
+    rows = [("Usage", "AmazonS3", "TimedStorage-ByteHrs", "bucket-a", "0.00000004", "us-east-1")] * 24
+    (record,) = CostAndUsage(ledger=LedgerName.billed, path=str(_cur(tmp_path, rows))).fetch()
+    assert record.amount == Decimal("0.00000096")
+
+
+def test_cur_reads_a_decimal_column_exactly(tmp_path: Path) -> None:
+    """A source that stores exact decimals must reach the record as the same decimals, with no float on the way."""
+    table = pa.table(
+        {
+            "line_item_usage_start_date": [datetime(2026, 11, 5, tzinfo=UTC)],
+            "line_item_line_item_type": ["Usage"],
+            "line_item_product_code": ["AmazonS3"],
+            "line_item_usage_type": ["Requests-Tier1"],
+            "line_item_resource_id": ["bucket-a"],
+            "line_item_usage_amount": pa.array([Decimal("3")], pa.decimal128(38, 12)),
+            "line_item_unblended_cost": pa.array([Decimal("0.000000000012")], pa.decimal128(38, 12)),
+            "product_region_code": ["us-east-1"],
+        }
+    )
+    folder = tmp_path / "cur"
+    folder.mkdir()
+    pq.write_table(table, folder / "part-0.parquet")
+    (record,) = CostAndUsage(ledger=LedgerName.billed, path=str(folder)).fetch()
+    assert record.amount == Decimal("0.000000000012")
+
+
+def test_cur_groups_hourly_lines_per_resource_usage_type_and_region_and_keeps_the_line_count(tmp_path: Path) -> None:
+    """Vampires Req 4.1: one record per resource, usage type and region. The money and the line count are kept."""
+    hourly = [("Usage", "AmazonEC2", "BoxUsage:t4g.micro", "i-0lab", "0.0042", "us-east-1")] * 24
+    other_region = [("Usage", "AmazonEC2", "BoxUsage:t4g.micro", "i-0lab", "0.0042", "eu-north-1")] * 2
+    other_type = [("Usage", "AmazonEC2", "EBS:VolumeUsage.gp3", "i-0lab", "0.0001", "us-east-1")] * 3
+    records = CostAndUsage(
+        ledger=LedgerName.billed, path=str(_cur(tmp_path, hourly + other_region + other_type))
+    ).fetch()
+    assert len(records) == 3
+    by_lines = {r.attrs["line_items"]: r for r in records}
+    assert by_lines["24"].amount == Decimal("0.1008")
+    total = sum((r.amount or Decimal(0) for r in records), Decimal(0))
+    assert total == Decimal("0.1008") + Decimal("0.0084") + Decimal("0.0003")
+
+
 def test_approved_changes_skip_expired(tmp_path: Path) -> None:
     (tmp_path / "approved.yaml").write_text(
         "approved:\n  - {id: keep-me, approver: A, reason: R, expires: '2027-01-01'}\n"

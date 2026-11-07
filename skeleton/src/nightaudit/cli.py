@@ -2,17 +2,19 @@
 
 ``nightaudit run <control>``    run a control file end to end.
 ``nightaudit serve --app <name>`` serve the web UI and API.
-``nightaudit verify <pack>``     verify an evidence pack.
+``nightaudit verify <pack>``     verify an evidence pack, and the run beside it (result.json or run.json) against it.
 ``nightaudit score --set dev``   score the casebook.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 from .api import create_app
 from .evidence import verify_evidence_pack
@@ -69,9 +71,37 @@ def _cmd_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+#: Where the run as a page displays it can sit beside a pack: ``run.json`` next to a static export's evidence files,
+#: ``result.json`` in the run folder that holds the ``evidence/`` pack (or in the pack folder itself).
+DISPLAYED_NAMES = ("run.json", "result.json")
+
+
+def _displayed_beside(pack: Path) -> Path | None:
+    for folder in (pack, pack.parent):
+        for name in DISPLAYED_NAMES:
+            if (folder / name).is_file():
+                return folder / name
+    return None
+
+
 def _cmd_verify(args: argparse.Namespace) -> int:
-    result = verify_evidence_pack(Path(args.pack))
+    pack = Path(args.pack)
+    displayed: dict[str, Any] | None = None
+    beside = _displayed_beside(pack)
+    if beside is not None:
+        try:
+            loaded = json.loads(beside.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            print(f"FAIL  {beside.name} beside the pack cannot be read: {exc}")
+            return 1
+        if not isinstance(loaded, dict):
+            print(f"FAIL  {beside.name} beside the pack is not a JSON object")
+            return 1
+        displayed = loaded
+    result = verify_evidence_pack(pack, displayed)
     print(f"{'OK' if result.ok else 'FAIL'}  {result.detail}")
+    if result.ok and beside is None:
+        print("      no result.json or run.json beside the pack, so what a page displays was not compared")
     return 0 if result.ok else 1
 
 

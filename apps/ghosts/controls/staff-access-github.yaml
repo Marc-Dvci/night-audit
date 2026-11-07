@@ -108,7 +108,7 @@ ui:
     - {label: Systems, from: "context:systems"}
     - {label: Seats, from: "context:seats"}
     - {label: Left on, from: "context:left_on"}
-    - {label: Last sign-in, from: "context:last_sign_in"}
+    - {label: Last sign-in, from: "context:last_sign_in_on"}
     - {label: Manager, from: "context:manager"}
   headlines:
     OB:

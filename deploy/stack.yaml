@@ -7,7 +7,12 @@ Description: >
 Parameters:
   CodeBucket: {Type: String}
   CodeKey: {Type: String}
-  CurBucket: {Type: String, Default: night-audit-cur-416964654816}
+  CurBucket:
+    Type: String
+    Description: The S3 bucket that receives the CUR 2.0 export, for example night-audit-cur-<account id>.
+  Approver:
+    Type: String
+    Description: The name recorded as approver on the approved changes that the audit itself needs.
   Schedule: {Type: String, Default: "cron(0 2 * * ? *)"}
 
 Resources:
@@ -35,7 +40,6 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/ReadOnlyAccess
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
         - PolicyName: write-runs-only
           PolicyDocument:
@@ -47,6 +51,10 @@ Resources:
               - Effect: Allow
                 Action: [ce:Get*, bcm-data-exports:Get*, bcm-data-exports:List*]
                 Resource: "*"
+              # The function's own log lines, nothing else. The log group is created below, so no CreateLogGroup.
+              - Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !Sub ${NightlyLogs.Arn}:*
 
   WebRole:
     Type: AWS::IAM::Role
@@ -57,8 +65,6 @@ Resources:
           - Effect: Allow
             Principal: {Service: lambda.amazonaws.com}
             Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
       Policies:
         - PolicyName: read-runs
           PolicyDocument:
@@ -71,6 +77,9 @@ Resources:
               - Effect: Allow
                 Action: [s3:GetObject]
                 Resource: !Sub ${RunsBucket.Arn}/nights/*
+              - Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !Sub ${WebLogs.Arn}:*
 
   NightlyFunction:
     Type: AWS::Lambda::Function
@@ -88,6 +97,9 @@ Resources:
         Variables:
           RUNS_BUCKET: !Ref RunsBucket
           CONTROL_FILE: aws-account.yaml
+          NIGHT_AUDIT_ACCOUNT_ID: !Ref AWS::AccountId
+          NIGHT_AUDIT_CUR_BUCKET: !Ref CurBucket
+          NIGHT_AUDIT_APPROVER: !Ref Approver
 
   WebFunction:
     Type: AWS::Lambda::Function

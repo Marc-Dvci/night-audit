@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import re
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 from nightaudit.control import region_names, resolve_ui
-from nightaudit.runner import load_control_file
+from nightaudit.runner import load_control_file, run_control
 
 CONTROLS = Path(__file__).resolve().parents[1] / "controls"
 ALL = [CONTROLS / "staff-access.yaml", CONTROLS / "staff-access-github.yaml"]
@@ -53,7 +55,7 @@ def test_the_page_speaks_about_people(path: Path) -> None:
         ("Systems", "context:systems"),
         ("Seats", "context:seats"),
         ("Left on", "context:left_on"),
-        ("Last sign-in", "context:last_sign_in"),
+        ("Last sign-in", "context:last_sign_in_on"),
         ("Manager", "context:manager"),
     ]
     assert control.ui is not None and set(control.ui.headlines) == {"OB", "B", "IB", "I", "O"}
@@ -104,3 +106,20 @@ def test_the_github_variant_only_adds_one_observed_source() -> None:
     assert variant.ledgers["observed"].sources[:-1] == base.ledgers["observed"].sources
     assert variant.ledgers["observed"].sources[-1].entry == "ghosts.github:GitHubMembers"
     assert variant.regions == base.regions and variant.ui == base.ui
+
+
+def test_the_last_sign_in_column_shows_the_date_only_and_the_evidence_keeps_the_timestamp(tmp_path: Path) -> None:
+    """Regression: the column showed the raw timestamp, which wrapped. The full value stays in the finding's context.
+
+    Runs the offline control; the GitHub one needs a token and an organisation (its column is checked above).
+    """
+    path = CONTROLS / "staff-access.yaml"
+    result = run_control(path, tmp_path / "runs", run_time=datetime(2026, 11, 4, 2, 0, tzinfo=UTC))
+    (column,) = [c for c in result.ui.columns if c.label == "Last sign-in"]
+    source = column.from_.removeprefix("context:")
+    shown = [(f.context[source], f.context["last_sign_in"]) for f in result.findings if f.context.get("last_sign_in")]
+    assert shown, "the demo data has findings with a recorded sign-in"
+    for cell, full in shown:
+        assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", cell), cell
+        assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", full), full
+        assert full.startswith(cell)

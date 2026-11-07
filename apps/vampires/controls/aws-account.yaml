@@ -1,7 +1,9 @@
-# Night Audit control: one AWS account, three ledgers.
+# Night Audit control: one AWS account, three ledgers. Generic: nothing in this file belongs to one account.
+# Account values (CUR bucket, account id, approver) come from settings.local.yaml or the environment; see
+# settings.example.yaml.
 # Intended = declared stacks + approved changes. Observed = live inventory. Billed = CUR 2.0.
 id: aws-account
-title: Lab account
+title: AWS account
 app: vampires
 grace_hours: 36
 exclude_keys_file: exclusions.local.yaml
@@ -33,7 +35,8 @@ ledgers:
         entry: vampires.aws:CostAndUsage
         options:
           profile: night-audit
-          bucket: night-audit-cur-416964654816
+          # bucket: comes from NIGHT_AUDIT_CUR_BUCKET (or NIGHT_AUDIT_ACCOUNT_ID) or settings.local.yaml; see
+          # settings.example.yaml. Name it here only for a fixed bucket you are happy to publish.
           prefix: cur2
           export: night-audit-cur2
 

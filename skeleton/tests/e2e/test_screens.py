@@ -162,6 +162,31 @@ def test_change_one_byte_fails_at_a_row_and_restore_verifies(page: Any, base_url
     page.wait_for_selector(".verdict.ok")
 
 
+def test_a_fake_finding_in_the_served_run_makes_verify_fail_and_names_it(
+    page: Any, base_url: str, nights: Served
+) -> None:
+    """Regression: the page showed an edited finding beside a passing "verified"."""
+    _, n = nights
+
+    def serve_a_lie(route: Any) -> None:
+        response = route.fetch()
+        document = response.json()
+        fake = dict(document["findings"][0])
+        fake["key"] = "i-0fake"
+        document["findings"].append(fake)
+        route.fulfill(response=response, json=document)
+
+    page.route(f"**/api/runs/{n.demo[2]}", serve_a_lie)
+    open_page(page, base_url, f"?app=vampires&run={n.demo[2]}")
+    assert "i-0fake" in page.inner_text("body")
+    page.click('[data-action="verify"]')
+    page.wait_for_selector(".verdict.failed")
+    verdict = page.inner_text("#verdict")
+    assert verdict.startswith("FAILED")
+    assert 'finding "i-0fake" is shown but is not in the evidence' in verdict
+    assert "VERIFIED" not in verdict
+
+
 def test_the_report_is_linked_and_loads_nothing_else(page: Any, base_url: str, nights: Served) -> None:
     _, n = nights
     open_page(page, base_url, f"?app=vampires&run={n.demo[2]}")

@@ -6,9 +6,11 @@ Every call here is a Describe, List, Get or LookupEvents call. The deployed func
 
 from __future__ import annotations
 
+import decimal
 import io
 import ipaddress
 import os
+import re
 from collections.abc import Iterable, Iterator
 from datetime import UTC, date, datetime
 from decimal import Decimal
@@ -37,6 +39,49 @@ AUDITED_STACK_TYPES: dict[str, str] = {
 }
 
 GLOBAL_REGION = "us-east-1"
+
+#: A local, untracked file next to the control (``*.local.yaml`` is git-ignored) with this account's own values.
+SETTINGS_FILE = "settings.local.yaml"
+#: The settings an account supplies, and the environment variable that overrides each. Nothing else is read.
+SETTING_ENV: dict[str, str] = {
+    "account_id": "NIGHT_AUDIT_ACCOUNT_ID",
+    "cur_bucket": "NIGHT_AUDIT_CUR_BUCKET",
+    "approver": "NIGHT_AUDIT_APPROVER",
+}
+_PLACEHOLDER = re.compile(r"\{(account_id|cur_bucket|artifacts_bucket|approver)\}")
+
+
+def account_settings(base_dir: Path | None) -> dict[str, str]:
+    """The values that belong to one account and so do not live in the committed control.
+
+    Read from ``settings.local.yaml`` beside the control, then from the environment (``NIGHT_AUDIT_ACCOUNT_ID``,
+    ``NIGHT_AUDIT_CUR_BUCKET``, ``NIGHT_AUDIT_APPROVER``), which wins. ``cur_bucket`` defaults to
+    ``night-audit-cur-<account_id>`` and ``artifacts_bucket`` is ``night-audit-artifacts-<account_id>``.
+    """
+    values: dict[str, str] = {}
+    path = base_dir / SETTINGS_FILE if base_dir is not None else None
+    if path is not None and path.is_file():
+        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        values.update({k: str(v) for k, v in raw.items() if k in SETTING_ENV and v not in (None, "")})
+    for name, variable in SETTING_ENV.items():
+        if os.environ.get(variable):
+            values[name] = os.environ[variable]
+    if values.get("account_id"):
+        values.setdefault("cur_bucket", f"night-audit-cur-{values['account_id']}")
+        values["artifacts_bucket"] = f"night-audit-artifacts-{values['account_id']}"
+    return values
+
+
+def _fill_settings(text: str, settings: dict[str, str], where: str) -> str:
+    """Replace ``{account_id}``, ``{cur_bucket}``, ``{artifacts_bucket}`` and ``{approver}`` in one value."""
+    missing = sorted({n for n in _PLACEHOLDER.findall(text) if n not in settings})
+    if missing:
+        names = ", ".join(missing)
+        variables = ", ".join(SETTING_ENV.get(n, SETTING_ENV["account_id"]) for n in missing)
+        raise ValueError(
+            f"{where} needs {names}: set it in {SETTINGS_FILE} beside the control or in the environment ({variables})"
+        )
+    return _PLACEHOLDER.sub(lambda m: settings[m.group(1)], text)
 
 
 def _session(profile: str | None) -> Any:
@@ -261,7 +306,14 @@ class ApprovedChanges(_AwsConnector):
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         records: list[Record] = []
         today = self.today
+        settings = account_settings(self._base_dir)
         for index, entry in enumerate(raw.get("approved", []), start=1):
+            # Account-specific values are written as {cur_bucket}, {artifacts_bucket}, {account_id} and {approver}.
+            # They are filled after the YAML is parsed, so a value cannot change the file's structure.
+            entry = {
+                k: _fill_settings(v, settings, f"{path.name} entry {index}") if isinstance(v, str) else v
+                for k, v in entry.items()
+            }
             expires = entry.get("expires")
             if expires and date.fromisoformat(str(expires)) < today:
                 self.expired.append(str(entry.get("id")))
@@ -456,6 +508,28 @@ class Inventory(_AwsConnector):
         return out
 
 
+#: Sums of money never round: the default 28-digit context drops digits.
+_EXACT = decimal.Context(
+    prec=decimal.MAX_PREC, Emax=decimal.MAX_EMAX, Emin=decimal.MIN_EMIN,
+    traps=[decimal.InvalidOperation, decimal.Inexact, decimal.Overflow],
+)
+
+
+def _exact_decimal(value: Any) -> Decimal:
+    """A CUR number as the exact decimal the file holds.
+
+    CUR 2.0 stores cost and usage as ``double``, so the file has no more digits than the shortest text that gives the
+    same double: ``Decimal(str(value))`` recovers that text (``4e-08`` is ``0.00000004``), where ``Decimal(value)``
+    would expose binary noise. A decimal column reaches here as a ``Decimal`` and is kept as it is. Nothing is rounded.
+    """
+    if value is None or value == "":
+        return Decimal(0)
+    number = value if isinstance(value, Decimal) else Decimal(str(value))
+    if not number.is_finite():
+        raise ValueError(f"CUR amount {value!r} is not a finite number")
+    return number
+
+
 USAGE_LINE_TYPES = {"Usage", "DiscountedUsage", "SavingsPlanCoveredUsage"}
 CUR_COLUMNS = [
     "line_item_usage_start_date",
@@ -480,10 +554,12 @@ def _is_cloudformation_stack(resource_id: str) -> bool:
 
 
 class CostAndUsage(_AwsConnector):
-    """Billed ledger: CUR 2.0 Parquet for one billing period, one record per resource and usage type.
+    """Billed ledger: CUR 2.0 Parquet for one billing period, one record per resource, usage type and region.
 
-    Usage lines are summed per (resource id, product, usage type). A line on the bill counts even when its cost is
-    zero (free tier, credits). Lines with no resource id (tax, credits, support) become unkeyed records.
+    Usage lines are summed per (resource id, product, usage type, region), exactly (Vampires Req 4.1): the first real
+    bill had 10,458 hourly lines, and one record per line would drown the page. The record keeps the line count. A
+    line on the bill counts even when its cost is zero (free tier, credits). Lines with no resource id (tax, credits,
+    support) become unkeyed records.
     """
 
     def __init__(
@@ -496,11 +572,16 @@ class CostAndUsage(_AwsConnector):
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
-        self._bucket = bucket
+        self._bucket_option = bucket
         self._prefix = prefix.strip("/")
         self._export = export
         self._period = billing_period or datetime.now(UTC).strftime("%Y-%m")
         self._path = path
+
+    @property
+    def _bucket(self) -> str | None:
+        """The CUR bucket: the control's option if it names one, else this account's setting (account_settings)."""
+        return self._bucket_option or account_settings(self._base_dir).get("cur_bucket")
 
     @property
     def source(self) -> str:
@@ -520,7 +601,10 @@ class CostAndUsage(_AwsConnector):
                 raise FileNotFoundError(f"no parquet files in {folder}")
             return [pq.read_table(f, columns=CUR_COLUMNS) for f in files]
         if not self._bucket:
-            raise ValueError("CostAndUsage needs a bucket or a local path")
+            raise ValueError(
+                "CostAndUsage needs a bucket or a local path: set NIGHT_AUDIT_CUR_BUCKET or NIGHT_AUDIT_ACCOUNT_ID, "
+                f"or cur_bucket in {SETTINGS_FILE} beside the control"
+            )
         s3 = self.session.client("s3", region_name=GLOBAL_REGION)
         prefix = f"{self._prefix}/{self._export}/data/BILLING_PERIOD={self._period}/"
         keys = [
@@ -554,8 +638,9 @@ class CostAndUsage(_AwsConnector):
                 group = groups.setdefault(
                     group_key, {"cost": Decimal("0"), "usage": Decimal("0"), "lines": 0, "start": None}
                 )
-                group["cost"] += Decimal(str(row.get("line_item_unblended_cost") or 0))
-                group["usage"] += Decimal(str(row.get("line_item_usage_amount") or 0))
+                cost = _exact_decimal(row.get("line_item_unblended_cost"))
+                group["cost"] = _EXACT.add(group["cost"], cost)
+                group["usage"] = _EXACT.add(group["usage"], _exact_decimal(row.get("line_item_usage_amount")))
                 group["lines"] += 1
                 start = _iso(row.get("line_item_usage_start_date"))
                 if start and (group["start"] is None or start < group["start"]):
@@ -569,7 +654,7 @@ class CostAndUsage(_AwsConnector):
                     source=self.source,
                     row_id=f"cur/{row_id}",
                     raw_key=resource,
-                    amount=g["cost"].quantize(Decimal("0.0000001")).normalize(),
+                    amount=g["cost"],
                     timestamp=g["start"],
                     attrs={
                         k: v

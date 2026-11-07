@@ -46,8 +46,16 @@ Billing data arrives late, so the control runs at 02:00 UTC on yesterday's bill 
 ## Requirement 4: billed ledger
 
 1. WHEN the billed ledger is read THE SYSTEM SHALL read the CUR 2.0 Parquet files for the current billing period from the
-   configured S3 location and emit one record per line item of type `Usage`, keyed by `line_item_resource_id`, with the
-   unblended cost as the amount and the product code, usage type and region as attributes.
+   configured S3 location and emit one record per resource id, product code, usage type and region, summing the lines
+   of type `Usage` (and `DiscountedUsage`, `SavingsPlanCoveredUsage`) that share them. The record is keyed by
+   `line_item_resource_id`, carries the exact sum of the unblended cost as the amount, the product code, usage type and
+   region as attributes, and the number of source lines as `line_items`.
+   The grouping is deliberate. CUR 2.0 reports usage hourly: the first real bill had 10,458 hourly lines for a small
+   account, and one record per line would bury the page under rows that differ only by hour. Grouping loses no money,
+   because the amount is the exact sum and no digit is rounded or dropped, and it loses no count, because `line_items`
+   keeps the number of lines behind each record.
+   Amounts are exact decimals. CUR 2.0 stores cost and usage as `double`, so the connector reads each value as the
+   shortest decimal text that gives the same double (`0.00000004`, not `0`) and adds them without rounding.
 2. WHEN a usage line has a cost of zero (free tier or credits) THE SYSTEM SHALL still emit it, because the resource is on
    the bill.
 3. WHEN a line has no resource id (tax, credits, support) THE SYSTEM SHALL emit it as an unkeyed record.
@@ -83,6 +91,21 @@ Billing data arrives late, so the control runs at 02:00 UTC on yesterday's bill 
 2. WHEN the function URL is opened with `?demo=1` THE SYSTEM SHALL serve a recorded run from the repository so the
    product works with no AWS access.
 3. THE SYSTEM SHALL tag every deployed resource `night-audit:intended=true` so the audit declares itself.
+4. THE SYSTEM SHALL make the read-only claim exactly as follows, and no wider. The nightly role's only write to the
+   account is `s3:PutObject` on its own runs bucket under `nights/*`, to store its own run. Beside it, each function
+   role may write its own log lines to its own log group (`logs:CreateLogStream`, `logs:PutLogEvents`, nothing else).
+   The web role reads `nights/*` and writes nothing else. Every other action of every role is a `Get*`, `List*`,
+   `Describe*` or `LookupEvents` call, and the one managed policy attached to the nightly role is AWS's `ReadOnlyAccess`.
+   The Scheduler role may invoke the nightly function and nothing else.
+5. THE SYSTEM SHALL keep connectors free of write calls: no Vampires module calls an AWS operation that is not
+   `Describe*`, `List*`, `Get*` or `LookupEvents`. A test parses `deploy/stack.yaml` and the connector modules and fails
+   on any write beyond the claim above.
+6. THE SYSTEM SHALL keep account-specific values out of the committed control, approvals and deployment template. The
+   CUR bucket, the account id and the approver come from `settings.local.yaml` beside the control (git-ignored;
+   `settings.example.yaml` documents it with the synthetic account `111122223333`) or from `NIGHT_AUDIT_CUR_BUCKET`,
+   `NIGHT_AUDIT_ACCOUNT_ID` and `NIGHT_AUDIT_APPROVER`, which win. The deployed function receives them as the stack
+   parameters `CurBucket` and `Approver` and the account id from `AWS::AccountId`. A test fails when the real lab
+   account number appears in a tracked file outside `lab/` and `docs/`.
 
 ## Requirement 9: the morning report
 

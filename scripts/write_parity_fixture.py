@@ -5,7 +5,9 @@
 * ``canonical``: a value and ``evidence.canonical_json`` of it,
 * ``money``: a decimal string as the API sends it and ``report.money_text`` of it,
 * ``pack``: a hostile evidence pack (bidi overrides, astral characters, quotes, control characters, lone surrogates, row
-  ids that sort differently by code point and by UTF-16 unit) and ``variants`` of it, each with Python's verdict.
+  ids that sort differently by code point and by UTF-16 unit) and ``variants`` of it, each with Python's verdict, and
+  ``displayed``: the run as a page shows it, edited in ways a page could lie (a fake finding, a changed region, a
+  hidden finding, a changed figure), each with Python's verdict from comparing it with the untouched pack.
 
 ``skeleton/tests/test_parity_fixture.py`` fails when the committed file differs from what this script writes, so the
 fixture always comes from the current Python code. Run: ``uv run python scripts/write_parity_fixture.py``.
@@ -16,12 +18,14 @@ from __future__ import annotations
 import hashlib
 import json
 import tempfile
+from collections.abc import Callable
 from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 from random import Random
 from typing import Any
 
+from nightaudit.api import run_document
 from nightaudit.control import ControlConfig
 from nightaudit.evidence import canonical_json, verify_evidence_pack, write_evidence_pack
 from nightaudit.matcher import match
@@ -144,14 +148,79 @@ def _variants(jsonl: str) -> list[tuple[str, str]]:
     ]
 
 
-def _verdict(jsonl: str, manifest: str) -> dict[str, Any]:
+def _verdict(jsonl: str, manifest: str, displayed: dict[str, Any] | None = None) -> dict[str, Any]:
     with tempfile.TemporaryDirectory() as tmp:
         pack = Path(tmp)
         (pack / "evidence.jsonl").write_bytes(jsonl.encode("utf-8", "surrogatepass"))
         (pack / "manifest.json").write_text(manifest, encoding="utf-8")
-        result = verify_evidence_pack(pack)
+        result = verify_evidence_pack(pack, displayed)
     return {"ok": result.ok, "failed_row": result.failed_row, "rows": result.rows, "findings": result.findings,
             "final_hash": result.final_hash, "detail": result.detail}
+
+
+def _displayed_variants(shown: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
+    """The page as served, and edits of it. Every variant is a deep copy, so the edits do not touch each other."""
+
+    def edit(name: str, change: Callable[[dict[str, Any]], None]) -> tuple[str, dict[str, Any]]:
+        copy: dict[str, Any] = json.loads(json.dumps(shown))
+        change(copy)
+        return name, copy
+
+    def fake(d: dict[str, Any]) -> None:
+        extra = json.loads(json.dumps(d["findings"][0]))
+        extra["key"] = "fake-\u202e\U0001f47b-\u00e9"
+        d["findings"].append(extra)
+
+    def region(d: dict[str, Any]) -> None:
+        d["findings"][0]["region_code"] = "IOB"
+
+    def status(d: dict[str, Any]) -> None:
+        d["findings"][0]["status"] = "persisting"
+
+    def amount(d: dict[str, Any]) -> None:
+        d["findings"][0]["billed_amount"] = "0.000000002"
+
+    def count(d: dict[str, Any]) -> None:
+        d["region_summaries"][d["findings"][0]["region_code"]]["key_count"] += 1
+
+    def headline_count(d: dict[str, Any]) -> None:
+        d["view"]["finding_count"] += 1
+
+    def billed_total(d: dict[str, Any]) -> None:
+        d["billed_total"] = "1E+30"
+
+    def run_time_offset(d: dict[str, Any]) -> None:
+        d["run_time"] = "2026-11-06T04:00:00+02:00"
+
+    return [
+        ("served as it is", shown),
+        edit("a fake finding", fake),
+        edit("a changed region", region),
+        edit("a changed status", status),
+        edit("a changed billed amount", amount),
+        edit("a hidden finding", lambda d: d["findings"].pop(0)),
+        edit("a finding shown twice", lambda d: d["findings"].append(d["findings"][0])),
+        edit("a changed region count", count),
+        edit("a changed headline count", headline_count),
+        edit("a changed billed total", billed_total),
+        edit("a changed run id", lambda d: d.update(run_id="0123456789abcdef")),
+        edit("a changed chain hash", lambda d: d.update(evidence_chain_hash="0" * 64)),
+        edit("no findings list", lambda d: d.pop("findings")),
+        edit("the same run time written with an offset", run_time_offset),
+    ]
+
+
+def _legacy_pack(jsonl: str, manifest: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """The same pack as written before the header row existed: no header, a chain that starts at the seed."""
+    rows = [json.loads(line) for line in jsonl.split("\n")[:-1]][1:]
+    prev, lines = "0" * 64, []
+    for index, row in enumerate(rows):
+        row.pop("row_hash")
+        row.update(index=index, prev_hash=prev)
+        row["row_hash"] = hashlib.sha256((prev + canonical_json(row)).encode()).hexdigest()
+        prev = row["row_hash"]
+        lines.append(canonical_json(row))
+    return "\n".join(lines) + "\n", {**manifest, "final_chain_hash": prev, "row_count": len(rows)}
 
 
 def _pack_case() -> dict[str, Any]:
@@ -161,10 +230,19 @@ def _pack_case() -> dict[str, Any]:
         write_evidence_pack(result, pack)
         jsonl = (pack / "evidence.jsonl").read_text(encoding="utf-8")
         manifest = (pack / "manifest.json").read_text(encoding="utf-8")
+    # The page never holds a lone surrogate (pydantic cannot write one), and the comparison does not read the records.
+    page = result.model_copy(update={"snapshots": [],
+                                     "findings": [f.model_copy(update={"records": []}) for f in result.findings]})
+    shown = json.loads(json.dumps(run_document(page)))
+    legacy_jsonl, legacy_manifest = _legacy_pack(jsonl, json.loads(manifest))
     return {
         "manifest": json.loads(manifest),
+        "legacy": {"jsonl": legacy_jsonl, "manifest": legacy_manifest,
+                   "verdict": _verdict(legacy_jsonl, json.dumps(legacy_manifest))},
         "variants": [{"name": name, "jsonl": text, "verdict": _verdict(text, manifest)}
                      for name, text in _variants(jsonl)],
+        "displayed": [{"name": name, "document": document, "verdict": _verdict(jsonl, manifest, document)}
+                      for name, document in _displayed_variants(shown)],
     }
 
 

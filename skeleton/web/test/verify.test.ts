@@ -18,6 +18,22 @@ describe("browser verification gives Python's verdict on a hostile pack", () => 
     }
   });
 
+  it("gives Python's verdict on a pack written before the header row, and says it has none", async () => {
+    const { jsonl, manifest: legacyManifest, verdict } = fixture.pack.legacy;
+    const result = await verifyPack(jsonl, legacyManifest);
+    expect(result.ok).toBe(true);
+    expect(result.hasHeader).toBe(false);
+    expect(result.detail).toBe(verdict.detail);
+    expect(result.detail).toContain("carries no header row");
+  });
+
+  it("fails when the manifest names another run than the chain header does", async () => {
+    const untouched = fixture.pack.variants[0].jsonl;
+    const result = await verifyPack(untouched, { ...manifest, run_id: "0123456789abcdef" });
+    expect(result.ok).toBe(false);
+    expect(result.detail).toMatch(/^manifest run_id differs from the chain header/);
+  });
+
   it("reports every row as it is checked", async () => {
     const untouched = fixture.pack.variants[0].jsonl;
     const seen: number[] = [];
@@ -34,3 +50,23 @@ describe("browser verification gives Python's verdict on a hostile pack", () => 
     expect(changed?.before).not.toBe(changed?.after);
   });
 });
+
+describe("the page against the chain gives Python's verdict", () => {
+  const untouched = fixture.pack.variants[0].jsonl;
+
+  it.each(fixture.pack.displayed.map((d) => [d.name, d] as const))("%s", async (_name, shown) => {
+    const result = await verifyPack(untouched, manifest, undefined, shown.document);
+    expect(result.ok).toBe(shown.verdict.ok);
+    expect(result.detail).toBe(shown.verdict.detail);
+    expect(result.failedRow).toBe(shown.verdict.failed_row);
+    if (shown.verdict.ok) expect(result.finalHash).toBe(shown.verdict.final_hash);
+  });
+
+  it("fails on a fake finding and names it", async () => {
+    const fake = fixture.pack.displayed.find((d) => d.name === "a fake finding");
+    const result = await verifyPack(untouched, manifest, undefined, fake?.document);
+    expect(result.ok).toBe(false);
+    expect(result.detail).toContain("is shown but is not in the evidence");
+  });
+});
+

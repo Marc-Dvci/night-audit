@@ -14,7 +14,12 @@ interface Verdict {
 export interface Parity {
   canonical: { value: unknown; canonical: string }[];
   money: { amount: string; text: string }[];
-  pack: { manifest: Record<string, unknown>; variants: { name: string; jsonl: string; verdict: Verdict }[] };
+  pack: {
+    manifest: Record<string, unknown>;
+    legacy: { jsonl: string; manifest: Record<string, unknown>; verdict: Verdict };
+    variants: { name: string; jsonl: string; verdict: Verdict }[];
+    displayed: { name: string; document: Record<string, unknown>; verdict: Verdict }[];
+  };
 }
 
 const fixture: Parity = JSON.parse(readFileSync(new URL("./fixtures/parity.json", import.meta.url), "utf-8"));
