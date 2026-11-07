@@ -266,6 +266,7 @@ def _displayed_variants(shown: dict[str, Any]) -> list[tuple[str, dict[str, Any]
         edit("a changed chain hash", lambda d: d.update(evidence_chain_hash="0" * 64)),
         edit("no findings list", lambda d: d.pop("findings")),
         edit("the same run time written with an offset", run_time_offset),
+        edit("marked incomplete while it states amounts", lambda d: d.update(complete=False)),
     ]
 
 

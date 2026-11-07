@@ -7,10 +7,10 @@ measured on 7 Nov 2026 at commit `a58b88b` plus the working changes that follow 
 
 | Figure | Value | Command |
 |---|---|---|
-| All tests | 934 collected: 931 passed, 3 skipped | `uv run pytest -q` |
+| All tests | 963 collected: 960 passed, 3 skipped | `uv run pytest -q` |
 | Skipped | 3, all `-m lean` differential tests, which need the Lean toolchain (`lake`); the `lean` CI job runs them with `NIGHTAUDIT_REQUIRE_LEAN=1` | `uv run pytest -q -ra` |
-| Property-based, integration, browser | 41, 249 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
-| TypeScript | 137 tests in 4 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
+| Property-based, integration, browser | 41, 250 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
+| TypeScript | 138 tests in 4 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
 | Decision core coverage | 96.8 % of lines and branches over `matcher`, `normalisers`, `grace`, `scope`, `state`, `evidence`, `explain`, `control`, `report` (floor 90 %) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Lint, format, types | ruff, ruff format and `mypy --strict` clean | `uv run ruff check . && uv run ruff format --check . && uv run mypy` |
 
@@ -128,8 +128,19 @@ example control through `nightaudit` and finds each planted condition.
 
 The investigator agent ran live through the AWS MCP server on the 7 Nov night. Its note passed the explanation guard and
 verifies with the evidence: `uv run nightaudit verify-notes <run>/evidence` prints "1 notes verify (1 accepted)".
-`crew/night-shift/` is written to the Kiro Crew App Kit manifest and validated by `skeleton/tests/test_crew_app.py`; its
-install steps are in [`crew/README.md`](../crew/README.md).
+`crew/night-shift/` is checked by `skeleton/tests/test_crew_app.py` against the rules Kiro Crew 0.13.0's source
+enforces; its install steps are in [`crew/README.md`](../crew/README.md).
+
+### The Crew run, 7 Nov 2026
+
+Kiro Crew 0.13.0 from a source checkout on Windows 11; gateway started with `AWS_PROFILE=night-audit` (read-only).
+
+| Step | Command | Result |
+|---|---|---|
+| Apply the app | `kirocrew app disable`, `uninstall`, `install`, `enable` (`app update` printed "No running gateway answered" on Windows) | `Agents registered: 1`, `Skills registered: 1`, `registered 2 cron job(s) with scheduler`; no new gateway log line |
+| Audit | `kirocrew cron trigger e7757f1f` | Crew: `last_status: ok`, 4 runs. `nightaudit verify` OK on `c518e7f39e95c08e`, `910948837feacfbc`, `1e9e38e57a33f5c4`; on `41178d37bd0da182` (incomplete, observed ledger missing) after the verifier fix for incomplete runs |
+| Notes | `kirocrew cron trigger 771fc3b9` | Crew: `last_status: ok`, `run 1e9e38e57a33f5c4: 5 accepted, 0 rejected, 0 unavailable, 0 skipped`. `nightaudit verify-notes`: `5 notes verify (5 accepted)` |
+| Afterwards | `kirocrew cron pause e7757f1f`, `kirocrew cron pause 771fc3b9` | `Paused job: e7757f1f`, `Paused job: 771fc3b9` |
 
 ## Lean
 

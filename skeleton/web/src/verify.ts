@@ -342,6 +342,11 @@ export function compareDisplayed(displayed: Row, manifest: Row, rows: Row[], fin
     total = add(total, amount);
     if (get(row, "key") === null) unkeyed = add(unkeyed, amount);
   }
+  if (get(displayed, "complete") === false) {
+    // An incomplete run matches nothing and states no amount (Req 9.4): the page must show zero.
+    total = ZERO;
+    unkeyed = ZERO;
+  }
   const view = get(displayed, "view");
   const figures: [string, unknown, Dec][] = [
     ["billed total", get(displayed, "billed_total"), total],

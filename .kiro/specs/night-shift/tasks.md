@@ -20,24 +20,52 @@ Requirements 2 (the Kiro power) and 3 (the partition proof). Requirement 1 gets 
       NOT DONE: `uv init --bare` and `uv add` hung behind the shared `power` lock. The copied templates were run in a
       temp project inside this repository's environment (`test_the_copied_templates_pass_on_the_example_in_a_project_
       with_no_other_night_audit_files`), which does not exercise `uv add` or the git URL.
-- [ ] **10. Lint, types, tests, casebook.** `uv run ruff check .`, `uv run mypy skeleton`, `uv run pytest -q`,
+- [x] **10. Lint, types, tests, casebook.** `uv run ruff check .`, `uv run mypy skeleton`, `uv run pytest -q`,
       `uv run python scripts/score_casebook.py --set dev`. [tech]
 
 ## Requirement 3: the partition proof
 
 Lean is not installed on the machine these were written on; CI's `lean` job is the only compiler. A task is ticked
-when that job passes it.
+when that job passes it. Tasks 11 to 16 were ticked on 7 Nov 2026 from CI run 42351134731 on commit `747eda1`: the
+`lean` job and each of its steps (source grep, build, `sorry` in the build log, axiom audit, executable, differential
+test) passed.
 
-- [ ] **11. Lake project.** `lean/` pinned to `leanprover/lean4:v4.28.0`, core library only; `lakefile.toml` with the
+- [x] **11. Lake project.** `lean/` pinned to `leanprover/lean4:v4.28.0`, core library only; `lakefile.toml` with the
       `NightAudit` library and the `regions` executable. [Req 3.1]
-- [ ] **12. Model.** `lean/NightAudit/Region.lean`: `Region`, `regionOfFlags`, `regionOf`, with the `matcher.py` lines
+- [x] **12. Model.** `lean/NightAudit/Region.lean`: `Region`, `regionOfFlags`, `regionOf`, with the `matcher.py` lines
       it models. [Req 3.1]
-- [ ] **13. Theorems.** `lean/NightAudit/Partition.lean`: `every_key_has_a_region`, `no_key_outside_has_a_region`,
+- [x] **13. Theorems.** `lean/NightAudit/Partition.lean`: `every_key_has_a_region`, `no_key_outside_has_a_region`,
       `region_is_exact`, `order_independent`, `duplicates_do_not_matter`, `partition_counts`; `Audit.lean` prints the
       axioms of each. [Req 3.1]
-- [ ] **14. Executable.** `lean/Main.lean` reads JSON Lines with `Lean.Json` and prints a region code or `none`.
+- [x] **14. Executable.** `lean/Main.lean` reads JSON Lines with `Lean.Json` and prints a region code or `none`.
       [Req 3.2]
-- [ ] **15. Differential test.** `skeleton/tests/test_lean_differential.py`, marker `lean`, 500 derandomised examples
+- [x] **15. Differential test.** `skeleton/tests/test_lean_differential.py`, marker `lean`, 500 derandomised examples
       with hostile keys; skips without `lake`, fails without it in CI. [Req 3.2]
-- [ ] **16. CI.** `lean` job: forbidden-word grep, `leanprover/lean-action` build, `sorry` in the build log, axiom
+- [x] **16. CI.** `lean` job: forbidden-word grep, `leanprover/lean-action` build, `sorry` in the build log, axiom
       audit against `propext`, `Classical.choice`, `Quot.sound`, the executable, the differential test. [Req 3.3]
+
+## The Crew app on Kiro Crew 0.13.0
+
+Checked on Windows 11 on 7 Nov 2026; commands and output in `crew/README.md`.
+
+- [x] **17. The audit as a script cron.** `crew/night-shift/crons/night_jobs.py:nightly` runs
+      `uv run --directory <checkout> python scripts/nightly.py` as an argument list; the checkout comes from the job
+      message as JSON. Tests: `test_the_audit_job_runs_nightly_py_through_uv_as_an_argument_list_and_reports_its_output`,
+      the missing-checkout, non-zero-exit and timeout tests, and
+      `test_regression_a_command_cron_is_rejected_on_windows_so_the_audit_is_a_script_cron`.
+- [x] **18. The investigator's MCP servers.** Declared in the agent's own `mcpServers`, pinned
+      (`awslabs.aws-api-mcp-server@1.6.0` with `READ_OPERATIONS_ONLY=true`, `awslabs.cloudtrail-mcp-server@0.1.1` with
+      `lake_query` disabled), profile inherited from `AWS_PROFILE`. Tests:
+      `test_the_investigator_servers_are_pinned_and_read_only`,
+      `test_regression_the_investigator_tool_refs_name_servers_the_agent_declares`,
+      `test_regression_the_agent_file_names_no_placeholder_crew_cannot_render`.
+- [x] **19. Checked notes under Crew.** The 02:30 job is `night_jobs.py:notes`, which runs `scripts/night_shift.py` on
+      the newest run; the agent stays registered with its skill for Crew chats. Test:
+      `test_the_notes_job_runs_night_shift_py_with_its_limits_and_the_gateway_profile`.
+- [x] **20. Manifest rules from the source.** Script path inside the bundle, a `.py` file, `file:function` naming a
+      defined function, `timeout_secs` covering `timeout` plus 5 s, `command` and `script` exclusive, every `@server`
+      ref declared. Tests: `test_the_validator_refuses_each_documented_mistake`,
+      `test_the_validator_refuses_an_agent_crew_would_not_mount`.
+- [x] **21. One real run in Crew.** Both jobs triggered from Crew: 4 runs written and verified, 5 accepted notes that
+      verify on run `1e9e38e57a33f5c4`; both jobs paused afterwards. The incomplete run first failed `nightaudit verify`;
+      the verifier was fixed (`test_regression_an_incomplete_run_whose_billed_ledger_was_read_verifies_against_its_page`).

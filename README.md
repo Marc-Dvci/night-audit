@@ -3,7 +3,7 @@
 [![CI](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml)
 [![Licence: Apache 2.0](https://img.shields.io/badge/licence-Apache%202.0-blue.svg)](LICENSE)
-![Tests: 934](https://img.shields.io/badge/tests-934-brightgreen)
+![Tests: 963](https://img.shields.io/badge/tests-963-brightgreen)
 ![Decision core coverage: 96.8%](https://img.shields.io/badge/decision%20core%20coverage-96.8%25-brightgreen)
 ![Casebook: 18 of 18](https://img.shields.io/badge/casebook-18%20of%2018-brightgreen)
 
@@ -126,7 +126,7 @@ The build used Kiro CLI, in headless mode (`kiro-cli chat --no-interactive`), wi
 | MCP | [`.kiro/settings/mcp.json`](.kiro/settings/mcp.json): the AWS API server with `READ_OPERATIONS_ONLY`, the billing server and the CloudTrail server, all on a read-only profile |
 | Property-based testing | 41 property-based tests (marker `property`) for the properties in the design. Seven bugs the example tests, the development casebook and the held-out casebook had missed, each kept as a `test_regression_` test |
 | Power | [`power/night-audit`](power/night-audit): the `add-control` and `read-a-night` skills and a pinned read-only MCP server |
-| Crew | [`crew/night-shift`](crew/night-shift): a Kiro Crew app with two daily crons, an investigator agent and a skill, written to the App Kit manifest; install steps in [`crew/README.md`](crew/README.md) |
+| Crew | [`crew/night-shift`](crew/night-shift): a Kiro Crew app with two daily script crons (the audit at 02:00 UTC, checked notes at 02:30), an investigator agent with two pinned read-only MCP servers, and a skill. Installed on Kiro Crew 0.13.0 on Windows 11 and run once from Crew against the lab account; what was checked and what was not is in [`crew/README.md`](crew/README.md) |
 
 What Kiro did in this repository, from its own session export (the own-build demo page lists it file by file): 17 sessions
 worked on 200 files, 195 of the 369 files tracked at the recorded commit. The credits reported for those files add up
@@ -161,7 +161,7 @@ to 679.1619 (an allocation, see [the third control](#two-apps-and-a-third-contro
 | Ghosts finds exactly its 8 planted findings | [`planted.yaml`](apps/ghosts/planted.yaml) | `test_the_run_finds_exactly_the_planted_findings` |
 | A spec path resolves to the one tracked file it ends | [`promised_files`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/apps/own-build/src/own_build/paths.py#L144-L157) | `test_a_spec_promises_exactly_the_files_the_casebook_says_given_the_tracked_files` |
 | The power finds each planted condition in an empty project | [`power/night-audit`](power/night-audit) | `test_the_example_control_finds_each_planted_condition_through_nightaudit` |
-| The Crew manifest follows the App Kit rules | [`crew/night-shift/app.json`](crew/night-shift/app.json) | `test_the_manifest_follows_the_documented_rules` |
+| The Crew manifest passes the rules Crew 0.13.0 enforces, and the Crew run wrote verified runs and notes | [`crew/night-shift/app.json`](crew/night-shift/app.json) | `test_the_manifest_follows_the_documented_rules`, `test_regression_a_command_cron_is_rejected_on_windows_so_the_audit_is_a_script_cron`, `test_regression_the_investigator_tool_refs_name_servers_the_agent_declares` |
 | A Venn click filters the rows | [`vennSvg`](https://github.com/Marc-Dvci/night-audit/blob/v1.0.0/skeleton/web/src/render/venn.ts#L68-L119) | `test_a_venn_region_click_filters_the_rows` |
 
 ## Evidence
@@ -171,8 +171,8 @@ Every figure comes from a command in this repository. Synthetic data is labelled
 
 | Figure | Command |
 |---|---|
-| 934 tests: 931 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
-| 41 property-based tests, 249 integration tests, 46 browser tests, 137 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
+| 963 tests: 960 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
+| 41 property-based tests, 250 integration tests, 46 browser tests, 138 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
 | Decision core coverage 96.8 % (lines and branches, nine modules) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Development casebook 18 of 18 | `uv run python scripts/score_casebook.py --set dev` |
 | Held-out casebook 6 of 6, scored once at tag `v0.1.0` | `uv run python scripts/score_heldout.py` |
@@ -181,6 +181,7 @@ Every figure comes from a command in this repository. Synthetic data is labelled
 | 0 axe-core violations (WCAG 2.0, 2.1, 2.2 A and AA) in 8 screen states; hostile tag text shown as text | `uv run python scripts/ui_check.py <url>` |
 | 298,000 records matched in 1.49 s (199,855 a second) | `uv run python scripts/bench.py 100000` |
 | Evidence of the live night verifies; the investigator's note passed the guard | `uv run nightaudit verify <run>/evidence`, `uv run nightaudit verify-notes <run>/evidence` |
+| Kiro Crew 0.13.0 on Windows 11, 7 Nov: the `night-audit` cron wrote 4 runs (all 4 verify), the `night-notes` cron recorded 5 accepted notes on run `1e9e38e57a33f5c4` (`5 notes verify (5 accepted)`); both jobs `ok` in Crew, then paused | `kirocrew cron trigger <id>`; `uv run nightaudit verify runs/<run>/evidence`; `uv run nightaudit verify-notes runs/1e9e38e57a33f5c4/evidence`; details in [`crew/README.md`](crew/README.md) |
 
 **Real and synthetic.** The lab night is a real AWS account with a planted lab ([`lab/`](lab)); the Vampires and Ghosts
 demos, both casebooks and the benchmark are synthetic; the third control reads this repository itself.

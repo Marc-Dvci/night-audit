@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from pathlib import Path
 
@@ -100,6 +101,23 @@ def test_a_billed_file_that_cannot_be_read_makes_the_ledger_missing(
     result = _run(control, tmp_path)
     _assert_missing(result, "billed", says)
     assert verify_evidence_pack(tmp_path / "runs" / result.run_id / "evidence").ok
+
+
+def test_regression_an_incomplete_run_whose_billed_ledger_was_read_verifies_against_its_page(tmp_path: Path) -> None:
+    """Bug, found by the first Crew run: an observed ledger that could not be read left a run whose page states no
+    amount (``billed_total`` 0), while its chain holds the billed rows that were read. ``nightaudit verify`` compared
+    the page with the sum of those rows and failed: "billed total: the page shows $0.00, the evidence has $6,683.00"."""
+    control = write_account(tmp_path)
+    (tmp_path / "observed.csv").unlink()
+    result = _run(control, tmp_path)
+    assert not result.complete and result.missing_ledgers == ["observed"]
+    run_dir = tmp_path / "runs" / result.run_id
+    displayed = json.loads((run_dir / "result.json").read_text(encoding="utf-8"))
+    assert displayed["billed_total"] == "0"
+    verdict = verify_evidence_pack(run_dir / "evidence", displayed)
+    assert verdict.ok, verdict.detail
+    displayed["billed_total"] = "41.20"  # an amount on the page of a run that matched nothing is still refused
+    assert not verify_evidence_pack(run_dir / "evidence", displayed).ok
 
 
 @pytest.mark.parametrize("amount", ["1,234.50", "$3.10", "three", "3.10.1"])

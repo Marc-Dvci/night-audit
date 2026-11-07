@@ -4722,6 +4722,304 @@
      "final_hash": "a71132e805cf53f2c969b77c04231c7575356d5deb4e9aa7158e97e82b831ef8",
      "detail": "verified 24 rows, 7 findings, header matches the manifest; the page matches the evidence"
     }
+   },
+   {
+    "name": "marked incomplete while it states amounts",
+    "document": {
+     "run_id": "ad25e22fb3a05034",
+     "run_time": "2026-11-06T02:00:00Z",
+     "control_hash": "14eeff6ef29b1dbda2c136f6b867136b26be0607a852bf3b80605d20cc55335c",
+     "complete": false,
+     "control_id": "",
+     "control_title": "",
+     "app": "",
+     "region_names": {
+      "IOB": "Living",
+      "IO": "Familiar",
+      "IB": "Wraith",
+      "OB": "Vampire",
+      "I": "Skeleton",
+      "O": "Poltergeist",
+      "B": "Phantom"
+     },
+     "region_meanings": {},
+     "ledger_errors": {},
+     "excluded": {},
+     "missing_ledgers": [],
+     "snapshots": [],
+     "regions": {
+      "k0": "IOB",
+      "k1": "IOB",
+      "k2": "IO",
+      "k3": "I",
+      "k4": "I",
+      "k5": "I",
+      "ghost-\ud83d\udc7b": "O",
+      "k9": "OB",
+      "phantom-\u00e9": "B"
+     },
+     "pending_keys": [],
+     "unkeyed": [
+      {
+       "row_id": "b4",
+       "ledger": "billed",
+       "source": "cur",
+       "amount": "-3.10"
+      }
+     ],
+     "findings": [
+      {
+       "key": "phantom-\u00e9",
+       "region_code": "B",
+       "name": "Phantom",
+       "severity": "high",
+       "meaning": "Billed for something nobody approved and nobody can see.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "6.40",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k3",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k4",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k5",
+       "region_code": "I",
+       "name": "Skeleton",
+       "severity": "medium",
+       "meaning": "Approved, but absent and unbilled.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k2",
+       "region_code": "IO",
+       "name": "Familiar",
+       "severity": "informational",
+       "meaning": "Approved and present, not billed. Informational.",
+       "informational": true,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "ghost-\ud83d\udc7b",
+       "region_code": "O",
+       "name": "Poltergeist",
+       "severity": "low",
+       "meaning": "Exists, unapproved, not billed.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "0",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      },
+      {
+       "key": "k9",
+       "region_code": "OB",
+       "name": "Vampire",
+       "severity": "high",
+       "meaning": "Exists and is paid for, but nobody approved it.",
+       "informational": false,
+       "records": [],
+       "billed_amount": "41.20",
+       "duplicate_counts": {},
+       "status": "new",
+       "nights_persisted": null,
+       "first_seen": "2026-11-06T02:00:00Z",
+       "explanation": null,
+       "context": {}
+      }
+     ],
+     "region_summaries": {
+      "B": {
+       "code": "B",
+       "key_count": 1,
+       "billed_amount": "6.40"
+      },
+      "I": {
+       "code": "I",
+       "key_count": 3,
+       "billed_amount": "0"
+      },
+      "IO": {
+       "code": "IO",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "IOB": {
+       "code": "IOB",
+       "key_count": 2,
+       "billed_amount": "18.610000001"
+      },
+      "O": {
+       "code": "O",
+       "key_count": 1,
+       "billed_amount": "0"
+      },
+      "OB": {
+       "code": "OB",
+       "key_count": 1,
+       "billed_amount": "41.20"
+      }
+     },
+     "duplicates": {},
+     "billed_total": "63.110000001",
+     "billed_unkeyed": "-3.10",
+     "dropped": {
+      "intended": 0,
+      "observed": 0,
+      "billed": 0
+     },
+     "resolved": [],
+     "evidence_chain_hash": "a71132e805cf53f2c969b77c04231c7575356d5deb4e9aa7158e97e82b831ef8",
+     "ui": {
+      "title": "Night Audit",
+      "tagline": "Three ledgers of the same reality, matched every night.",
+      "noun": {
+       "singular": "item",
+       "plural": "items"
+      },
+      "ledgers": {
+       "intended": {
+        "label": "Intended",
+        "source": "What was approved."
+       },
+       "observed": {
+        "label": "Observed",
+        "source": "What exists."
+       },
+       "billed": {
+        "label": "Billed",
+        "source": "What is paid for."
+       }
+      },
+      "columns": [
+       {
+        "label": "Key",
+        "from": "key"
+       },
+       {
+        "label": "Since",
+        "from": "status"
+       },
+       {
+        "label": "Billed",
+        "from": "amount"
+       }
+      ],
+      "headlines": {},
+      "unkeyed": {
+       "singular": "line with no resource id",
+       "plural": "lines with no resource id",
+       "explanation": "Tax, credits and support lines carry no resource id, so they are kept apart."
+      },
+      "downloads": []
+     },
+     "notes": [],
+     "view": {
+      "headline": "1 Vampire exists and is on the bill with no approval: $41.20. 1 Phantom is on the bill for something nobody approved or can see: $6.40. 1 Poltergeist exists with no approval and costs nothing. 3 Skeletons are approved but gone and unbilled.",
+      "headline_sentences": [
+       "1 Vampire exists and is on the bill with no approval: $41.20.",
+       "1 Phantom is on the bill for something nobody approved or can see: $6.40.",
+       "1 Poltergeist exists with no approval and costs nothing.",
+       "3 Skeletons are approved but gone and unbilled."
+      ],
+      "calm": false,
+      "ledger_keys": {
+       "intended": null,
+       "observed": null,
+       "billed": null
+      },
+      "keyed_total": "66.210000001",
+      "unkeyed_total": "-3.10",
+      "billed_total": "63.110000001",
+      "lines": [
+       {
+        "label": "On the bill for 0 items",
+        "value": "$66.210000001",
+        "amount": "66.210000001",
+        "note": ""
+       },
+       {
+        "label": "1 line with no resource id",
+        "value": "\u2212$3.10",
+        "amount": "-3.10",
+        "note": "Negative because credits are larger than tax and support. A credit is expected here."
+       },
+       {
+        "label": "Billed total",
+        "value": "$63.110000001",
+        "amount": "63.110000001",
+        "note": ""
+       }
+      ],
+      "finding_count": 6,
+      "new_count": 6,
+      "persisting_count": 0,
+      "pending_count": 0,
+      "resolved_count": 0
+     },
+     "downloads": []
+    },
+    "verdict": {
+     "ok": false,
+     "failed_row": null,
+     "rows": 0,
+     "findings": 0,
+     "final_hash": null,
+     "detail": "the page differs from the evidence: billed total: the page shows $63.110000001, the evidence has $0.00; unkeyed billed amount: the page shows \u2212$3.10, the evidence has $0.00; headline billed total: the page shows $63.110000001, the evidence has $0.00; headline unkeyed amount: the page shows \u2212$3.10, the evidence has $0.00; headline keyed amount: the page shows $66.210000001, the evidence has $0.00"
+    }
    }
   ]
  }

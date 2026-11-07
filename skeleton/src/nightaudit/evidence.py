@@ -371,6 +371,10 @@ def compare_displayed(
             total = _EXACT.add(total, amount)
             if row.get("key") is None:
                 unkeyed = _EXACT.add(unkeyed, amount)
+    if displayed.get("complete") is False:
+        # An incomplete run matches nothing and states no amount (Req 9.4): the page must show zero, whatever the
+        # ledgers that were read hold.
+        total, unkeyed = Decimal(0), Decimal(0)
     figures: list[tuple[str, object, Decimal]] = [
         ("billed total", displayed.get("billed_total"), total),
         ("unkeyed billed amount", displayed.get("billed_unkeyed"), unkeyed),
