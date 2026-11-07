@@ -98,16 +98,16 @@ def test_the_page_reads_in_files_and_states_the_allocation(page: Any, url: str) 
     open_page(page, url, f"?app=own-build-demo&run={night()}")
     sentences = page.locator(".headline-lead, .headline-line").all_inner_texts()
     assert sentences == [
-        "45 files were built with Kiro and no spec names them.",
-        "8 files were worked on by Kiro, named by no spec, and are gone.",
-        "36 files were written by hand or generated: no spec names them and no Kiro session touched them.",
+        "49 files were built with Kiro and no spec names them.",
+        "5 files were worked on by Kiro, named by no spec, and are gone.",
+        "42 files were written by hand or generated: no spec names them and no Kiro session touched them.",
         "3 files were promised by a spec and never built.",
     ]
     notes = page.locator(".notes li").all_inner_texts()
     assert notes[0].startswith("Credits per file are an allocation:") and "not a measurement" in notes[0]
     assert page.text_content("#venn-title") == "Files by region across the three ledgers"
     ledgers = page.inner_text(".ledgers")
-    assert "SPECS" in ledgers.upper() and "376 files" in ledgers and "229 files" in ledgers
+    assert "SPECS" in ledgers.upper() and "390 files" in ledgers and "234 files" in ledgers
     assert "allocation chosen for this audit, not a measurement" in ledgers
     text = (page.inner_text(".lede") + " " + ledgers).lower()
     assert not [w for w in FOREIGN if w in text], [w for w in FOREIGN if w in text]
@@ -130,7 +130,7 @@ def test_the_venn_names_the_regions_in_words_and_counts_them(page: Any, url: str
     for words in ("PROMISED BY A", "SPEC'D, NO KIRO", "BUILT, SPEC'D, GONE", "WRITTEN BY HAND"):
         assert words in joined, words
     counts = page.locator("svg.venn .venn-count").evaluate_all(TEXT_OF_ALL)
-    assert sorted(counts, key=int) == ["0", "3", "8", "36", "45", "119", "176"]
+    assert sorted(counts, key=int) == ["0", "3", "5", "42", "49", "119", "180"]
 
 
 @in_chromium()
@@ -142,7 +142,7 @@ def test_an_opened_file_states_its_condition_and_shows_its_evidence(page: Any, u
     )
     row.locator(".row-head").click()
     page.wait_for_selector("table.evidence")
-    assert "3.2145" in row.inner_text()
+    assert "7.2952" in row.inner_text()  # 3.2145 + 4.0807, the shares of its two sessions
     assert_axe_clean(page)
 
 

@@ -69,3 +69,17 @@ Checked on Windows 11 on 7 Nov 2026; commands and output in `crew/README.md`.
 - [x] **21. One real run in Crew.** Both jobs triggered from Crew: 4 runs written and verified, 5 accepted notes that
       verify on run `1e9e38e57a33f5c4`; both jobs paused afterwards. The incomplete run first failed `nightaudit verify`;
       the verifier was fixed (`test_regression_an_incomplete_run_whose_billed_ledger_was_read_verifies_against_its_page`).
+- [x] **22. Both investigators read only.** The checkout's agent, which `scripts/night_shift.py` launches, lists only
+      `read`, `@aws-api` and `@aws-cloudtrail` and denies `aws-cloudtrail/lake_query`; `.kiro/settings/mcp.json`
+      disables `lake_query` and the billing server's `storage-lens`, `sp-purchase-analyzer` and `sp-recommendation`.
+      `skeleton/tests/test_investigator_read_only.py`, 15 tests, reads each agent with the settings it loads; it
+      failed on `lake_query`, then on the three billing tools, before the fixes. [audit rule 3]
+- [x] **23. No local paths.** `test_no_tracked_text_file_names_a_drive_path_or_a_home_folder` scans every tracked text
+      file. [audit rule 9]
+- [x] **24. The Crew run with the final code.** Bundle reinstalled (ids `0af6390d`, `9d342b56`). The audit job:
+      `last_status: ok`, 4 runs, each `nightaudit verify` OK (`847b2b2514c14574` incomplete, `ebd45fd5644e4159`,
+      `4c3e32bf3ef8c9ab`, `6ad680fc05a50128`). The notes job with the read-only investigator: `last_status: ok`,
+      `run 6ad680fc05a50128: 0 accepted, 0 rejected, 0 unavailable, 0 skipped`, `verify-notes`: `OK  no investigator's
+      notes recorded` (its five `OB` and `O` findings persist from the night before). Both paused; `crew/README.md`.
+- [ ] **25. A note from the read-only investigator inside Crew.** Needs a night with a new `OB` or `O` finding; the
+      13:07 notes run had none, so kiro-cli was not started.

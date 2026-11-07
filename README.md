@@ -3,8 +3,8 @@
 [![CI](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Marc-Dvci/night-audit/actions/workflows/codeql.yml)
 [![Licence: Apache 2.0](https://img.shields.io/badge/licence-Apache%202.0-blue.svg)](LICENSE)
-![Tests: 996](https://img.shields.io/badge/tests-996-brightgreen)
-![Decision core coverage: 96.8%](https://img.shields.io/badge/decision%20core%20coverage-96.8%25-brightgreen)
+![Tests: 1046](https://img.shields.io/badge/tests-1046-brightgreen)
+![Decision core coverage: 96.85%](https://img.shields.io/badge/decision%20core%20coverage-96.85%25-brightgreen)
 ![Casebook: 18 of 18](https://img.shields.io/badge/casebook-18%20of%2018-brightgreen)
 
 ![Night Audit on the demo account, night of 6 Nov 2026: the headline, the bill, the three-circle Venn diagram of declared, running and billed resources, and the list of regions](docs/figures/ui-night-3.png)
@@ -123,14 +123,14 @@ The build used Kiro CLI, in headless mode (`kiro-cli chat --no-interactive`), wi
 | Custom agents | [`night-builder`](.kiro/agents/night-builder.json) (cannot read the sealed cases, edit its own hooks or commit), [`night-app-builder`](.kiro/agents/night-app-builder.json) (no write permission on `skeleton/`), [`night-reviewer`](.kiro/agents/night-reviewer.json) (a different model, cannot change a file), [`night-investigator`](.kiro/agents/night-investigator.json) (read-only AWS tools) |
 | Hooks | [`seal-heldout-casebook`](.kiro/hooks/seal-heldout.json), [`read-only-aws`](.kiro/hooks/read-only-aws.json), [`no-harm-guard`](.kiro/hooks/no-harm.json), [`casebook-score-on-stop`](.kiro/hooks/score-on-stop.json), [`properties-on-save`](.kiro/hooks/properties-on-save.json), [`new-control-scaffold`](.kiro/hooks/new-control-scaffold.json) |
 | Steering | [product](.kiro/steering/product.md), [tech](.kiro/steering/tech.md), [audit rules](.kiro/steering/audit-rules.md), [UI identity](.kiro/steering/ui-identity.md) (loaded only for web files) |
-| MCP | [`.kiro/settings/mcp.json`](.kiro/settings/mcp.json): the AWS API server with `READ_OPERATIONS_ONLY`, the billing server and the CloudTrail server, all on a read-only profile |
+| MCP | [`.kiro/settings/mcp.json`](.kiro/settings/mcp.json) mounts three pinned servers on the read-only `night-audit` profile: `aws-api` (`awslabs.aws-api-mcp-server@1.6.0`, `READ_OPERATIONS_ONLY=true`), `aws-cloudtrail` (`@0.1.1`, `lake_query` disabled) and `aws-billing` (`awslabs.billing-cost-management-mcp-server@0.0.44`, `storage-lens`, `sp-purchase-analyzer` and `sp-recommendation` disabled). The [`night-investigator`](.kiro/agents/night-investigator.json) may call only `aws-api` and `aws-cloudtrail`, and denies `aws-cloudtrail/lake_query`; the builder, app-builder and reviewer agents load no MCP settings. [`test_investigator_read_only.py`](skeleton/tests/test_investigator_read_only.py) fails if either investigator can call a tool that is not a read |
 | Property-based testing | 41 property-based tests (marker `property`) for the properties in the design. Seven bugs the example tests, the development casebook and the held-out casebook had missed, each kept as a `test_regression_` test |
 | Power | [`power/night-audit`](power/night-audit): the `add-control` and `read-a-night` skills and a pinned read-only MCP server |
-| Crew | [`crew/night-shift`](crew/night-shift): a Kiro Crew app with two daily script crons (the audit at 02:00 UTC, checked notes at 02:30), an investigator agent with two pinned read-only MCP servers, and a skill. Installed on Kiro Crew 0.13.0 on Windows 11 and run once from Crew against the lab account; what was checked and what was not is in [`crew/README.md`](crew/README.md) |
+| Crew | [`crew/night-shift`](crew/night-shift): a Kiro Crew app with two daily script crons (the audit at 02:00 UTC, checked notes at 02:30), an investigator agent with two pinned read-only MCP servers, and a skill. Installed on Kiro Crew 0.13.0 on Windows 11 and triggered from Crew against the lab account on 7 Nov 2026 (the audit job and the notes job); what was checked and what was not is in [`crew/README.md`](crew/README.md) |
 
-What Kiro did in this repository, from its own session export (the own-build demo page lists it file by file): 21 sessions
-worked on 229 files, 221 of the 376 files tracked at the recorded commit. The credits reported for those files add up
-to 929.1727 (an allocation, see [the third control](#two-apps-and-a-third-control)).
+What Kiro did in this repository, from its own session export (the own-build demo page lists it file by file): 23 sessions
+worked on 234 files, 229 of the 390 files tracked at the recorded commit, `2035d42`. The credits reported for those
+files add up to 1072.7314 (an allocation, see [the third control](#two-apps-and-a-third-control)).
 
 ## What it will not do
 
@@ -175,17 +175,17 @@ Every figure comes from a command in this repository. Synthetic data is labelled
 
 | Figure | Command |
 |---|---|
-| 996 tests: 993 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
-| 41 property-based tests, 251 integration tests, 46 browser tests, 247 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
-| Decision core coverage 96.8 % (lines and branches, nine modules) | `uv run pytest -q -m "not e2e and not live" --cov` |
+| 1046 tests: 1043 pass, 3 are the Lean differential tests, which run where `lake` is installed (CI) | `uv run pytest -q` |
+| 41 property-based tests, 252 integration tests, 46 browser tests, 261 TypeScript tests | `uv run pytest -m property`, `-m integration`, `-m e2e`; `cd skeleton/web && npx vitest run` |
+| Decision core coverage 96.85 % (lines and branches, nine modules) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Development casebook 18 of 18 | `uv run python scripts/score_casebook.py --set dev` |
 | Held-out casebook 6 of 6, scored once at tag `v0.1.0` | `uv run python scripts/score_heldout.py` |
 | Real lab night, 7 Nov 02:00 UTC: 4 planted, 4 found, 0 Phantoms, 0 false Vampires. The instance, its volume and its network interface cost $0.7172 together, as Vampires | `uv run nightaudit run apps/vampires/controls/aws-account.yaml --runs runs/live` (read-only profile on the lab account); expected findings in `lab/expected.yaml` |
 | Property-based testing found 7 bugs that 38 example tests, 18 of 18 development cases and 6 of 6 held-out cases had missed | `uv run pytest -m property`; the `test_regression_` tests |
-| 0 axe-core violations (WCAG 2.0, 2.1, 2.2 A and AA) in 8 screen states; hostile tag text shown as text | `uv run python scripts/ui_check.py <url>` |
+| 0 axe-core violations (WCAG 2.0, 2.1, 2.2 A and AA) in 8 screen states, on the deployed demo (`?app=vampires-demo`) and on the live lab night, 7 Nov 2026; hostile tag text shown as text on the demo | `uv run python scripts/ui_check.py <url>`; both URLs and results in [`docs/RESULTS.md`](docs/RESULTS.md#accessibility) |
 | 298,000 records matched in 1.49 s (199,855 a second) | `uv run python scripts/bench.py 100000` |
 | Evidence of the live night verifies; the investigator's note passed the guard | `uv run nightaudit verify <run>/evidence`, `uv run nightaudit verify-notes <run>/evidence` |
-| Kiro Crew 0.13.0 on Windows 11, 7 Nov, with the final code: the `night-audit` cron wrote 4 runs and all 4 verify (`847b2b2514c14574`, `ebd45fd5644e4159`, `4c3e32bf3ef8c9ab`, `6ad680fc05a50128`); the `night-notes` cron was not run again. Its earlier run recorded 5 accepted notes on `1e9e38e57a33f5c4` (`5 notes verify (5 accepted)`). Both jobs paused | `kirocrew cron trigger <id>`; `uv run nightaudit verify runs/<run>/evidence`; `uv run nightaudit verify-notes runs/1e9e38e57a33f5c4/evidence`; details in [`crew/README.md`](crew/README.md) |
+| Kiro Crew 0.13.0 on Windows 11, 7 Nov, with the final code: the `night-audit` cron (`0af6390d`) wrote 4 runs and all 4 verify (`847b2b2514c14574`, `ebd45fd5644e4159`, `4c3e32bf3ef8c9ab`, `6ad680fc05a50128`). The `night-notes` cron (`9d342b56`), run with the read-only investigator, picked `6ad680fc05a50128` and asked nothing, since its five `OB` and `O` findings persist from the night before: `0 accepted, 0 rejected, 0 unavailable, 0 skipped`. The 5 notes on that earlier night, `1e9e38e57a33f5c4`, verify (`5 notes verify (5 accepted)`). Both jobs paused | `kirocrew cron trigger <id>`; `uv run nightaudit verify runs/<run>/evidence`; `uv run nightaudit verify-notes runs/<run>/evidence`; details in [`crew/README.md`](crew/README.md) |
 
 **Real and synthetic.** The lab night is a real AWS account with a planted lab ([`lab/`](lab)); the Vampires and Ghosts
 demos, both casebooks and the benchmark are synthetic; the third control reads this repository itself.
@@ -226,18 +226,18 @@ The third control, [`apps/own-build`](apps/own-build/README.md), audits this rep
 specs promise. Observed is the files git tracks. Billed is the files Kiro worked on, in Kiro credits. It was written in
 one control file through the `new-control-scaffold` hook, and no skeleton source file changed.
 
-It reads the files git tracks at one commit. Recorded first at `a58b88b`, then again at `05f013d` after the later Kiro
-sessions, the Crew session among them, were added to Kiro's export:
+It reads the files git tracks at one commit. Recorded first at `a58b88b`, then at `05f013d` and at `2035d42`, each time
+after the later Kiro sessions (the Crew sessions among them) were added to Kiro's export:
 
-| Region | `a58b88b` | `05f013d` |
-|---|---|---|
-| Spec'd and built with Kiro (`IOB`) | 172 | 176 |
-| Spec'd, no Kiro session (`IO`, informational) | 118 | 119 |
-| Written by hand or generated (`O`) | 56 | 36 |
-| Built with Kiro, no spec names it or a folder holding it (`OB`) | 23 | 45 |
-| Promised by a spec, never built (`I`) | 6 | 3 |
-| Kiro worked on it, no spec, it is gone (`B`) | 5 | 8 |
-| Tracked files | 369 | 376 |
+| Region | `a58b88b` | `05f013d` | `2035d42` |
+|---|---|---|---|
+| Spec'd and built with Kiro (`IOB`) | 172 | 176 | 180 |
+| Spec'd, no Kiro session (`IO`, informational) | 118 | 119 | 119 |
+| Written by hand or generated (`O`) | 56 | 36 | 42 |
+| Built with Kiro, no spec names it or a folder holding it (`OB`) | 23 | 45 | 49 |
+| Promised by a spec, never built (`I`) | 6 | 3 | 3 |
+| Kiro worked on it, no spec, it is gone (`B`) | 5 | 8 | 5 |
+| Tracked files | 369 | 376 | 390 |
 
 The first run reported 32 files promised and never built. Reading them showed that 26 were the control's own parser
 mistakes: a path written relative to a folder, a folder, or build output. The parser now resolves a relative path to the
@@ -246,7 +246,10 @@ the files a spec says the power writes into a user's own project. At `a58b88b` t
 paths in the spec text that no longer existed (`apps/vampires/approved-changes.yaml`, `src/findings.ts`, `src/venn.ts`);
 the spec text was corrected, and at `05f013d` they are gone. Three remain because they name no single file:
 `demo/build.py` ends three tracked files, `references/region-table.md` ends two, `assets/verify.js` is a path inside
-build output. Between the two, 21 files moved from `O` to `OB`: Kiro sessions in the newer export touched them.
+build output. Between the first two, 21 files moved from `O` to `OB`: Kiro sessions in the newer export touched them.
+Between `05f013d` and `2035d42`, 14 more files are tracked: 11 new ones (3 in `IOB`, 8 in `O`) and 3 that were in `B`
+because Kiro had worked on them before they were committed (`examples/README.md` and `scripts/build_examples.py` are
+now `OB`, `skeleton/tests/test_examples.py` is `IOB`); 2 more files moved from `O` to `OB`.
 
 The snapshot is one commit: `uv run python apps/own-build/snapshot.py` records the files git tracks at `HEAD` and the
 paths its specs promise, and a change after that commit enters at the next snapshot. The credits are an allocation: a

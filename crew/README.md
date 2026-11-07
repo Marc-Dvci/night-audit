@@ -60,15 +60,22 @@ would be registered as `night-shift:<server>` in Crew's own agent config instead
 | `aws-cloudtrail` | `awslabs.cloudtrail-mcp-server@0.1.1` | `lake_query` disabled: it calls `StartQuery`; the other tools are `LookupEvents`, `List*`, `Get*` and `Describe*` calls |
 
 **The two investigators.** Both mount `aws-api` with `READ_OPERATIONS_ONLY=true` and `aws-cloudtrail` with
-`lake_query` disabled; the checkout's agent also denies `aws-cloudtrail/lake_query` in its permissions. The checkout's
-agent, the one the notes job runs, also mounts `aws-billing` (`awslabs.billing-cost-management-mcp-server@0.0.44`).
-Three of that server's tools can start work in the account, read from its source: `storage-lens` (Athena
-`StartQueryExecution`, after `CREATE DATABASE` and `CREATE EXTERNAL TABLE`), `sp-purchase-analyzer`
-(`StartCommitmentPurchaseAnalysis`) and `sp-recommendation` (`StartSavingsPlansPurchaseRecommendationGeneration`).
-So the two are **not yet read-only in the same way**. `skeleton/tests/test_investigator_read_only.py` reads each agent
-with its settings and fails while any tool that is not a read can be called;
-`test_the_checkout_investigator_can_call_no_tool_that_is_not_a_read` fails on those three tools today. The notes job
-was not run again for that reason.
+`lake_query` disabled; the checkout's agent also denies `aws-cloudtrail/lake_query` in its permissions. **Both
+investigators are read-only.** Neither may call the billing server: the checkout's agent, the one the notes job runs,
+lists only `read`, `@aws-api` and `@aws-cloudtrail` in `tools` and allows only `aws-api/*` and `aws-cloudtrail/*` in its
+MCP rules. The workspace settings still mount `aws-billing` (`awslabs.billing-cost-management-mcp-server@0.0.44`) for
+the default Kiro agent, with the three tools that can start work in the account disabled, read from the server's
+source: `storage-lens` (Athena `StartQueryExecution`, after `CREATE DATABASE` and `CREATE EXTERNAL TABLE`),
+`sp-purchase-analyzer` (`StartCommitmentPurchaseAnalysis`) and `sp-recommendation`
+(`StartSavingsPlansPurchaseRecommendationGeneration`).
+
+How it is tested: `skeleton/tests/test_investigator_read_only.py` reads each agent together with the settings it
+loads (`includeMcpJson`), works out every `server/tool` it can call (named in `tools`, server not disabled, tool not in
+`disabledTools`, no deny rule), and maps each tool to the AWS operations it calls, recorded per pinned server version
+from that server's source. It fails if any callable tool calls an operation that is not `Describe*`, `List*`, `Get*`,
+`BatchGet*` or `LookupEvents`, if `call_aws` runs without `READ_OPERATIONS_ONLY=true`, or if a server is unpinned or a
+version it has no record for. Its own cases show it catches `lake_query`, `call_aws` without read-only mode and the
+three billing tools. All 15 tests pass.
 
 Neither server names a profile. They inherit `AWS_PROFILE` from the process that starts them; the gateway was started
 with `AWS_PROFILE=night-audit`. The power writes `"${AWS_PROFILE}"`, but Crew reads `{AWS_PROFILE}` inside it as a host
@@ -156,26 +163,14 @@ The verifier was wrong, not the run: an incomplete run matches nothing and state
 `verify.ts`) now expect zero for an incomplete run. The regression test is
 `test_regression_an_incomplete_run_whose_billed_ledger_was_read_verifies_against_its_page`.
 
-**The notes job**, `kirocrew cron trigger 771fc3b9` at 11:12:44. Crew recorded `last_status: ok` at 10:14:17 UTC
-with this `last_result`:
-
-```
-night_shift.py finished in <checkout>:
-accepted     akiawcfihw3qdcdeagee
-accepted     lab-debug
-accepted     eni-085d97a8b514d1ce7
-accepted     i-0c8b3995db6d57788
-accepted     vol-042dd68de0b61a0dd
-run 1e9e38e57a33f5c4: 5 accepted, 0 rejected, 0 unavailable, 0 skipped; notes in runs\1e9e38e57a33f5c4\evidence\notes.jsonl
-```
-
-`uv run nightaudit verify-notes runs/1e9e38e57a33f5c4/evidence` printed
-`OK  evidence verifies; 5 notes verify (5 accepted)`. No model call and no MCP server failed in either run.
+**The notes job**, `kirocrew cron trigger 771fc3b9` at 11:12:44, with the earlier code. It wrote 5 accepted notes on
+`1e9e38e57a33f5c4` (`akiawcfihw3qdcdeagee`, `lab-debug`, `eni-085d97a8b514d1ce7`, `i-0c8b3995db6d57788`,
+`vol-042dd68de0b61a0dd`); the current record of the notes job is the 13:07 run below.
 
 After both runs both jobs show `enabled: false, user_paused: true` (a trigger does not resume a job), and
 `kirocrew cron pause` was run on both again so nothing fires at 02:00 until the owner resumes them.
 
-## Run again with the final code, 7 November 2026, 12:52 to 12:56 local time
+## Run again with the final code, 7 November 2026, 12:52 to 13:07 local time
 
 `crew/night-shift/crons/night_jobs.py` changed (its docstring example became `<checkout>`), so the bundle was
 reinstalled: `kirocrew app disable night-shift`, `uninstall`, `install <checkout>\crew\night-shift`, then
@@ -202,12 +197,40 @@ incomplete Crew night. `41178d37bd0da182` was written before the chain recorded 
 and fails (`complete: the page shows false, the evidence records no completeness, so the night is taken as complete;
 billed total: the page shows $0.00, the evidence has $6,683.00; ...`). That is the intended verdict: it should go.
 
-**The notes job was not triggered.** The checkout's investigator can still call three `aws-billing` tools that start
-work in the account (see "The two investigators" above). Both jobs were paused again: `Paused job: 0af6390d`,
-`Paused job: 9d342b56`; Crew's store shows `enabled: false, user_paused: true` for both.
+**The notes job**, `kirocrew cron trigger 9d342b56` at 13:07:02 local time, after the investigator was made read-only
+(above), against the lab account through the gateway's read-only profile. The message was already
+`{"checkout": "<checkout>"}`. The trigger returned at 13:07:06; Crew's history records
+`"trigger": "manual"`, `"duration_ms": 1553`, `"status": "success"`, and the job `last_status: ok`, `last_error: null`,
+at 12:07:08 UTC, with this `last_result`:
+
+```
+night_shift.py finished in <checkout>:
+run 6ad680fc05a50128: 0 accepted, 0 rejected, 0 unavailable, 0 skipped; notes in runs\6ad680fc05a50128\evidence\notes.jsonl
+```
+
+`uv run nightaudit verify-notes runs/6ad680fc05a50128/evidence` printed `OK  no investigator's notes recorded`.
+
+No finding was asked about, and that is the intended behaviour: `night_shift.py` opens only `new` findings in `OB`
+and `O`, and all five on `6ad680fc05a50128` (`akiawcfihw3qdcdeagee`, `lab-debug`, `eni-085d97a8b514d1ce7`,
+`i-0c8b3995db6d57788`, `vol-042dd68de0b61a0dd`) are `persisting` from the earlier lab night `1e9e38e57a33f5c4`. No
+`notes.jsonl` was written, although the summary line names its path. The notes on those five findings are the ones
+written on `1e9e38e57a33f5c4` by the 11:12 run (`771fc3b9`, gone since the reinstall); `uv run nightaudit verify-notes
+runs/1e9e38e57a33f5c4/evidence` still prints `OK  evidence verifies; 5 notes verify (5 accepted)`.
+
+Both jobs were paused again: `Paused job: 0af6390d`, `Paused job: 9d342b56`. `kirocrew cron list` then printed:
+
+```
+  ⏸ 0af6390d  night-shift/night-audit  (At 2:00 AM UTC)  {"checkout": "<checkout>"}
+      owner: none (manage from CLI or the dashboard Schedule page)  created by: app:night-shift
+  ⏸ 9d342b56  night-shift/night-notes  (At 2:30 AM UTC)  {"checkout": "<checkout>"}
+      owner: none (manage from CLI or the dashboard Schedule page)  created by: app:night-shift
+```
 
 ## Still not checked
 
+* That the read-only investigator (without `aws-billing`) writes a note inside Crew: the 13:07 notes run had no new
+  `OB` or `O` finding to ask about, so kiro-cli was not started. The 5 notes on `1e9e38e57a33f5c4` came from the
+  agent while it still listed `@aws-billing`.
 * That the Crew-registered `night-investigator` agent mounts its two servers in a Crew chat: no chat was opened. The
   notes job runs the checkout's own agent through kiro-cli, which reads `.kiro/settings/mcp.json`.
 * A run that fires on its schedule at 02:00 or 02:30; both were started with `cron trigger`.

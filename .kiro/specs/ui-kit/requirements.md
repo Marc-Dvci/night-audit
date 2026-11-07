@@ -81,9 +81,12 @@ review that an auditor will test.
    the same files statically.
 6. WHEN the page is verified THE SYSTEM SHALL compare what the page shows with the chain, and take whether the night was
    complete from the chain's header row, never from the page. A pack written before the header recorded completeness
-   SHALL count as incomplete only when it holds no finding row and a ledger with no record row.
-7. THE SYSTEM SHALL accept an amount in the headline text only when it is a headline region's amount in the chain, written
-   exactly or rounded as Requirement 2.7 rounds it. Every other figure on the page SHALL equal the chain exactly.
+   SHALL count as complete, because nothing in it can prove the night was incomplete.
+7. THE SYSTEM SHALL accept a number in the headline text, however it is written, only when it is one of the headline's
+   own counts, or a headline region's amount in the chain written exactly or rounded as Requirement 2.7 rounds it. Every
+   other figure on the page SHALL equal the chain exactly.
+8. THE SYSTEM SHALL fail verification unless the manifest names exactly the ledgers `intended`, `observed` and `billed`,
+   and every record row belongs to one of them.
 
 ## Requirement 7: the morning report
 

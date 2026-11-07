@@ -1,17 +1,17 @@
 # Results
 
 Every figure here comes from a command in this repository. Synthetic data is labelled as synthetic. Figures were
-measured on 7 Nov 2026 at commit `05f013d` plus the working changes that follow it.
+measured on 7 Nov 2026 at commit `2035d42` plus the working changes that follow it.
 
 ## Tests
 
 | Figure | Value | Command |
 |---|---|---|
-| All tests | 996 collected: 993 passed, 3 skipped | `uv run pytest -q` |
+| All tests | 1046 collected: 1043 passed, 3 skipped | `uv run pytest -q` |
 | Skipped | 3, all `-m lean` differential tests, which need the Lean toolchain (`lake`); the `lean` CI job runs them with `NIGHTAUDIT_REQUIRE_LEAN=1` | `uv run pytest -q -ra` |
-| Property-based, integration, browser | 41, 251 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
-| TypeScript | 247 tests in 4 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
-| Decision core coverage | 96.8 % of lines and branches over `matcher`, `normalisers`, `grace`, `scope`, `state`, `evidence`, `explain`, `control`, `report` (floor 90 %) | `uv run pytest -q -m "not e2e and not live" --cov` |
+| Property-based, integration, browser | 41, 252 and 46 tests (a test can carry more than one marker) | `uv run pytest -m property --collect-only -q`, `-m integration`, `-m e2e` |
+| TypeScript | 261 tests in 4 files | `cd skeleton/web && npx vitest run --sequence.shuffle` |
+| Decision core coverage | 96.85 % of lines and branches over `matcher`, `normalisers`, `grace`, `scope`, `state`, `evidence`, `explain`, `control`, `report` (floor 90 %) | `uv run pytest -q -m "not e2e and not live" --cov` |
 | Lint, format, types | ruff, ruff format and `mypy --strict` clean | `uv run ruff check . && uv run ruff format --check . && uv run mypy` |
 
 Tests run in random order (`pytest-randomly`), with a 30 s timeout each, no network and no real clock.
@@ -86,8 +86,19 @@ The release review found two more holes in the page check, both fixed in Python 
 
 | Hole | Test |
 |---|---|
-| Completeness came from the page: a complete night's page edited to `complete: false` with a billed total of 0, its findings still shown, verified. The header row and the manifest now record `complete`; a pack without it counts as incomplete only when it holds no finding and a ledger with no record, which is all an incomplete night can write | `test_regression_a_page_that_says_incomplete_to_hide_the_bill_fails_verification` |
+| Completeness came from the page: a complete night's page edited to `complete: false` with a billed total of 0, its findings still shown, verified. The header row and the manifest now record `complete` | `test_regression_a_page_that_says_incomplete_to_hide_the_bill_fails_verification` |
 | The headline text was not compared with the chain, so it could print any amount. Each amount in it must now be a headline region's amount, exact or rounded half-even to four significant figures (`0.71725` prints `$0.7172`); every other figure must be exact | `test_regression_a_headline_that_rounds_its_amount_wrongly_fails_verification`, `test_a_page_that_rounds_any_amount_but_the_headline_fails_verification` |
+
+A second independent review on another model, of `28a432b`, reported one tool that could start work in the account,
+three holes in the evidence checks and two faults in the documentation. All are fixed in `2035d42`:
+
+| Finding | Fix and test |
+|---|---|
+| The checkout's investigator, which the notes job launches, could call CloudTrail `lake_query` (`StartQuery`) | `lake_query` disabled in `.kiro/settings/mcp.json` and denied in the agent; `test_investigator_read_only.py` reads each agent with the settings it loads. That test then found three more: the billing server's `storage-lens` (Athena `StartQueryExecution`), `sp-purchase-analyzer` and `sp-recommendation` (both start an analysis). The investigator no longer lists the billing server, and the settings disable the three tools |
+| A pack with no completeness field, a complete night holding only an unkeyed bill of $41.20, verified beside a page that said incomplete with every total 0 | Such a pack counts as complete: `test_regression_an_old_pack_cannot_hide_an_unkeyed_bill_behind_a_page_that_says_incomplete` |
+| `One Vampire costs 0.7173 dollars.` verified: the headline check read only amounts written with `$` | Every number in the headline is read with the explanation guard's scanner: `test_regression_every_number_in_the_headline_must_be_its_own_count_or_amount` |
+| A manifest without the `billed` ledger verified | Exactly three ledgers: `test_regression_a_manifest_that_omits_a_ledger_fails_verification` |
+| A local checkout path in `crew/README.md`; a claim that tests pinned the Crew run | `test_no_tracked_text_file_names_a_drive_path_or_a_home_folder`; the claim split into a tested row and a recorded-run row |
 
 ## Self-attack
 
@@ -104,13 +115,21 @@ The release review found two more holes in the page check, both fixed in Python 
 
 ## Accessibility
 
-`uv run python scripts/ui_check.py <url>` drives the demo UI in headless Chromium through eight states (overview and each
-region filter, with a finding opened) and runs axe-core with the WCAG 2.0, 2.1 and 2.2 A and AA rules: 0 violations in all
-eight on 7 Nov 2026, on the local build of this commit. That run did not record its URL; it is not repeated here as a
-measured figure until it is run again. `ui_check.py` now prints `measured on: <url>` as its first line, and reports the
-script-payload check as `xss: not applicable, no payload on this night` on a night that plants none (the live lab
-night) instead of failing. The 46 browser tests (`uv run pytest -m e2e`) run the same axe
-check on the screens of the apps, including a 390 px phone width.
+`uv run python scripts/ui_check.py <url>` drives the UI in headless Chromium through eight states (overview and each
+region filter, with a finding opened) and runs axe-core with the WCAG 2.0, 2.1 and 2.2 A and AA rules. Measured on
+7 Nov 2026 at 13:13 local time against the deployed Lambda function URL:
+
+| URL | Violations in the eight states | Script-payload check | Keyboard | Result |
+|---|---|---|---|---|
+| `https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/?app=vampires-demo` (demo, synthetic) | 0 in each (axe passes 28 to 30 rules per state) | `payload in the data 2 time(s), shown as text in 1 place(s), no dialog` | Enter on the Vampire legend item shows `"VAMPIRE 2"` | `RESULT: PASS` |
+| `https://o7hhjtbm3mydyatsvlz7t3teli0fqski.lambda-url.us-east-1.on.aws/` (the live lab night) | 0 in each (28 to 31 rules pass per state) | `not applicable, no payload on this night` | `"VAMPIRE 3"` | `RESULT: PASS` |
+
+The first run on each URL also printed a Playwright traceback before `RESULT: PASS`: one JSON response on the deployed
+URL is a redirect, and the script read its body. The script was wrong; it now skips redirects
+(`test_regression_a_json_redirect_is_not_read_for_the_payload`), and the figures above are from the runs after the fix.
+The line `third Tab lands on:` prints the focused element's class name, and printed nothing on both URLs; it is not
+checked. The 46 browser tests (`uv run pytest -m e2e`) run the same axe check on the screens of the apps, including a
+390 px phone width.
 
 ## Throughput
 
@@ -154,7 +173,7 @@ Kiro Crew 0.13.0 from a source checkout on Windows 11; gateway started with `AWS
 |---|---|---|
 | Apply the app | `kirocrew app disable`, `uninstall`, `install`, `enable` (`app update` printed "No running gateway answered" on Windows) | `Agents registered: 1`, `Skills registered: 1`, `registered 2 cron job(s) with scheduler`; no new gateway log line |
 | Audit | `kirocrew cron trigger e7757f1f` | Crew: `last_status: ok`, 4 runs. `nightaudit verify` OK on `c518e7f39e95c08e`, `910948837feacfbc`, `1e9e38e57a33f5c4`; on `41178d37bd0da182` (incomplete, observed ledger missing) after the verifier fix for incomplete runs, and again after completeness was recorded in the chain (`OK  verified 545 rows, 0 findings`) |
-| Notes | `kirocrew cron trigger 771fc3b9` | Crew: `last_status: ok`, `run 1e9e38e57a33f5c4: 5 accepted, 0 rejected, 0 unavailable, 0 skipped`. `nightaudit verify-notes`: `5 notes verify (5 accepted)` |
+| Notes | `kirocrew cron trigger 771fc3b9` | Crew: `last_status: ok`, `run 1e9e38e57a33f5c4: 5 accepted, 0 rejected, 0 unavailable, 0 skipped`; superseded by the 13:07 run below |
 | Afterwards | `kirocrew cron pause e7757f1f`, `kirocrew cron pause 771fc3b9` | `Paused job: e7757f1f`, `Paused job: 771fc3b9` |
 
 `41178d37bd0da182` no longer verifies: it was written before the chain recorded completeness, and such a pack is now
@@ -168,8 +187,12 @@ complete; billed total: the page shows $0.00, the evidence has $6,683.00; ...`).
 | Apply the app | `kirocrew app disable night-shift`, `uninstall`, `install <checkout>\crew\night-shift`; trust set back to `["night-shift"]` in `agent.apps_trusted` and `agent.apps_trusted_local`; `enable` | `Agents registered: 1`, `Skills registered: 1`, `registered 2 cron job(s) with scheduler`; new ids `0af6390d` (audit), `9d342b56` (notes) |
 | Audit, before the message was set | `kirocrew cron trigger 0af6390d` | Crew: `last_status: error`, `checkout 'REPLACE_WITH_NIGHT_AUDIT_CHECKOUT' is not an absolute path`; nothing run |
 | Audit | `kirocrew cron update 0af6390d --message '{"checkout": "<checkout>"}'`, `kirocrew cron trigger 0af6390d` | Crew: `last_status: ok`, 4 runs. `nightaudit verify`: `847b2b2514c14574` (incomplete, observed missing) `OK  verified 545 rows, 0 findings`; `ebd45fd5644e4159` `OK  verified 742 rows, 12 findings`; `4c3e32bf3ef8c9ab` `OK  verified 1119 rows, 211 findings`; `6ad680fc05a50128` `OK  verified 226 rows, 8 findings`; each `header matches the manifest; the page matches the evidence` |
-| Notes | not triggered | the checkout's investigator can still call three `aws-billing` tools that are not reads (`test_the_checkout_investigator_can_call_no_tool_that_is_not_a_read` fails); see [`crew/README.md`](../crew/README.md) |
-| Afterwards | `kirocrew cron pause 0af6390d`, `kirocrew cron pause 9d342b56` | `Paused job: 0af6390d`, `Paused job: 9d342b56` |
+| Notes | `kirocrew cron trigger 9d342b56` at 13:07:02, after `@aws-billing` was removed from the investigator; message already `{"checkout": "<checkout>"}` | Crew: `"trigger": "manual"`, `"duration_ms": 1553`, `"status": "success"`, `last_status: ok`, `run 6ad680fc05a50128: 0 accepted, 0 rejected, 0 unavailable, 0 skipped`. `nightaudit verify-notes runs/6ad680fc05a50128/evidence`: `OK  no investigator's notes recorded`. No finding was asked about: the five `OB` and `O` findings are `persisting` from `1e9e38e57a33f5c4`, and the job opens only `new` ones |
+| Afterwards | `kirocrew cron pause 0af6390d`, `kirocrew cron pause 9d342b56`, `kirocrew cron list` | `Paused job: 0af6390d`, `Paused job: 9d342b56`; both listed as `⏸` with the checkout message |
+
+The five notes the page shows for the lab account are still those on `1e9e38e57a33f5c4`, written by the earlier
+investigator, which then also listed `@aws-billing` (`verify-notes`: `OK  evidence verifies; 5 notes verify (5
+accepted)`). The read-only investigator has not yet written a note inside Crew.
 
 ## Lean
 
@@ -183,21 +206,36 @@ differential test of the Lean model against the Python matcher
 
 `uv run python apps/own-build/snapshot.py` records the files git tracks at `HEAD` and the paths the specs promise;
 `uv run python scripts/build_demos.py own-build` runs the night. Recorded first at commit `a58b88b`, then at `05f013d`
-after `export_build_ledger.py` refreshed Kiro's export with the later sessions, the Crew session among them:
+and at `2035d42`, each time after `export_build_ledger.py` refreshed Kiro's export with the later sessions (the Crew
+sessions among them). The export at `2035d42` holds 46 sessions, 24 of them with a credit figure, and 403
+session-file rows over 234 files.
 
-| Region | `a58b88b` | `05f013d` |
-|---|---|---|
-| `IOB` Spec'd and built with Kiro | 172 | 176 |
-| `IO` Spec'd, no Kiro session | 118 | 119 |
-| `O` Written by hand or generated | 56 | 36 |
-| `OB` Built with Kiro, no spec names it or a folder holding it | 23 | 45 |
-| `I` Promised by a spec, never built | 6 | 3 |
-| `B` Kiro worked on it, no spec, it is gone | 5 | 8 |
-| Tracked / promised / worked on by Kiro | 369 / 296 / 200 | 376 / 298 / 229 |
-| Sessions that touched a file / credits allocated to files | 17 / 679.1619 | 21 / 929.1727 |
+| Region | `a58b88b` | `05f013d` (before) | `2035d42` (after) | Change |
+|---|---|---|---|---|
+| `IOB` Spec'd and built with Kiro | 172 | 176 | 180 | +4 |
+| `IO` Spec'd, no Kiro session | 118 | 119 | 119 | 0 |
+| `O` Written by hand or generated | 56 | 36 | 42 | +6 |
+| `OB` Built with Kiro, no spec names it or a folder holding it | 23 | 45 | 49 | +4 |
+| `I` Promised by a spec, never built | 6 | 3 | 3 | 0 |
+| `B` Kiro worked on it, no spec, it is gone | 5 | 8 | 5 | -3 |
+| Tracked / promised / worked on by Kiro | 369 / 296 / 200 | 376 / 298 / 229 | 390 / 302 / 234 | +14 / +4 / +5 |
+| Findings, informational among them | | 211, 119 | 218, 119 | +7, 0 |
+| Sessions that touched a file / credits allocated to files | 17 / 679.1619 | 21 / 929.1727 | 23 / 1072.7314 | +2 / +143.5587 |
 
-21 files moved from `O` to `OB` between the two: Kiro sessions in the newer export touched them. The credits are an
-allocation chosen for this audit, not a measurement of what one file cost.
+21 files moved from `O` to `OB` between the first two: Kiro sessions in the newer export touched them. Between
+`05f013d` and `2035d42`:
+
+| Move | Files |
+|---|---|
+| new, `IOB` | `skeleton/tests/test_investigator_read_only.py`, `skeleton/tests/test_no_local_paths.py`, `skeleton/tests/test_ui_check.py` |
+| new, `O` | `SECURITY.md` and the seven files of `examples/vampires-night/` (generated by `scripts/build_examples.py`) |
+| `B` to `IOB` | `skeleton/tests/test_examples.py` |
+| `B` to `OB` | `examples/README.md`, `scripts/build_examples.py` |
+| `O` to `OB` | `.kiro/specs/ui-kit/requirements.md`, `scripts/ui_check.py` |
+
+The three `B` files had been worked on by Kiro before they were committed. A file the newer export credits more than
+before carries more: `.devcontainer/devcontainer.json` held 3.2145 credits, and holds 7.2952 now that its second
+session reports 4.0807. The credits are an allocation chosen for this audit, not a measurement of what one file cost.
 
 Before and after on the same night. The first run read a spec path as written and reported 32 files promised and never
 built. 26 of those were the parser's mistakes: relative paths (`tests/test_x.py` for `skeleton/tests/test_x.py`), folders

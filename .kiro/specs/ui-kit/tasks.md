@@ -142,6 +142,32 @@ Status: every task but 28 is ticked. Task 28 waits on `uv run ruff check .`, whi
       `0.71725`; `test_regression_a_headline_that_rounds_its_amount_wrongly_fails_verification`,
       `test_a_page_that_rounds_any_amount_but_the_headline_fails_verification`, P11 with `headline_numbers`. [Req 2.7, 6.7]
 
+## Review fixes (commit `2035d42`)
+
+An independent review on another model, which could not write files, reported these against `28a432b`. Each fix has a
+failing test first, in Python and in the browser verifier through the shared cases in `parity.json`.
+
+- [x] **31. A pack with no completeness field is complete.** The rule "no finding and a ledger with no record may be
+      incomplete" let a complete night with only an unkeyed bill of $41.20 verify beside a page that said incomplete
+      with every total 0. Such a pack is now held to a complete night's figures.
+      `test_regression_an_old_pack_cannot_hide_an_unkeyed_bill_behind_a_page_that_says_incomplete`,
+      `test_a_pack_that_records_no_completeness_is_taken_as_complete_so_an_incomplete_page_fails`; parity section
+      `completeness` (9 cases). [Req 6.6]
+- [x] **32. Every number in the headline is checked.** `One Vampire costs 0.7173 dollars.` verified, because only
+      `$`-prefixed amounts were read. Every numeric literal is now read with the explanation guard's scanner
+      (`explain.number_literals`). `test_regression_every_number_in_the_headline_must_be_its_own_count_or_amount`,
+      `test_a_headline_with_a_digit_that_is_not_ascii_fails_verification`; `verify.test.ts` "refuses a headline amount
+      written without a dollar sign"; parity section `displayed`. [Req 6.7]
+- [x] **33. Exactly three ledgers.** Both verifiers looped over the manifest's ledgers only, so a manifest without
+      `billed` verified. `test_regression_a_manifest_that_omits_a_ledger_fails_verification`,
+      `test_a_manifest_that_names_a_fourth_ledger_fails_verification`,
+      `test_a_record_row_of_another_ledger_fails_verification_at_its_row`; parity section `ledgers` (4 cases). [Req 6.8]
+- [x] **34. `ui_check.py` on a night with no payload, and on a redirect.** It reports `xss: not applicable, no payload
+      on this night` and does not fail; it names the URL it measured; it no longer reads a redirect's body
+      (`test_regression_a_night_with_no_payload_is_not_applicable_rather_than_a_failure`,
+      `test_regression_a_json_redirect_is_not_read_for_the_payload`). Run on the deployed demo and the live lab night on
+      7 Nov 2026: `RESULT: PASS` on both, 0 violations in 8 states (`docs/RESULTS.md`, Accessibility). [Req 10.1]
+
 ## Verification
 
 - [x] **28. All checks.** `uv run ruff check .`, `uv run mypy skeleton apps/vampires/src`, `uv run pytest -q`,

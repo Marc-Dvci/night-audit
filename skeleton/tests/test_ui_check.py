@@ -50,3 +50,13 @@ def test_the_payload_is_found_in_a_json_response_however_it_is_escaped() -> None
     assert check.payload_count('{"name": "<img src=x onerror=alert(1)>"}') == 1
     assert check.payload_count('{"name": "\\u003cimg src=x onerror=alert(1)\\u003e"}') == 1
     assert check.payload_count('{"name": "i-0c8b3995db6d57788"}') == 0
+
+
+def test_regression_a_json_redirect_is_not_read_for_the_payload() -> None:
+    """Bug: on the deployed URL a JSON response was a redirect, and reading its body printed a Playwright traceback
+    (``Response body is unavailable for redirect responses``) before ``RESULT: PASS``."""
+    check = _ui_check()
+    assert not check.has_json_body(307, "application/json")
+    assert not check.has_json_body(301, "application/json")
+    assert check.has_json_body(200, "application/json; charset=utf-8")
+    assert not check.has_json_body(200, "text/html")

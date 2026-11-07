@@ -45,6 +45,11 @@ def xss_verdict(payload_in_data: int, shown: int, dialogs: int) -> tuple[bool, s
     return True, f"xss: payload in the data {payload_in_data} time(s), shown as text in {shown} place(s), no dialog"
 
 
+def has_json_body(status: int, content_type: str) -> bool:
+    """Whether a response's body is read for the payload count. A redirect has no body: reading it raises."""
+    return "json" in content_type and not 300 <= status < 400
+
+
 def scan(page: Page, label: str) -> list[dict[str, object]]:
     result = page.evaluate("async (tags) => await axe.run(document, {runOnly: {type: 'tag', values: tags}})", TAGS)
     violations = result["violations"]
@@ -72,7 +77,10 @@ def main() -> int:
         dialogs: list[str] = []
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
         page.on("dialog", lambda d: (dialogs.append(d.message), d.dismiss()))
-        page.on("response", lambda r: bodies.append(r.text()) if "json" in r.headers.get("content-type", "") else None)
+        page.on(
+            "response",
+            lambda r: bodies.append(r.text()) if has_json_body(r.status, r.headers.get("content-type", "")) else None,
+        )
         page.goto(base, wait_until="networkidle")
         page.wait_for_selector(".venn")
         states = [("overview", None)]
